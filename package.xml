@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>hlctrl</name>
+  <version>0.0.0</version>
+  <description>The hlctrl package</description>
+
+  <maintainer email="sebastian.buck@uni-tuebingen.de">buck</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>sbc15_msgs</build_depend>
+  <build_depend>smach</build_depend>
+
+  <run_depend>rospy</run_depend>
+  <run_depend>sbc15_msgs</run_depend>
+  <run_depend>smach</run_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
