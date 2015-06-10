@@ -45,6 +45,7 @@ class GoalSelector(smach.State):
             rospy.loginfo("got map of size %d" % grid.info.width )
 
             p = self.select_goal(grid)
+
             userdata.goal_pose = p
             userdata.velocity = 0.5
             rospy.loginfo("selected goal %d, %d" % (p.pose.position.x, p.pose.position.y) )
@@ -98,7 +99,7 @@ class GoalSelector(smach.State):
             rx = int((trans[0] - grid.info.origin.position.x) / res)
             ry = int((trans[1] - grid.info.origin.position.y) / res)
 
-            min_dist_to_start = 2.0
+            min_dist_to_start = 1.5
             desired_frontier_dist = 1.0
             min_dist_to_obstacles = desired_frontier_dist
 
@@ -137,7 +138,7 @@ class GoalSelector(smach.State):
                             Q.append((nx, ny))
                             visited[ny][nx] = True
 
-            pos = candidates[0] if candidates else (rx, ry)
+            pos = candidates[0] if candidates else (0, 0)
 
             Q = [pos]
             visited = [[False for x in range(w)] for y in range(h)]

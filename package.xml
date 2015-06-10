@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>hlctrl</name>
+  <name>sbc15_fsm</name>
   <version>0.0.0</version>
-  <description>The hlctrl package</description>
+  <description>The high level ctrl package</description>
 
   <maintainer email="sebastian.buck@uni-tuebingen.de">buck</maintainer>
 
