@@ -1,0 +1,76 @@
+#ifndef STATE_H
+#define STATE_H
+
+/// COMPONENT
+#include "action.h"
+#include "event.h"
+
+/// SYSTEM
+#include <vector>
+#include <ros/rate.h>
+
+class Event;
+class Transition;
+
+class State
+{
+public:
+    typedef std::vector<Action> Actions;
+    static State* NO_PARENT;
+
+private:
+    std::vector<Event*> events_;
+
+public:
+    Event event_default;
+
+public:
+    Actions action_entry;
+    Actions action_exit;
+
+public:
+    State(State* parent);
+    virtual ~State();
+
+    void tick(std::vector<const Transition *> &possible_transitions);
+
+    virtual bool isTerminal() const;
+    ros::Rate getRate() const;
+
+    void performEntryAction();
+    void performExitAction();
+
+    State* getParent() const;
+    std::string getName() const;
+
+protected:
+    virtual void entryAction();
+    virtual void exitAction();
+    virtual void iteration();
+    virtual double desiredFrequency() const;
+
+private:
+    friend class Event;
+    void registerEvent(Event* event);
+
+private:
+    ros::Rate rate_;
+    State* parent_;
+};
+
+
+inline void operator >> (Event& e, State& s)
+{
+    e.connect(&s);
+}
+inline void operator >> (Event* e, State& s)
+{
+    e->connect(&s);
+}
+
+inline void operator >> (Event& e, State* s)
+{
+    e.connect(s);
+}
+
+#endif // STATE_H

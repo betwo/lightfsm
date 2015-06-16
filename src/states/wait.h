@@ -1,0 +1,27 @@
+#ifndef WAIT_H
+#define WAIT_H
+
+/// COMPONENT
+#include "../fsm/state.h"
+#include "../fsm/triggered_event.h"
+
+class Wait : public State
+{
+public:
+    TriggeredEvent event_done;
+
+public:
+    Wait(State *parent, double duration);
+
+protected:
+    void entryAction();
+    void iteration();
+
+    double desiredFrequency() const;
+
+private:
+    double duration_;
+    ros::Time continue_at_;
+};
+
+#endif // WAIT_H

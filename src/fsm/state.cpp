@@ -1,0 +1,105 @@
+/// HEADER
+#include "state.h"
+
+/// SYSTEM
+#include <ros/ros.h>
+#include <typeinfo>
+#include <cxxabi.h>
+
+State* State::NO_PARENT = NULL;
+
+State::State(State* parent)
+    : event_default(this), rate_(1), parent_(parent)
+{
+}
+
+State::~State()
+{
+
+}
+
+std::string State::getName() const
+{
+    int status;
+    std::string full_name(abi::__cxa_demangle(typeid(*this).name(), 0, 0, &status));
+
+    return full_name;
+
+}
+
+bool State::isTerminal() const
+{
+    return false;
+}
+
+ros::Rate State::getRate() const
+{
+    return ros::Rate(desiredFrequency());
+}
+
+void State::performEntryAction()
+{
+    rate_ = ros::Rate(desiredFrequency());
+
+    for(std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {
+        const Action& action = *a;
+        action.perform();
+    }
+
+    entryAction();
+}
+
+void State::performExitAction()
+{
+    exitAction();
+
+    for(std::vector<Action>::const_iterator a = action_exit.begin(); a != action_exit.end(); ++a) {
+        const Action& action = *a;
+        action.perform();
+    }
+}
+
+
+void State::entryAction()
+{
+    rate_ = ros::Rate(desiredFrequency());
+}
+
+void State::exitAction()
+{
+
+}
+
+void State::iteration()
+{
+
+}
+
+double State::desiredFrequency() const
+{
+    return 10.0;
+}
+
+void State::tick(std::vector<const Transition*>& possible_transitions)
+{
+    // do work
+    iteration();
+
+    // check events
+    for(std::vector<Event*>::const_iterator e = events_.begin(); e != events_.end(); ++e) {
+        const Event* event = *e;
+
+        event->getPossibleTransitions(possible_transitions);
+    }
+}
+
+void State::registerEvent(Event *event)
+{
+    events_.push_back(event);
+}
+
+
+State* State::getParent() const
+{
+    return parent_;
+}

@@ -1,0 +1,52 @@
+#ifndef EVENT_H
+#define EVENT_H
+
+/// COMPONENT
+#include "transition.h"
+
+/// SYSTEM
+#include <vector>
+#include <boost/noncopyable.hpp>
+
+class State;
+
+class Event : private boost::noncopyable
+{
+public:
+    Event(State* parent);
+    virtual ~Event();
+
+    void connect(State* state, Guard guard = Guard(), Action action = Action());
+    void connect(State* state, Action action);
+
+    void connect(Event* event);
+
+    void connect(Action action);
+
+    virtual void getPossibleTransitions(std::vector<const Transition *> &possible_transitions) const;
+    void performTransitionActions();
+
+    virtual void forwardEvent();
+
+protected:
+    State* parent_;
+    std::vector<Transition> transitions_;
+    std::vector<Event*> connected_events_;
+    std::vector<Action> actions_on_transition_;
+};
+
+inline void operator >> (Event& e, Event& f)
+{
+    e.connect(&f);
+}
+inline void operator << (Event& e, const Action& a)
+{
+    e.connect(a);
+}
+inline void operator << (Event& e, const boost::function<void()>& a)
+{
+    e.connect(Action(a));
+}
+
+
+#endif // EVENT_H
