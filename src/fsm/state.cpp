@@ -34,7 +34,7 @@ bool State::isTerminal() const
 
 ros::Rate State::getRate() const
 {
-    return ros::Rate(desiredFrequency());
+    return rate_;
 }
 
 void State::performEntryAction()

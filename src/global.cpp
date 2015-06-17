@@ -1,17 +1,17 @@
 /// HEADER
 #include "global.h"
 
-void sick14_fsm_global::action::print(const std::string& str)
+void sbc15_fsm_global::action::print(const std::string& str)
 {
     ROS_WARN_STREAM("action: " << str);
 }
 
-void sick14_fsm_global::action::say(const std::string& str)
+void sbc15_fsm_global::action::say(const std::string& str)
 {
     GlobalState::getInstance().talk(str);
 }
 
-void sick14_fsm_global::waitForRosTime()
+void sbc15_fsm_global::waitForRosTime()
 {
     ros::WallRate wait(60);
     while(ros::Time::now().toNSec() == 0) {

@@ -12,11 +12,6 @@ ExploreMap::ExploreMap(State *parent)
 
 void ExploreMap::entryAction()
 {
-    GlobalState::getInstance().setSystemEnabled("/targets", false);
-    GlobalState::getInstance().setSystemEnabled("/signs", true);
-    GlobalState::getInstance().setSystemEnabled("/barcode", false);
-    GlobalState::getInstance().setSystemEnabled("/cubedetection", false);
-
     explorer_.startExploring();
 }
 

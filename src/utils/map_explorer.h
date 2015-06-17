@@ -31,6 +31,7 @@ private:
                 const path_msgs::NavigateToGoalResultConstPtr& result);
 
     void splitMap(const nav_msgs::OccupancyGrid& map);
+    cv::Point2i findNearestFreePoint(const cv::Mat& search_space, const cv::Point2i& start, cv::Mat &debug);
     cv::Point2i findPOI(const cv::Mat& search_space, const cv::Point2i& start, double min_distance, cv::Mat &debug);
 
 private:
@@ -44,8 +45,6 @@ private:
     bool exploring_;
 
     ros::ServiceClient map_service_client;
-
-    ros::Publisher lookat_pt_cmd_publisher;
 
     cv::Mat map_free_safe;
     cv::Mat search_space;

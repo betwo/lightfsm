@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/bash -i
 echo "running test coverage"
 
 THISDIR=$(pwd)
-ROOT=$(cd ../../../../; pwd)
+ROOT=$(roscd; cd ../; pwd)
 DIR=$THISDIR/traces
 
 # build
@@ -30,7 +30,6 @@ make run_tests_sick14_state_machine_gtest
 cd $THISDIR
 find $ROOT/build -iname *.gcda | xargs mv -t $DIR
 lcov --capture --directory $DIR --output-file $THISDIR/test.info
-#lcov --extract test.info "*sick14*" -o test_extracted.info
 lcov --remove test.info           "/usr*" -o test_extracted.info
 lcov --remove test_extracted.info "/opt*" -o test_extracted.info
 

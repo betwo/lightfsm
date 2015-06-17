@@ -62,7 +62,8 @@ std::vector<sbc15_msgs::Object> GlobalState::getObjects()
         if(client_objects_.call(srv)) {
             return srv.response.objects;
         } else {
-            ROS_FATAL("cannot get objects via /get_objects");
+            ROS_ERROR("cannot get objects via /get_objects");
+            return std::vector<sbc15_msgs::Object>();
         }
     }
 }

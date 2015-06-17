@@ -15,8 +15,6 @@ Wait::Wait(State* parent, double duration)
 
 void Wait::entryAction()
 {
-    GlobalState::getInstance().setSystemEnabled("/barcode", true);
-
     continue_at_ = ros::Time::now() + ros::Duration(duration_);
     ROS_INFO_STREAM("waiting for " << duration_ << " seconds until " << continue_at_);
 }

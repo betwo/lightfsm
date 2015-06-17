@@ -1,11 +1,11 @@
-#ifndef SICK14_GLOBAL_H
-#define SICK14_GLOBAL_H
+#ifndef sbc15_GLOBAL_H
+#define sbc15_GLOBAL_H
 
 /// COMPONENT
 #include "states/global_state.h"
 #include "fsm/state.h"
 
-namespace sick14_fsm_global {
+namespace sbc15_fsm_global {
 namespace action {
 void print(const std::string& str);
 void say(const std::string& str);
@@ -39,4 +39,4 @@ protected:
     bool isTerminal() const;
 };
 
-#endif // SICK14_GLOBAL_H
+#endif // sbc15_GLOBAL_H

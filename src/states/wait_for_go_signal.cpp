@@ -17,11 +17,6 @@ WaitForGoSignal::WaitForGoSignal(State* parent)
 
 void WaitForGoSignal::entryAction()
 {
-    GlobalState::getInstance().setSystemEnabled("/targets", false);
-    GlobalState::getInstance().setSystemEnabled("/signs", true);
-    GlobalState::getInstance().setSystemEnabled("/barcode", false);
-    GlobalState::getInstance().setSystemEnabled("/cubedetection", false);
-
     GlobalState::getInstance().sound(sound_play::SoundRequest::NEEDS_PLUGGING);
 }
 

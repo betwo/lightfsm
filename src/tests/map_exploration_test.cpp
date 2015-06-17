@@ -8,15 +8,18 @@
 #include "../global.h"
 
 #include "../utils/map_explorer.h"
-
+#include "../states/wait.h"
 
 class Explore : public State
 {
 public:
-    Explore(State* parent)
-        : State(parent)
-    {
+    TriggeredEvent event_object_found;
 
+public:
+    Explore(State* parent)
+        : State(parent),
+          event_object_found(this, "A cup has been found")
+    {
     }
 
     void entryAction()
@@ -29,11 +32,24 @@ public:
         if(!explorer_.isExploring()) {
             explorer_.startExploring();
         }
+
+        auto objects = GlobalState::getInstance().getObjects();
+        for(const sbc15_msgs::Object& o : objects) {
+            if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
+                event_object_found.trigger();
+            }
+        }
     }
 
     void exitAction()
     {
         explorer_.stopExploring();
+    }
+
+protected:
+    double desiredFrequency() const
+    {
+        return 1.0;
     }
 
 private:
@@ -42,17 +58,21 @@ private:
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "sick14_state_machine_node_map_exploration_test");
+    ros::init(argc, argv, "sbc15_state_machine_node_map_exploration_test");
     ros::NodeHandle nh;
 
-    sick14_fsm_global::waitForRosTime();
+    sbc15_fsm_global::waitForRosTime();
 
     // STATES
     Explore explore(State::NO_PARENT);
+    Wait goal(State::NO_PARENT, 10.0);
 
     // ACTIONS
-    explore.action_entry.push_back(Action(boost::bind(&sick14_fsm_global::action::say, "Testing Map Exploration")));
+    explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
+    explore.event_object_found >> goal;
+    explore.event_object_found.connect(Action(boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been found-")));
 
+    goal.event_done >> goal;
 
     StateMachine state_machine(&explore);
 

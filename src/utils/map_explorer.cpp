@@ -13,12 +13,10 @@ MapExplorer::MapExplorer()
 {
     GlobalState& global = GlobalState::getInstance();
 
-    std::string map_service = "/dynamic_map";
+    std::string map_service = "/exploration/dynamic_map";
     global.nh.param("map_service",map_service, map_service);
     map_service_client = global.nh.serviceClient<nav_msgs::GetMap> (map_service);
     map_service_client.waitForExistence();
-
-    lookat_pt_cmd_publisher = global.nh.advertise<std_msgs::String>("/look_at/cmd", 10, true);
 }
 
 void MapExplorer::startExploring()
@@ -33,10 +31,6 @@ bool MapExplorer::isExploring()
 
 void MapExplorer::stopExploring()
 {
-    // reset view mode to look ahead
-    std_msgs::String reset;
-    reset.data = "reset";
-    lookat_pt_cmd_publisher.publish(reset);
 }
 
 
@@ -70,13 +64,8 @@ void MapExplorer::findExplorationPoint()
     map_pos.y = (own_pos.y() - map.info.origin.position.y) / map.info.resolution;
 
     double min_distance = 2 /*m*/ / map.info.resolution;
-    cv::Point2i poi = findPOI(search_space, map_pos, min_distance, debug);
-
-    if(poi == map_pos) {
-        std::cerr << "poi is own pose -> abort" << std::endl;
-        exploring_ = false;
-        return;
-    }
+    cv::Point2i start = findNearestFreePoint(search_space, map_pos, debug);
+    cv::Point2i poi = findPOI(search_space, start, min_distance, debug);
 
     cv::circle(debug, poi, 5, cv::Scalar(0xFF, 0xCC, 0x00), CV_FILLED, CV_AA);
     cv::circle(debug, map_pos, 5, cv::Scalar(0x00, 0xCC, 0xFF), CV_FILLED, CV_AA);
@@ -91,10 +80,16 @@ void MapExplorer::findExplorationPoint()
 
     exploring_ = true;
 
-    cv::imshow("search_space", search_space);
-    cv::imshow("debug", debug);
+//    cv::imshow("search_space", search_space);
+//    cv::imshow("debug", debug);
 
-    cv::waitKey(33);
+//    cv::waitKey(500);
+
+
+    if(poi == map_pos) {
+        std::cerr << "poi is own pose -> abort" << std::endl;
+        exploring_ = false;
+    }
 }
 
 namespace {
@@ -104,6 +99,49 @@ std::size_t index(const cv::Point2i& pt, std::size_t step) {
 std::size_t index(int x, int y, std::size_t step) {
     return y * step + x;
 }
+}
+
+cv::Point2i MapExplorer::findNearestFreePoint(const cv::Mat &search_space, const cv::Point2i &start, cv::Mat &debug)
+{
+    int rows = search_space.rows;
+    int cols = search_space.cols;
+    std::size_t M = rows * cols;
+    bool visited[M];
+    for(std::size_t i = 0; i < M; ++i) {
+        visited[i] = false;
+    }
+    visited[index(start, cols)] = true;
+
+    std::deque<cv::Point2i> Q;
+    Q.push_back(start);
+
+    static const int neighbor_x[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    static const int neighbor_y[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+
+    while(!Q.empty()) {
+        cv::Point2i current = Q.front();
+        Q.pop_front();
+
+        for(std::size_t n = 0; n < 8; ++n) {
+            int nx = current.x + neighbor_x[n];
+            int ny = current.y + neighbor_y[n];
+
+            if(nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                if(!visited[index(nx, ny, cols)]) {
+                    visited[index(nx, ny, cols)] = true;
+                    const uchar& cell = search_space.at<uchar>(ny, nx);
+
+                    if(cell == UNKNOWN) {
+                        Q.push_back(cv::Point2i(nx, ny));
+                    } else if(cell == FREE) {
+                        return cv::Point2i(nx, ny);
+                    }
+                }
+            }
+        }
+    }
+
+    return start;
 }
 
 cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i &start, double min_distance, cv::Mat& debug)

@@ -17,10 +17,10 @@
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "sick14_state_machine_node");
+    ros::init(argc, argv, "sbc15_state_machine_node");
     ros::NodeHandle nh;
 
-    sick14_fsm_global::waitForRosTime();
+    sbc15_fsm_global::waitForRosTime();
 
     // STATES
     WaitForGoSignal init(State::NO_PARENT);
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     Error goal(State::NO_PARENT);
 
     // ACTIONS
-    init.action_entry << boost::bind(&sick14_fsm_global::action::say, "It's show time!");
+    init.action_entry << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
 
     // TRANSITIONS
     init.event_done >> goal;

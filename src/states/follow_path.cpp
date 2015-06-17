@@ -16,11 +16,6 @@ FollowPath::FollowPath(State *parent, int retries)
 void FollowPath::entryAction()
 {
     retries_left_ = retries_;
-
-    GlobalState::getInstance().setSystemEnabled("/targets", false);
-    GlobalState::getInstance().setSystemEnabled("/signs", true);
-    GlobalState::getInstance().setSystemEnabled("/barcode", false);
-    GlobalState::getInstance().setSystemEnabled("/cubedetection", false);
 }
 
 void FollowPath::iteration()
