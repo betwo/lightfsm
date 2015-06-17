@@ -182,6 +182,7 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
                     if(cell == UNKNOWN) {
                         double distance = hypot(nx-start.x, ny-start.y);
                         if(distance > min_distance) {
+                            std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
                             cv::Point2i candidate(nx, ny);
                             std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
                             if(it == blacklist_.end()) {
@@ -190,6 +191,8 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
 
                                 return candidate;
                             }
+                        } else {
+                            std::cerr << "ignore unknown cell " << nx << ", " << ny << " because it is only " << distance << " m away (min is " << min_distance << ")" << std::endl;
                         }
                         debug.at<cv::Vec3b>(ny, nx) = cv::Vec3b(0xFF, 0x00, 0x00);
                     } else if(cell == FREE) {
