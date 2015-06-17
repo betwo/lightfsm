@@ -65,6 +65,11 @@ void MapExplorer::findExplorationPoint()
 
     double min_distance = 2 /*m*/ / map.info.resolution;
     cv::Point2i start = findNearestFreePoint(search_space, map_pos, debug);
+
+    if(start == map_pos) {
+        std::cout << "start at map_pos" << std::endl;
+    }
+
     cv::Point2i poi = findPOI(search_space, start, min_distance, debug);
 
     cv::circle(debug, poi, 5, cv::Scalar(0xFF, 0xCC, 0x00), CV_FILLED, CV_AA);
