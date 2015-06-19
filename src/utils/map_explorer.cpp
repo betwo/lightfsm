@@ -182,7 +182,7 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
                 if(!visited[index(nx, ny, cols)]) {
                     visited[index(nx, ny, cols)] = true;
                     const uchar& cell = search_space.at<uchar>(ny, nx);
-
+                    std::cerr << "cell " << nx << ", " << ny << " is " << (int)cell << std::endl;
                     if(cell == UNKNOWN) {
                         double distance = hypot(nx-start.x, ny-start.y);
                         if(distance > min_distance) {

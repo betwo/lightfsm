@@ -15,7 +15,7 @@ import cv2
 import cv
 import math
 
-roslib.load_manifest('hlctrl')
+roslib.load_manifest('sbc15_fsm')
 
 class Initialization(smach.State):
     def __init__(self):
@@ -37,9 +37,9 @@ class GoalSelector(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Exploring the environment')
 
-        rospy.wait_for_service('/dynamic_map')
+        rospy.wait_for_service('/exploration/dynamic_map')
         try:
-            client = rospy.ServiceProxy('/dynamic_map', GetMap)
+            client = rospy.ServiceProxy('/exploration/dynamic_map', GetMap)
             r = client()
             grid = r.map
             rospy.loginfo("got map of size %d" % grid.info.width )
