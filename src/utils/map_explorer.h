@@ -49,6 +49,8 @@ private:
     cv::Mat map_free_safe;
     cv::Mat search_space;
 
+    ros::Publisher search_space_map_pub_;
+
     std::vector<cv::Point2i> blacklist_;
 };
 

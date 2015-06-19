@@ -17,6 +17,8 @@ MapExplorer::MapExplorer()
     global.nh.param("map_service",map_service, map_service);
     map_service_client = global.nh.serviceClient<nav_msgs::GetMap> (map_service);
     map_service_client.waitForExistence();
+
+    search_space_map_pub_ = global.nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
 }
 
 void MapExplorer::startExploring()
@@ -63,7 +65,7 @@ void MapExplorer::findExplorationPoint()
     map_pos.x = (own_pos.x() - map.info.origin.position.x) / map.info.resolution;
     map_pos.y = (own_pos.y() - map.info.origin.position.y) / map.info.resolution;
 
-    double min_distance = 2 /*m*/ / map.info.resolution;
+    double min_distance = 10 /*m*/ / map.info.resolution;
     cv::Point2i start = findNearestFreePoint(search_space, map_pos, debug);
 
     if(start == map_pos) {
@@ -78,12 +80,10 @@ void MapExplorer::findExplorationPoint()
     tf::Vector3 poi_pos;
     poi_pos.setX(poi.x * map.info.resolution + map.info.origin.position.x);
     poi_pos.setY(poi.y * map.info.resolution + map.info.origin.position.y);
-    tf::Quaternion orientation = tf::createIdentityQuaternion();
+    tf::Quaternion orientation = tf::createQuaternionFromYaw(std::atan2(poi.y - map_pos.y, poi.x - map_pos.x));
 
     tf::Pose target(orientation, poi_pos);
     global.moveTo(target, boost::bind(&MapExplorer::doneCb, this, _1, _2));
-
-    exploring_ = true;
 
 //    cv::imshow("search_space", search_space);
 //    cv::imshow("debug", debug);
@@ -94,6 +94,10 @@ void MapExplorer::findExplorationPoint()
     if(poi == map_pos) {
         std::cerr << "poi is own pose -> abort" << std::endl;
         exploring_ = false;
+    } else {
+
+        std::cerr << "got exploration point " << poi.x << " / " << poi.y << std::endl;
+        exploring_ = true;
     }
 }
 
@@ -184,15 +188,15 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
                         if(distance > min_distance) {
                             std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
                             cv::Point2i candidate(nx, ny);
-                            std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
-                            if(it == blacklist_.end()) {
-                                blacklist_.push_back(candidate);
+//                            std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
+//                            if(it == blacklist_.end()) {
+//                                blacklist_.push_back(candidate);
 
 
                                 return candidate;
-                            }
+//                            }
                         } else {
-                            std::cerr << "ignore unknown cell " << nx << ", " << ny << " because it is only " << distance << " m away (min is " << min_distance << ")" << std::endl;
+//                            std::cerr << "ignore unknown cell " << nx << ", " << ny << " because it is only " << distance << " m away (min is " << min_distance << ")" << std::endl;
                         }
                         debug.at<cv::Vec3b>(ny, nx) = cv::Vec3b(0xFF, 0x00, 0x00);
                     } else if(cell == FREE) {
@@ -211,6 +215,8 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map)
 {
     int w = map.info.width;
     int h = map.info.height;
+
+    search_space_map_pub_.publish(map);
 
     const cv::Mat data(h, w, CV_8SC1, const_cast<signed char*>(map.data.data()));
 
