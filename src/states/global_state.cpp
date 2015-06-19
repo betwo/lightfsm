@@ -198,7 +198,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 1.5);
+    nh.param<double>("desired_speed", desired_speed_, 0.6);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb);
 }
@@ -218,7 +218,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 1.5);
+    nh.param<double>("desired_speed", desired_speed_, 0.6);
 
     path_msgs::NavigateToGoalGoal goal;
     goal.goal_pose = target_msg;

@@ -30,6 +30,7 @@ public:
     void iteration()
     {
         if(!explorer_.isExploring()) {
+            ROS_INFO("start exploring");
             explorer_.startExploring();
         }
 
