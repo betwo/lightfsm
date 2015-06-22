@@ -65,7 +65,7 @@ void MapExplorer::findExplorationPoint()
     map_pos.x = (own_pos.x() - map.info.origin.position.x) / map.info.resolution;
     map_pos.y = (own_pos.y() - map.info.origin.position.y) / map.info.resolution;
 
-    double min_distance = 10 /*m*/ / map.info.resolution;
+    double min_distance = 2 /*m*/ / map.info.resolution;
     cv::Point2i start = findNearestFreePoint(search_space, map_pos, debug);
 
     if(start == map_pos) {
@@ -90,6 +90,17 @@ void MapExplorer::findExplorationPoint()
 
 //    cv::waitKey(500);
 
+
+    visualization_msgs::Marker marker = global.makeMarker(1,0,0, "exploration goal", 0);
+    marker.type = visualization_msgs::Marker::CYLINDER;
+    marker.scale.x = 0.5;
+    marker.scale.y = 0.5;
+    marker.scale.z = 2.0;
+    marker.color.a = 0.4;
+    marker.pose.position.x = poi_pos.x();
+    marker.pose.position.y = poi_pos.y();
+    marker.pose.position.z = marker.scale.z / 2.0;
+    global.mark(marker);
 
     if(poi == map_pos) {
         std::cerr << "poi is own pose -> abort" << std::endl;
@@ -188,13 +199,13 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
                         if(distance > min_distance) {
                             std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
                             cv::Point2i candidate(nx, ny);
-//                            std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
-//                            if(it == blacklist_.end()) {
-//                                blacklist_.push_back(candidate);
+                            std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
+                            if(it == blacklist_.end()) {
+                                blacklist_.push_back(candidate);
 
 
                                 return candidate;
-//                            }
+                            }
                         } else {
 //                            std::cerr << "ignore unknown cell " << nx << ", " << ny << " because it is only " << distance << " m away (min is " << min_distance << ")" << std::endl;
                         }
