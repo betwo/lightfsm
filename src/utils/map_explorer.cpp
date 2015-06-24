@@ -7,6 +7,8 @@
 /// SYSTEM
 #include <nav_msgs/GetMap.h>
 #include <opencv2/opencv.hpp>
+#include <path_msgs/NavigateToGoalGoal.h>
+#include <queue>
 
 MapExplorer::MapExplorer()
     : exploring_(false)
@@ -49,7 +51,13 @@ void MapExplorer::findExplorationPoint()
     }
 
     const nav_msgs::OccupancyGrid& map = map_service.response.map;
-    splitMap(map);
+
+    tf::Vector3 own_pos = global.pose.getOrigin();
+    cv::Point2i map_pos;
+    map_pos.x = (own_pos.x() - map.info.origin.position.x) / map.info.resolution;
+    map_pos.y = (own_pos.y() - map.info.origin.position.y) / map.info.resolution;
+
+    splitMap(map, map_pos);
 
     cv::Mat debug(search_space.rows, search_space.cols, CV_8UC3);
     for(int row = 0; row < search_space.rows; ++row) {
@@ -59,20 +67,14 @@ void MapExplorer::findExplorationPoint()
             pxl = cv::Vec3b::all(cell);
         }
     }
-
-    tf::Vector3 own_pos = global.pose.getOrigin();
-    cv::Point2i map_pos;
-    map_pos.x = (own_pos.x() - map.info.origin.position.x) / map.info.resolution;
-    map_pos.y = (own_pos.y() - map.info.origin.position.y) / map.info.resolution;
-
     double min_distance = 2 /*m*/ / map.info.resolution;
-    cv::Point2i start = findNearestFreePoint(search_space, map_pos, debug);
+    cv::Point2i start = findNearestFreePoint(map_pos, debug);
 
     if(start == map_pos) {
         std::cout << "start at map_pos" << std::endl;
     }
 
-    cv::Point2i poi = findPOI(search_space, start, min_distance, debug);
+    cv::Point2i poi = findPOI(start, tf::getYaw(global.pose.getRotation()), min_distance, debug);
 
     cv::circle(debug, poi, 5, cv::Scalar(0xFF, 0xCC, 0x00), CV_FILLED, CV_AA);
     cv::circle(debug, map_pos, 5, cv::Scalar(0x00, 0xCC, 0xFF), CV_FILLED, CV_AA);
@@ -83,12 +85,12 @@ void MapExplorer::findExplorationPoint()
     tf::Quaternion orientation = tf::createQuaternionFromYaw(std::atan2(poi.y - map_pos.y, poi.x - map_pos.x));
 
     tf::Pose target(orientation, poi_pos);
-    global.moveTo(target, boost::bind(&MapExplorer::doneCb, this, _1, _2));
+    global.moveTo(target, boost::bind(&MapExplorer::doneCb, this, _1, _2), path_msgs::NavigateToGoalGoal::FAILURE_MODE_ABORT);
 
-//    cv::imshow("search_space", search_space);
-//    cv::imshow("debug", debug);
+    //    cv::imshow("search_space", search_space);
+    //    cv::imshow("debug", debug);
 
-//    cv::waitKey(500);
+    //    cv::waitKey(500);
 
 
     visualization_msgs::Marker marker = global.makeMarker(1,0,0, "exploration goal", 0);
@@ -121,7 +123,7 @@ std::size_t index(int x, int y, std::size_t step) {
 }
 }
 
-cv::Point2i MapExplorer::findNearestFreePoint(const cv::Mat &search_space, const cv::Point2i &start, cv::Mat &debug)
+cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i &start, cv::Mat &debug)
 {
     int rows = search_space.rows;
     int cols = search_space.cols;
@@ -164,7 +166,7 @@ cv::Point2i MapExplorer::findNearestFreePoint(const cv::Mat &search_space, const
     return start;
 }
 
-cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i &start, double min_distance, cv::Mat& debug)
+cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double theta, double min_distance, cv::Mat& debug)
 {
     int rows = search_space.rows;
     int cols = search_space.cols;
@@ -181,6 +183,18 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
     static const int neighbor_x[] = {-1, 0, 1, -1, 1, -1, 0, 1};
     static const int neighbor_y[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 
+    cv::Point2i result = start;
+    struct Point {
+        cv::Point2i pt;
+        double priority;
+
+        bool operator < (const Point& rhs) const
+        {
+            return priority < rhs.priority;
+        }
+    };
+    std::priority_queue<Point> candidates;
+
     while(!Q.empty()) {
         cv::Point2i current = Q.front();
         Q.pop_front();
@@ -193,24 +207,22 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
                 if(!visited[index(nx, ny, cols)]) {
                     visited[index(nx, ny, cols)] = true;
                     const uchar& cell = search_space.at<uchar>(ny, nx);
-                    std::cerr << "cell " << nx << ", " << ny << " is " << (int)cell << std::endl;
                     if(cell == UNKNOWN) {
                         double distance = hypot(nx-start.x, ny-start.y);
+                        float dist_to_obstacles = distance_to_obstacle.at<float>(ny, nx);
                         if(distance > min_distance) {
-                            std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
+                            //                            std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
                             cv::Point2i candidate(nx, ny);
                             std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
                             if(it == blacklist_.end()) {
-                                blacklist_.push_back(candidate);
-
-
-                                return candidate;
+                                Point c;
+                                c.pt = candidate;
+                                c.priority = dist_to_obstacles;
+                                candidates.push(c);
                             }
-                        } else {
-//                            std::cerr << "ignore unknown cell " << nx << ", " << ny << " because it is only " << distance << " m away (min is " << min_distance << ")" << std::endl;
                         }
                         debug.at<cv::Vec3b>(ny, nx) = cv::Vec3b(0xFF, 0x00, 0x00);
-                    } else if(cell == FREE) {
+                    } else if(cell != OBSTACLE) {
                         Q.push_back(cv::Point2i(nx, ny));
                         debug.at<cv::Vec3b>(ny, nx) = cv::Vec3b(0x00, 0x00, 0xFF);
                     }
@@ -219,44 +231,129 @@ cv::Point2i MapExplorer::findPOI(const cv::Mat &search_space, const cv::Point2i 
         }
     }
 
-    return start;
+
+    ROS_INFO_STREAM("got " << candidates.size() << " exploration candidates");
+
+
+    if(!candidates.empty()) {
+        result = candidates.top().pt;
+        search_space.at<uchar>(result.y, result.x) = 240;
+        candidates.pop();
+        while(!candidates.empty()) {
+            auto pt = candidates.top().pt;
+            candidates.pop();
+            search_space.at<uchar>(pt.y, pt.x) = 180;
+
+        }
+
+        blacklist_.push_back(result);
+    }
+
+
+    // PUBLISH SEARCH SPACE AS GRID MAP
+
+    int w = last_map.info.width;
+    int h = last_map.info.height;
+
+    nav_msgs::OccupancyGrid ss;
+    ss.header = last_map.header;
+    ss.info = last_map.info;
+    ss.data.resize(w*h, 0);
+
+    int i = 0;
+    for(int row = 0; row < h; ++row) {
+        for(int col = 0; col < w; ++col) {
+            const uchar& val = search_space.at<uchar>(row, col);
+            if(val == 255) {
+                ss.data[i++] = val;
+            } else {
+                // val is in [0,254]
+                ss.data[i++] = (val / 254.0) * 100.0;
+            }
+        }
+    }
+
+    search_space_map_pub_.publish(ss);
+
+    return result;
 }
 
-void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map)
+void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_pos)
 {
+    last_map = map;
+
     int w = map.info.width;
     int h = map.info.height;
 
-    search_space_map_pub_.publish(map);
-
     const cv::Mat data(h, w, CV_8SC1, const_cast<signed char*>(map.data.data()));
 
-    cv::Mat map_free(h, w, CV_8UC1, cv::Scalar::all(UNKNOWN));
-    cv::Mat map_obstacle(h, w, CV_8UC1, cv::Scalar::all(UNKNOWN));
+    cv::Mat map_free(h, w, CV_8UC1, cv::Scalar::all(255));
+    cv::Mat map_obstacle(h, w, CV_8UC1, cv::Scalar::all(255));
+    cv::Mat map_unknown(h, w, CV_8UC1, cv::Scalar::all(255));
 
     for(int row = 0; row < h; ++row) {
         for(int col = 0; col < w; ++col) {
             const char& cell = data.at<char>(row, col);
-            if(cell >= 0 && cell <= 10) {
-                map_free.at<uchar>(row, col) = FREE;
-            } else if(cell > 10) {
-                map_obstacle.at<uchar>(row, col) = OBSTACLE;
+
+            bool free = cell >= 0 && cell <= 10;
+            bool occupied = cell > 10;
+
+            double distance = std::hypot(row - map_pos.y, col - map_pos.x);
+            if(distance < 10.0) {
+                free = true;
+                occupied = false;
+            }
+
+            if(free) {
+                map_free.at<uchar>(row, col) = 0;
+            } else if(occupied) {
+                map_obstacle.at<uchar>(row, col) = 0;
+            } else {
+                map_unknown.at<uchar>(row, col) = 0;
             }
         }
     }
 
 
-    int kernel_size = 5;
+    int kernel_size = 4;
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
                                                cv::Size( 2*kernel_size + 1, 2*kernel_size+1 ),
                                                cv::Point( kernel_size, kernel_size ) );
+    int small_kernel_size = 3;
+    cv::Mat small_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+                                                     cv::Size( 2*small_kernel_size + 1, 2*small_kernel_size+1 ),
+                                                     cv::Point( small_kernel_size, small_kernel_size ) );
 
-//    cv::dilate(map_free, map_free_safe, kernel);
+    //    cv::dilate(map_free, map_free_safe, kernel);
 
-    cv::erode(map_free, map_free, kernel);
+
+    cv::dilate(map_free, map_free, kernel);
     cv::erode(map_obstacle, map_obstacle, kernel);
+    cv::erode(map_unknown, map_unknown, small_kernel);
 
-    search_space = cv::min(map_obstacle, map_free);
+    cv::distanceTransform(map_obstacle, distance_to_obstacle, CV_DIST_L2, 5);
+    assert(distance_to_obstacle.type() == CV_32FC1);
+
+    search_space = cv::Mat(h, w, CV_8UC1, cv::Scalar::all(0));
+
+    for(int row = 0; row < h; ++row) {
+        for(int col = 0; col < w; ++col) {
+            char& e = search_space.at<char>(row, col);
+
+            bool free = 0 == map_free.at<char>(row, col);
+            bool obstacle = 0 == map_obstacle.at<char>(row, col);
+            bool unknown = 0 == map_unknown.at<char>(row, col);
+
+            if(obstacle) {
+                e = OBSTACLE;
+            } else if(unknown) {
+                e = UNKNOWN;
+            } else {
+                const float& dist_to_obst = distance_to_obstacle.at<float>(row, col);
+                e = (254 - std::min(254.f, dist_to_obst * 10.0f));
+            }
+        }
+    }
 }
 
 void MapExplorer::doneCb(const actionlib::SimpleClientGoalState& /*state*/,

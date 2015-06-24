@@ -30,14 +30,14 @@ private:
     void doneCb(const actionlib::SimpleClientGoalState& state,
                 const path_msgs::NavigateToGoalResultConstPtr& result);
 
-    void splitMap(const nav_msgs::OccupancyGrid& map);
-    cv::Point2i findNearestFreePoint(const cv::Mat& search_space, const cv::Point2i& start, cv::Mat &debug);
-    cv::Point2i findPOI(const cv::Mat& search_space, const cv::Point2i& start, double min_distance, cv::Mat &debug);
+    void splitMap(const nav_msgs::OccupancyGrid& map, cv::Point2i map_pos);
+    cv::Point2i findNearestFreePoint(const cv::Point2i& start, cv::Mat &debug);
+    cv::Point2i findPOI(const cv::Point2i& start, double theta, double min_distance, cv::Mat &debug);
 
 private:
     enum STATES {
-        OBSTACLE = 0,
-        FREE = 100,
+        OBSTACLE = 254,
+        FREE = 0,
         UNKNOWN = 255
     };
 
@@ -46,8 +46,10 @@ private:
 
     ros::ServiceClient map_service_client;
 
-    cv::Mat map_free_safe;
+    nav_msgs::OccupancyGrid last_map;
+
     cv::Mat search_space;
+    cv::Mat distance_to_obstacle;
 
     ros::Publisher search_space_map_pub_;
 

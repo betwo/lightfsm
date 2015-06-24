@@ -3,6 +3,7 @@ project(sbc15_fsm)
 
 add_definitions(-W -Wall)
 
+set(CMAKE_BUILD_TYPE Debug)
 
 ## Enforce that we use C++11
 include(CheckCXXCompilerFlag)

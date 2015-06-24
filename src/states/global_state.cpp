@@ -62,7 +62,7 @@ std::vector<sbc15_msgs::Object> GlobalState::getObjects()
         if(client_objects_.call(srv)) {
             return srv.response.objects;
         } else {
-            ROS_ERROR("cannot get objects via /get_objects");
+            ROS_ERROR_THROTTLE(1, "cannot get objects via /get_objects");
             return std::vector<sbc15_msgs::Object>();
         }
     }
@@ -155,74 +155,82 @@ void GlobalState::stopMoving()
 
 
 void GlobalState::moveTo(const tf::Pose &target,
-                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb)
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         int failure_mode)
 {
-    moveTo(target, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1));
+    moveTo(target, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
 }
 
 void GlobalState::moveTo(const tf::Pose &target,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
+                         int failure_mode)
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
-    moveTo(msg, doneCb, feedbackCb);
+    moveTo(msg, doneCb, feedbackCb, failure_mode);
 }
 
 
 void GlobalState::moveTo(const tf::Pose &target,
                          double velocity,
-                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb)
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         int failure_mode)
 {
-    moveTo(target, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1));
+    moveTo(target, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
 }
 void GlobalState::moveTo(const tf::Pose &target,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
+                         int failure_mode)
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
-    moveTo(msg, velocity, doneCb, feedbackCb);
+    moveTo(msg, velocity, doneCb, feedbackCb, failure_mode);
 }
 
 
 
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
-                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb)
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         int failure_mode)
 {
-    moveTo(target_msg, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1));
+    moveTo(target_msg, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
 }
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
+                         int failure_mode)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 0.6);
+    nh.param<double>("desired_speed", desired_speed_, 0.75);
 
-    moveTo(target_msg, desired_speed_, doneCb, feedbackCb);
+    moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode);
 }
 
 
 
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          double velocity,
-                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb)
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         int failure_mode)
 {
-    moveTo(target_msg, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1));
+    moveTo(target_msg, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
 }
 
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
+                         int failure_mode)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 0.6);
+    nh.param<double>("desired_speed", desired_speed_, 0.75);
 
     path_msgs::NavigateToGoalGoal goal;
     goal.goal_pose = target_msg;
-    goal.failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN;
+    goal.failure_mode = failure_mode;
     goal.velocity = velocity;
     client_.sendGoal(goal,
                      doneCb,
