@@ -24,6 +24,8 @@
 #pragma GCC diagnostic pop
 /////////////////////////////////////////////////////////
 
+class State;
+
 class GlobalState : private boost::noncopyable
 {
 public:
@@ -78,7 +80,7 @@ public:
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
                 int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
 
-    void update();
+    void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
     static visualization_msgs::Marker makeMarker(float r, float g, float b, const std::string &ns, int id);
@@ -93,6 +95,7 @@ private:
     void feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& feedback);
 
 public:
+    ros::NodeHandle private_nh;
     ros::NodeHandle nh;
     tf::Pose pose;
 
@@ -102,6 +105,7 @@ private:
     ros::Publisher pub_move_unsafe_;
     ros::Publisher pub_marker_;
     ros::Publisher pub_sound_;
+    ros::Publisher pub_state_;
 
     std::map<std::string, ros::Publisher> pubs_systems_;
 

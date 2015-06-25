@@ -9,7 +9,7 @@ class StateMachine
 public:
     StateMachine(State* initial_state);
 
-    void run(boost::function<void()> callback);
+    void run(boost::function<void(State *)> callback);
     bool step();
 
 private:

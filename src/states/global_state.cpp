@@ -3,15 +3,17 @@
 
 /// PROJECT
 #include <sbc15_msgs/GetObjects.h>
+#include "../fsm/state.h"
 
 /// SYSTEM
 #include <geometry_msgs/PointStamped.h>
 #include <sound_play/SoundRequest.h>
+#include <std_msgs/String.h>
 
 using namespace path_msgs;
 
 GlobalState::GlobalState()
-    : nh("~"),
+    : private_nh("~"),
       client_("navigate_to_goal", true),
       tfl_(ros::Duration(15.0))
 {
@@ -20,6 +22,7 @@ GlobalState::GlobalState()
     pub_move_unsafe_ = nh.advertise<geometry_msgs::Twist> ("/cmd_vel_unsafe", 10, true);
     pub_marker_ = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 100, true);
     pub_sound_ = nh.advertise<sound_play::SoundRequest>("/robotsound", 1, true);
+    pub_state_ = nh.advertise<std_msgs::String>("state", 100, true);
 
     client_objects_ = nh.serviceClient<sbc15_msgs::GetObjects>("/get_objects");
 
@@ -50,9 +53,13 @@ tf::Transform GlobalState::getTransform(const std::string &from, const std::stri
     }
 }
 
-void GlobalState::update()
+void GlobalState::update(State* current_state)
 {
     pose = getTransform("/map", "/base_link");
+
+    std_msgs::String state;
+    state.data = current_state->getName();
+    pub_state_.publish(state);
 }
 
 std::vector<sbc15_msgs::Object> GlobalState::getObjects()
@@ -77,7 +84,7 @@ void GlobalState::setSystemEnabled(const std::string &name, bool enabled)
 void GlobalState::sendSystemCommand(const std::string &name, const std::string &command)
 {
     if(pubs_systems_.find(name) == pubs_systems_.end()) {
-        pubs_systems_.insert(std::make_pair(name, nh.advertise<std_msgs::String>(name + "/command", 10, true)));
+        pubs_systems_.insert(std::make_pair(name, private_nh.advertise<std_msgs::String>(name + "/command", 10, true)));
     }
 
     std_msgs::String cmd_msg;
@@ -204,7 +211,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 0.75);
+    private_nh.param<double>("desired_speed", desired_speed_, 0.75);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode);
 }
@@ -226,7 +233,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode)
 {
     ROS_DEBUG("Send goal...");
-    nh.param<double>("desired_speed", desired_speed_, 0.75);
+    private_nh.param<double>("desired_speed", desired_speed_, 0.75);
 
     path_msgs::NavigateToGoalGoal goal;
     goal.goal_pose = target_msg;

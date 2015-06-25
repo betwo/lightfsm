@@ -16,11 +16,11 @@ MapExplorer::MapExplorer()
     GlobalState& global = GlobalState::getInstance();
 
     std::string map_service = "/exploration/dynamic_map";
-    global.nh.param("map_service",map_service, map_service);
-    map_service_client = global.nh.serviceClient<nav_msgs::GetMap> (map_service);
+    global.private_nh.param("map_service",map_service, map_service);
+    map_service_client = global.private_nh.serviceClient<nav_msgs::GetMap> (map_service);
     map_service_client.waitForExistence();
 
-    search_space_map_pub_ = global.nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
+    search_space_map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
 }
 
 void MapExplorer::startExploring()

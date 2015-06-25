@@ -15,6 +15,11 @@
 #include <ros/ros.h>
 #include <sound_play/SoundRequest.h>
 
+void tick(State* current_state)
+{
+    GlobalState::getInstance().update(current_state);
+}
+
 int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "sbc15_state_machine_node");
@@ -36,7 +41,7 @@ int main(int argc, char *argv[])
 
     StateMachine state_machine(&init);
 
-    state_machine.run(boost::bind(&GlobalState::update, &GlobalState::getInstance()));
+    state_machine.run(boost::bind(&tick, _1));
 
     return 0;
 }

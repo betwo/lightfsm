@@ -10,6 +10,12 @@
 #include "../utils/map_explorer.h"
 #include "../states/wait.h"
 
+void tick(State* current_state)
+{
+    GlobalState::getInstance().update(current_state);
+}
+
+
 class Explore : public State
 {
 public:
@@ -78,7 +84,7 @@ int main(int argc, char *argv[])
 
     StateMachine state_machine(&explore);
 
-    state_machine.run(boost::bind(&GlobalState::update, &GlobalState::getInstance()));
+    state_machine.run(boost::bind(&tick, _1));
 
     return 0;
 }

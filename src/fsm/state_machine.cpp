@@ -13,14 +13,14 @@ StateMachine::StateMachine(State* initial_state)
     state_->performEntryAction();
 }
 
-void StateMachine::run(boost::function<void()> callback)
+void StateMachine::run(boost::function<void(State*)> callback)
 {
     ROS_INFO_STREAM("starting withstate " << state_->getName());
 
     check();
 
     while(ros::ok()) {
-        callback();
+        callback(state_);
         bool terminal = !step();
 
         if(terminal) {
