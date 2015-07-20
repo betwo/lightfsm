@@ -55,6 +55,11 @@ set(STATES
     src/states/explore_map.cpp
     src/states/wait_for_go_signal.cpp
     src/states/follow_path.cpp
+
+    src/states/explore.cpp
+    src/states/fetch_object.cpp
+    src/states/goto_object.cpp
+    src/states/pickup_object.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
@@ -83,5 +88,13 @@ add_executable(sbc15_test_map_exploration
     src/tests/map_exploration_test.cpp
 )
 target_link_libraries(sbc15_test_map_exploration
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
+
+
+add_executable(sbc15_test_find_cup
+    src/tests/find_cup_test.cpp
+)
+target_link_libraries(sbc15_test_find_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )

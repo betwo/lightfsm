@@ -10,6 +10,7 @@
 #include "../utils/map_explorer.h"
 #include "../states/wait.h"
 #include "../states/explore.h"
+#include "../states/fetch_object.h"
 
 void tick(State* current_state)
 {
@@ -26,10 +27,11 @@ int main(int argc, char *argv[])
     // STATES
     Explore explore(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
+    FetchObject get_cup(State::NO_PARENT);
 
     // ACTIONS
     explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
-    explore.event_object_found >> goal;
+    explore.event_object_found >> get_cup;
     explore.event_object_found.connect(Action(boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been found.")));
 
     goal.event_done >> goal;
