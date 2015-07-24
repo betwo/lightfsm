@@ -22,14 +22,27 @@ GoToObject::GoToObject(State* parent)
 
 void GoToObject::entryAction()
 {
+    const double offset = 0.5 /*m*/;
+
     auto objects = GlobalState::getInstance().getObjects();
     ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
     for(const sbc15_msgs::Object& o : objects) {
         if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
             target_ = o;
-            tf::Pose pose;
-            tf::poseMsgToTF(target_.pose, pose);
-            follow_path.moveTo(pose, event_sent_goal);
+
+            tf::Pose object_map;
+            tf::poseMsgToTF(target_.pose, object_map);
+
+            tf::Pose robot_map = GlobalState::getInstance().pose;
+
+            tf::Vector3 delta = (robot_map.getOrigin() - object_map.getOrigin());
+
+            tf::Vector3 pos_map = object_map.getOrigin() + delta * offset / delta.length();
+            tf::Quaternion rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+
+            tf::Pose object_offset_map(rot_map, pos_map);
+
+            follow_path.moveTo(object_offset_map, event_sent_goal);
             return;
         }
     }
