@@ -11,7 +11,7 @@ public:
     TriggeredEvent event_at_goal;
     TriggeredEvent event_failure;
 public:
-    PlanArmMotion();
+    PlanArmMotion(State* parent);
 
     void entryAction();
     void iteration();

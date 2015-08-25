@@ -8,7 +8,10 @@
 PickupObject::PickupObject(State* parent)
     : MetaState(parent),
       event_object_pickedup(this, "The object has been reached"),
-      event_object_failure(this, "The object pose is not known")
+      event_object_failure(this, "The object pose is not known"),
+      plan_arm_motion(this),
+      visual_servoing(this),
+      store_object(this)
 {
     event_entry_meta >> plan_arm_motion;
 

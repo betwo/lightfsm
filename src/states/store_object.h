@@ -12,7 +12,7 @@ public:
     TriggeredEvent event_failure;
 
 public:
-    StoreObject();
+    StoreObject(State* parent);
 };
 
 #endif // STORE_OBJECT_H

@@ -11,7 +11,7 @@ public:
     TriggeredEvent event_object_gripped;
     TriggeredEvent event_failure;
 public:
-    VisualServoing();
+    VisualServoing(State* parent);
 
     void entryAction();
     void iteration();
