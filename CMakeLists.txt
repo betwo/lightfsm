@@ -76,7 +76,11 @@ add_library(sbc15_state_machine
     ${STATES}
     ${UTILS}
 )
-add_dependencies(sbc15_state_machine sick_msgs_generate_messages_cpp path_msgs_generate_messages_cpp)
+add_dependencies(sbc15_state_machine
+    sick_msgs_generate_messages_cpp
+    path_msgs_generate_messages_cpp
+    sbc15_msgs_generate_messages_cpp
+)
 target_link_libraries(sbc15_state_machine ${OpenCV_LIBS})
 
 add_executable(sbc15_state_machine_node

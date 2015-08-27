@@ -15,8 +15,6 @@ using namespace path_msgs;
 GlobalState::GlobalState()
     : private_nh("~"),
       client_("navigate_to_goal", true),
-      client_vs_("servoingActionController", true),
-      client_arm_motion_("cup_gripp", true),
       tfl_(ros::Duration(15.0))
 {
 //    pub_speech_ = nh.advertise<std_msgs::String> ("/speech", 10, true);
@@ -278,60 +276,41 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
     }
 }
 
-void GlobalState::grapObject(int object,ros::Duration t,
-                boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb)
-{
-    grapObject(object,0,0,t,doneCb,boost::bind(&GlobalState::feedbackVsCb, this, _1));
-}
+//void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
+//                             boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb)
+//{
+//    sbc15_msgs::visual_servoingGoal goal;
+//    goal.timeout = t;
+//    goal.object = object;
+//    goal.phi = phi;
+//    goal.theta = theta;
+//    grapObject(goal,doneCb,feedbackCb);
 
-void GlobalState::grapObject(int object,ros::Duration t,
-                            boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb,
-                            boost::function<void(const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb)
+//}
 
-{
-    grapObject(object,0,0,t,doneCb,feedbackCb);
-}
+//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal &goal,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb)
+//{
+//    grapObject(goal, doneCb, boost::bind(&GlobalState::feedbackVsCb, this, _1));
+//}
 
-void GlobalState::grapObject(int object, double phi, ros::Duration t,
-                             boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb)
-{
-     grapObject(object,phi,0,t,doneCb,boost::bind(&GlobalState::feedbackVsCb, this, _1));
-}
+//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal& goal,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
+//                             boost::function<void (const sbc15_msgs::visual_servoingFeedbackConstPtr &)> feedbackCb)
+//{
+//    client_vs_.sendGoal(goal,
+//                        doneCb,
+//                        boost::bind(&GlobalState::activeVsCp, this),
+//                        feedbackCb);
+//}
 
-void GlobalState::grapObject(int object, double phi, ros::Duration t,
-                             boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb,
-                             boost::function<void(const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb)
-{
-    grapObject(object,phi,0,t,doneCb,feedbackCb);
-}
+//void GlobalState::activeVsCp()
+//{
 
-void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
-                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingActionResultConstPtr &)> doneCb)
-{
-    grapObject(object,phi,theta,t,doneCb,boost::bind(&GlobalState::feedbackVsCb, this, _1));
-}
+//}
 
-void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
-                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingActionResultConstPtr &)> doneCb,
-                             boost::function<void (const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb)
-{
-    sbc15_msgs::visual_servoingActionGoal goal;
-    goal.timeout = t;
-    goal.object = object;
-    goal.phi = phi;
-    goal.theta = theta;
-    client_vs_.sendGoal(goal,
-                        doneCb,
-                        boost::bind(&GlobalState::activeVsCp, this),
-                        feedbackCb);
-}
+//void GlobalState::feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr &feedback)
+//{
 
-void GlobalState::activeVsCp()
-{
-
-}
-
-void GlobalState::feedbackVsCb(const sbc15_msgs::visual_servoingActionFeedbackConstPtr &feedback)
-{
-
-}
+//}
