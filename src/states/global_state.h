@@ -8,7 +8,10 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <path_msgs/NavigateToGoalAction.h>
+#include <sbc15_msgs/visual_servoingAction.h>
+#include <sbc15_msgs/CupGrippAction.h>
 #include <sbc15_msgs/Object.h>
+
 
 #include <actionlib/client/simple_action_client.h>
 #include <ros/ros.h>
@@ -80,6 +83,25 @@ public:
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
                 int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
 
+    void grapObject(int object,ros::Duration t,
+                    boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb);
+    void grapObject(int object,ros::Duration t,
+                    boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb,
+                    boost::function<void(const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb);
+
+    void grapObject(int object, double phi, ros::Duration t,
+                    boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb);
+    void grapObject(int object, double phi, ros::Duration t,
+                    boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::visual_servoingActionResultConstPtr&)> doneCb,
+                    boost::function<void(const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb);
+
+    void grapObject(int object, double phi, double theta, ros::Duration t,
+                    boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingActionResultConstPtr &)> doneCb);
+    void grapObject(int object, double phi, double theta, ros::Duration t,
+                    boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingActionResultConstPtr &)> doneCb,
+                    boost::function<void(const sbc15_msgs::visual_servoingActionFeedbackConstPtr&)> feedbackCb);
+
+
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
@@ -93,6 +115,9 @@ public:
 private:
     void activeCb();
     void feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& feedback);
+
+    void activeVsCp();
+    void feedbackVsCb(const sbc15_msgs::visual_servoingActionFeedbackConstPtr& feedback);
 
 public:
     ros::NodeHandle private_nh;
@@ -110,6 +135,8 @@ private:
     std::map<std::string, ros::Publisher> pubs_systems_;
 
     actionlib::SimpleActionClient<path_msgs::NavigateToGoalAction> client_;
+    actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> client_vs_;
+    actionlib::SimpleActionClient<sbc15_msgs::CupGrippAction> client_arm_motion_;
 
     ros::ServiceClient client_objects_;
 

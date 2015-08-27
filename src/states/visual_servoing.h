@@ -5,6 +5,9 @@
 #include "../fsm/state.h"
 #include "../fsm/triggered_event.h"
 
+#include <actionlib/client/simple_action_client.h>
+#include <sbc15_msgs/visual_servoingAction.h>
+
 class VisualServoing: public State
 {
 public:
@@ -16,6 +19,8 @@ public:
     void entryAction();
     void iteration();
 
+private:
+    actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> ac_;
 
 };
 
