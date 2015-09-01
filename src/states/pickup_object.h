@@ -23,6 +23,8 @@ public:
 public:
     TriggeredEvent event_object_pickedup;
     TriggeredEvent event_object_failure;
+    TriggeredEvent event_object_out_of_range;
+    TriggeredEvent event_servo_control_failed;
 
 public:
     PickupObject(State* parent);

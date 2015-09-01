@@ -12,21 +12,21 @@ class VisualServoing: public State
 {
 public:
     TriggeredEvent event_object_gripped;
+    TriggeredEvent event_timeout;
     TriggeredEvent event_failure;
+    TriggeredEvent event_out_of_range;
+    TriggeredEvent event_servo_control_failed;
+    TriggeredEvent event_no_object;
 public:
     VisualServoing(State* parent, int retries);
 
     void entryAction();
     void iteration();
 
-//    void grapObject(const sbc15_msgs::visual_servoingGoal& goal, TriggeredEvent &event);
-//    void grapObject(const sbc15_msgs::visual_servoingGoal& goal,TriggeredEvent &event, boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> cb);
-//    void grapObject(int object, double phi, double theta, ros::Duration t, TriggeredEvent &event);
-//    void grapObject(int object, double phi, double theta, ros::Duration t,  TriggeredEvent &event, boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> cb);
-
 private:
     int retries_;
     int retries_left_;
+    bool started_;
 
     sbc15_msgs::visual_servoingGoal goal_;
     actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> client_;
