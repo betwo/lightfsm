@@ -80,16 +80,6 @@ public:
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
                 int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
 
-//    void grapObject(int object, double phi, double theta, ros::Duration t,
-//                    boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                    boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb);
-//    void grapObject(sbc15_msgs::visual_servoingGoal& goal,
-//                    boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb);
-//    void grapObject(sbc15_msgs::visual_servoingGoal& goal,
-//                    boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                    boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb);
-
-
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
@@ -123,8 +113,6 @@ private:
     std::map<std::string, ros::Publisher> pubs_systems_;
 
     actionlib::SimpleActionClient<path_msgs::NavigateToGoalAction> client_;
-//    actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> client_vs_;
-//
 
     ros::ServiceClient client_objects_;
 
