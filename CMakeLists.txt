@@ -105,3 +105,10 @@ add_executable(sbc15_test_find_cup
 target_link_libraries(sbc15_test_find_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
+
+add_executable(sbc15_test_pick_up_cup
+    src/tests/pick_up_cup_test.cpp
+)
+target_link_libraries(sbc15_test_pick_up_cup
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
