@@ -28,7 +28,7 @@ void PlanArmMotion::iteration()
         started_ = true;
         --retries_left_;
         sbc15_msgs::PreplannedTrajectories msgs;
-        msgs.request.trajecory = sbc15_msgs::PreplannedTrajectories::Request::PICK_CUP;
+        msgs.request.trajectory = sbc15_msgs::PreplannedTrajectories::Request::PICK_CUP;
         planedTrajectoryClient_.call(msgs.request,msgs.response);
 
         if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
