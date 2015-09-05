@@ -28,20 +28,19 @@ void PlanArmMotion::iteration()
         started_ = true;
         --retries_left_;
         sbc15_msgs::PreplannedTrajectories msgs;
-        msgs.request.trajectory = sbc15_msgs::PreplannedTrajectories::Request::PICK_CUP;
+        msgs.request.trajectory = 8;
         planedTrajectoryClient_.call(msgs.request,msgs.response);
-
-        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
-        {
+//        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
+//        {
             event_at_goal.trigger();
-        }
-        else
-        {
-            if(retries_left_ < 0)
-            {
-                event_failure.trigger();
-            }
-        }
+//        }
+//        else
+//        {
+//            if(retries_left_ < 0)
+//            {
+//                event_failure.trigger();
+//            }
+//        }
         started_ = false;
     }
 }

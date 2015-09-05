@@ -31,17 +31,17 @@ void StoreObject::iteration()
         msgs.request.trajectory = sbc15_msgs::PreplannedTrajectories::Request::PLACE_CUP;
         planedTrajectoryClient_.call(msgs.request,msgs.response);
 
-        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
-        {
+//        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
+//        {
             object_stored.trigger();
-        }
-        else
-        {
-            if(retries_left_ < 0)
-            {
-                event_failure.trigger();
-            }
-        }
+//        }
+//        else
+//        {
+//            if(retries_left_ < 0)
+//            {
+//                event_failure.trigger();
+//            }
+//        }
         started_ = false;
     }
 }
