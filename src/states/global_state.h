@@ -46,39 +46,47 @@ public:
 
     void moveTo(const tf::Pose& pose,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
     void moveTo(const tf::Pose& pose,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
 
     void moveTo(const tf::Pose& pose,
                 double velocity,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
     void moveTo(const tf::Pose& pose,
                 double velocity,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
 
     void moveTo(const geometry_msgs::PoseStamped& pose,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
     void moveTo(const geometry_msgs::PoseStamped& pose,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
 
     void moveTo(const geometry_msgs::PoseStamped& pose,
                 double velocity,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
     void moveTo(const geometry_msgs::PoseStamped& pose,
                 double velocity,
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN);
+                int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
+                const std::string& planning_algorithm = "");
 
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);

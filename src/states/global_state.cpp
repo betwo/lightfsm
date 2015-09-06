@@ -163,57 +163,61 @@ void GlobalState::stopMoving()
 
 void GlobalState::moveTo(const tf::Pose &target,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         int failure_mode)
+                         int failure_mode, const std::string &planning_algorithm)
 {
-    moveTo(target, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
+    moveTo(target, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode, planning_algorithm);
 }
 
 void GlobalState::moveTo(const tf::Pose &target,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
-    moveTo(msg, doneCb, feedbackCb, failure_mode);
+    moveTo(msg, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
 
 void GlobalState::moveTo(const tf::Pose &target,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         int failure_mode)
+                         int failure_mode, const std::string &planning_algorithm)
 {
-    moveTo(target, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
+    moveTo(target, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode, planning_algorithm);
 }
 void GlobalState::moveTo(const tf::Pose &target,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
-    moveTo(msg, velocity, doneCb, feedbackCb, failure_mode);
+    moveTo(msg, velocity, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
 
 
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
-    moveTo(target_msg, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
+    moveTo(target_msg, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode, planning_algorithm);
 }
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
     ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.75);
 
-    moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode);
+    moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
 
@@ -221,16 +225,18 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
-    moveTo(target_msg, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode);
+    moveTo(target_msg, velocity, doneCb, boost::bind(&GlobalState::feedbackCb, this, _1), failure_mode, planning_algorithm);
 }
 
 void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          double velocity,
                          boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                          boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb,
-                         int failure_mode)
+                         int failure_mode,
+                         const std::string& planning_algorithm)
 {
     ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.75);
@@ -239,6 +245,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
     goal.goal_pose = target_msg;
     goal.failure_mode = failure_mode;
     goal.velocity = velocity;
+    goal.planning_algorithm.data = planning_algorithm;
     client_.sendGoal(goal,
                      doneCb,
                      boost::bind(&GlobalState::activeCb, this),
