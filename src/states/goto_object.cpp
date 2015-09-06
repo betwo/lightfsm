@@ -45,6 +45,33 @@ void GoToObject::entryAction()
             follow_path.moveTo(object_offset_map, event_sent_goal);
             return;
         }
+
+        if(o.type == sbc15_msgs::Object::OBJECT_BATTERY) {
+            target_ = o;
+
+            tf::Pose object_map;
+            tf::poseMsgToTF(target_.pose, object_map);
+
+            tf::Pose robot_map = GlobalState::getInstance().pose;
+
+            tf::Quaternion rot_map = tf::createQuaternionFromYaw(tf::getYaw(object_map.getRotation()));
+
+            tf::Vector3 delta_obj(offset, 0, 0);
+            tf::Vector3 delta_world = tf::quatRotate(rot_map, delta_obj);
+
+            tf::Vector3 pos_map_a = object_map.getOrigin() + delta_world;
+            tf::Vector3 pos_map_b = object_map.getOrigin() + delta_world;
+
+            double dist_a = (pos_map_a - robot_map.getOrigin()).length();
+            double dist_b = (pos_map_b - robot_map.getOrigin()).length();
+
+            tf::Vector3 pos_map = (dist_a < dist_b) ? pos_map_a : pos_map_b;
+
+            tf::Pose object_offset_map(rot_map, pos_map);
+
+            follow_path.moveTo(object_offset_map, event_sent_goal);
+            return;
+        }
     }
 
     event_object_unknown.trigger();
