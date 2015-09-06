@@ -22,7 +22,7 @@ GoToObject::GoToObject(State* parent)
 
 void GoToObject::entryAction()
 {
-    const double offset = 0.5 /*m*/;
+    const double offset = 0.45 /*m*/;
 
     auto objects = GlobalState::getInstance().getObjects();
     ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");

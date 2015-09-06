@@ -211,7 +211,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode)
 {
     ROS_DEBUG("Send goal...");
-    private_nh.param<double>("desired_speed", desired_speed_, 0.75);
+    private_nh.param<double>("desired_speed", desired_speed_, 0.2);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode);
 }
