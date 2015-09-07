@@ -20,7 +20,6 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   rospy
   sbc15_msgs
-  smach
   roscpp 
   std_msgs 
   tf
