@@ -67,7 +67,7 @@ void MapExplorer::findExplorationPoint()
             pxl = cv::Vec3b::all(cell);
         }
     }
-    double min_distance = 2 /*m*/ / map.info.resolution;
+    double min_distance = 1 /*m*/ / map.info.resolution;
     cv::Point2i start = findNearestFreePoint(map_pos, debug);
 
     if(start == map_pos) {
@@ -247,6 +247,8 @@ cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double theta, double 
         }
 
         blacklist_.push_back(result);
+    } else {
+        blacklist_.clear();
     }
 
 
