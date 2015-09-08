@@ -25,7 +25,7 @@ void BackUp::iteration()
     if((now - start).length() >= distance_) {
         event_positioned.trigger();
     } else {
-        cmd.linear.x = -velocity_;
+        cmd.linear.x = velocity_;
     }
     GlobalState::getInstance().move(cmd);
 }

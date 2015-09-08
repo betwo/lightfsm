@@ -215,7 +215,7 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          const std::string& planning_algorithm)
 {
     ROS_DEBUG("Send goal...");
-    private_nh.param<double>("desired_speed", desired_speed_, 0.75);
+    private_nh.param<double>("desired_speed", desired_speed_, 0.2);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
@@ -273,6 +273,10 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
         ROS_WARN("Path is replaned.");
         break;
 
+    case NavigateToGoalFeedback::STATUS_OBSTACLE:
+        ROS_WARN("There is an obstacle.");
+        break;
+
     case NavigateToGoalFeedback::STATUS_REPLAN_FAILED:
         ROS_ERROR("Replan failed.");
         break;
@@ -283,3 +287,41 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
     }
 }
 
+//void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
+//                             boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb)
+//{
+//    sbc15_msgs::visual_servoingGoal goal;
+//    goal.timeout = t;
+//    goal.object = object;
+//    goal.phi = phi;
+//    goal.theta = theta;
+//    grapObject(goal,doneCb,feedbackCb);
+
+//}
+
+//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal &goal,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb)
+//{
+//    grapObject(goal, doneCb, boost::bind(&GlobalState::feedbackVsCb, this, _1));
+//}
+
+//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal& goal,
+//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
+//                             boost::function<void (const sbc15_msgs::visual_servoingFeedbackConstPtr &)> feedbackCb)
+//{
+//    client_vs_.sendGoal(goal,
+//                        doneCb,
+//                        boost::bind(&GlobalState::activeVsCp, this),
+//                        feedbackCb);
+//}
+
+//void GlobalState::activeVsCp()
+//{
+
+//}
+
+//void GlobalState::feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr &feedback)
+//{
+
+//}

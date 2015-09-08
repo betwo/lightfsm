@@ -102,6 +102,9 @@ private:
     void activeCb();
     void feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& feedback);
 
+    void activeVsCp();
+//    void feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr& feedback);
+
 public:
     ros::NodeHandle private_nh;
     ros::NodeHandle nh;

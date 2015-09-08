@@ -20,7 +20,6 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   rospy
   sbc15_msgs
-  smach
   roscpp 
   std_msgs 
   tf
@@ -60,6 +59,13 @@ set(STATES
     src/states/fetch_object.cpp
     src/states/goto_object.cpp
     src/states/pickup_object.cpp
+    src/states/visual_servoing.cpp
+
+    src/states/gripper_state.cpp
+
+    src/states/preplanned_state.cpp
+    src/states/plan_arm_motion.cpp
+    src/states/store_object.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
@@ -73,7 +79,11 @@ add_library(sbc15_state_machine
     ${STATES}
     ${UTILS}
 )
-add_dependencies(sbc15_state_machine sick_msgs_generate_messages_cpp path_msgs_generate_messages_cpp)
+add_dependencies(sbc15_state_machine
+    sick_msgs_generate_messages_cpp
+    path_msgs_generate_messages_cpp
+    sbc15_msgs_generate_messages_cpp
+)
 target_link_libraries(sbc15_state_machine ${OpenCV_LIBS})
 
 add_executable(sbc15_state_machine_node
@@ -96,5 +106,12 @@ add_executable(sbc15_test_find_cup
     src/tests/find_cup_test.cpp
 )
 target_link_libraries(sbc15_test_find_cup
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
+
+add_executable(sbc15_test_pick_up_cup
+    src/tests/pick_up_cup_test.cpp
+)
+target_link_libraries(sbc15_test_pick_up_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
