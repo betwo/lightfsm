@@ -359,5 +359,6 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
 void MapExplorer::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
                          const path_msgs::NavigateToGoalResultConstPtr& /*result*/)
 {
+    ROS_WARN("done exploring");
     exploring_ = false;
 }

@@ -273,6 +273,10 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
         ROS_WARN("Path is replaned.");
         break;
 
+    case NavigateToGoalFeedback::STATUS_OBSTACLE:
+        ROS_WARN("There is an obstacle.");
+        break;
+
     case NavigateToGoalFeedback::STATUS_REPLAN_FAILED:
         ROS_ERROR("Replan failed.");
         break;
