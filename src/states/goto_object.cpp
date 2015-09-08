@@ -67,6 +67,10 @@ void GoToObject::entryAction()
 
             tf::Vector3 pos_map = (dist_a < dist_b) ? pos_map_a : pos_map_b;
 
+            tf::Vector3 delta = object_map.getOrigin() - pos_map;
+
+            rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+
             tf::Pose object_offset_map(rot_map, pos_map);
 
             follow_path.moveTo(object_offset_map, event_sent_goal);

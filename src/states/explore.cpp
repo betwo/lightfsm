@@ -26,9 +26,9 @@ void Explore::iteration()
     auto objects = GlobalState::getInstance().getObjects();
     ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
     for(const sbc15_msgs::Object& o : objects) {
-        if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
+        //if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
             event_object_found.trigger();
-        }
+        //}
     }
 }
 
