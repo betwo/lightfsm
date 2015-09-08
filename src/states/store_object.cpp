@@ -5,43 +5,22 @@
 #include <control_msgs/FollowJointTrajectoryResult.h>
 
 StoreObject::StoreObject(State *parent, int retries):
-    State(parent),
+    MetaState(parent),
     object_stored(this,"object is stored"),
     event_failure(this,"error occured"),
-    retries_(retries),
-    started_(false)
+
+    place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP /* or 2 for battery... */, retries),
+    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP  /* or 6 for battery... */, retries)
 
 {
-    planedTrajectoryClient_ = GlobalState::getInstance().nh.serviceClient<sbc15_msgs::PreplannedTrajectories>("preplanned_trajectories");
-}
+    event_entry_meta >> place_object;
 
-void StoreObject::entryAction()
-{
-    retries_left_ = retries_;
-    started_ = true;
-}
+    place_object.event_done >> open_gripper;
+    place_object.event_failure >> place_object;
 
-void StoreObject::iteration()
-{
-    if(!started_ && retries_left_ > 0)
-    {
-        started_ = true;
-        --retries_left_;
-        sbc15_msgs::PreplannedTrajectories msgs;
-        msgs.request.trajectory = sbc15_msgs::PreplannedTrajectories::Request::PLACE_CUP;
-        planedTrajectoryClient_.call(msgs.request,msgs.response);
+    open_gripper.event_done >> rest_position;
 
-//        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
-//        {
-            object_stored.trigger();
-//        }
-//        else
-//        {
-//            if(retries_left_ < 0)
-//            {
-//                event_failure.trigger();
-//            }
-//        }
-        started_ = false;
-    }
+    rest_position.event_done >> object_stored;
+    rest_position.event_failure >> rest_position;
 }

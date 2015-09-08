@@ -2,26 +2,24 @@
 #define STORE_OBJECT_H
 
 /// COMPONENT
-#include "../fsm/state.h"
+#include "../fsm/meta_state.h"
 #include "../fsm/triggered_event.h"
+#include "../states/preplanned_state.h"
+#include "../states/gripper_state.h"
 #include "ros/ros.h"
-class StoreObject: public State
+
+class StoreObject: public MetaState
 {
 public:
     TriggeredEvent object_stored;
     TriggeredEvent event_failure;
 
+    PreplannedState place_object;
+    GripperState open_gripper;
+    PreplannedState rest_position;
+
 public:
     StoreObject(State* parent, int retries);
-
-    void entryAction();
-    void iteration();
-
-private:
-    ros::ServiceClient planedTrajectoryClient_;
-    int retries_;
-    int retries_left_;
-    bool started_;
 };
 
 #endif // STORE_OBJECT_H

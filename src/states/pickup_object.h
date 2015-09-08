@@ -8,6 +8,7 @@
 #include "plan_arm_motion.h"
 #include "visual_servoing.h"
 #include "store_object.h"
+#include "back_up.h"
 
 /// PROJECT
 #include <sbc15_msgs/Object.h>
@@ -20,6 +21,12 @@ public:
     VisualServoing visual_servoing;
     StoreObject store_object;
 
+    PreplannedState pre_pos;
+    BackUp drive_forward;
+
+    PreplannedState back_up;
+    BackUp drive_backward;
+
 public:
     TriggeredEvent event_object_pickedup;
     TriggeredEvent event_object_failure;
@@ -28,9 +35,6 @@ public:
 
 public:
     PickupObject(State* parent);
-
-    void entryAction();
-    void iteration();
 
 protected:
     double desiredFrequency() const;

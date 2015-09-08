@@ -59,8 +59,12 @@ set(STATES
     src/states/fetch_object.cpp
     src/states/goto_object.cpp
     src/states/pickup_object.cpp
-    src/states/plan_arm_motion.cpp
     src/states/visual_servoing.cpp
+
+    src/states/gripper_state.cpp
+
+    src/states/preplanned_state.cpp
+    src/states/plan_arm_motion.cpp
     src/states/store_object.cpp
 )
 set(UTILS
