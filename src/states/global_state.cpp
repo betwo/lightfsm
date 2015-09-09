@@ -75,6 +75,26 @@ std::vector<sbc15_msgs::Object> GlobalState::getObjects()
     }
 }
 
+sbc15_msgs::ObjectPtr GlobalState::getCurrentObject()
+{
+    return current_object_;
+}
+
+void GlobalState::setCurrentObject(sbc15_msgs::ObjectPtr current)
+{
+    current_object_ = current;
+}
+
+bool GlobalState::isObjectCollected(int type)
+{
+    return object_collected_[type];
+}
+
+void GlobalState::setObjectCollected(int type)
+{
+    object_collected_[type] = true;
+}
+
 void GlobalState::setSystemEnabled(const std::string &name, bool enabled)
 {
     std::cerr << "[SBC15 State Maching] " << (enabled? "enable" : "disable") << " subsystem" << name << std::endl;

@@ -5,13 +5,13 @@
 #include "../states/global_state.h"
 
 
-FetchObject::FetchObject(State* parent)
+FetchObject::FetchObject(State* parent, bool store)
     : MetaState(parent),
 
       event_object_unknown(this, "The object is not known"),
 
       goto_object(this),
-      pickup_object(this)
+      pickup_object(this, store)
 {
     event_entry_meta >> goto_object;
     goto_object.event_object_reached >> pickup_object;

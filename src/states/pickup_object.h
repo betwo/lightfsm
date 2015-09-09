@@ -9,6 +9,8 @@
 #include "visual_servoing.h"
 #include "store_object.h"
 #include "back_up.h"
+#include "gripper_state.h"
+#include "place_object.h"
 
 /// PROJECT
 #include <sbc15_msgs/Object.h>
@@ -19,7 +21,9 @@ public:
     // states:
     PlanArmMotion plan_arm_motion;
     VisualServoing visual_servoing;
+
     StoreObject store_object;
+    PlaceObject place_object;
 
     PreplannedState pre_pos;
     BackUp drive_forward;
@@ -34,10 +38,13 @@ public:
     TriggeredEvent event_servo_control_failed;
 
 public:
-    PickupObject(State* parent);
+    PickupObject(State* parent, bool store);
 
 protected:
     double desiredFrequency() const;
+
+private:
+    bool store_;
 };
 
 #endif // PICKUPOBJECT_H

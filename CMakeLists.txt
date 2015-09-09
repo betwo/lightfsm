@@ -55,6 +55,7 @@ set(STATES
     src/states/wait_for_go_signal.cpp
     src/states/follow_path.cpp
 
+    src/states/select_task.cpp
     src/states/explore.cpp
     src/states/fetch_object.cpp
     src/states/goto_object.cpp
@@ -66,6 +67,7 @@ set(STATES
     src/states/preplanned_state.cpp
     src/states/plan_arm_motion.cpp
     src/states/store_object.cpp
+    src/states/place_object.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp

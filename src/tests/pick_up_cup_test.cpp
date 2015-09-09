@@ -7,6 +7,7 @@
 
 #include "../global.h"
 
+#include "../states/select_task.h"
 #include "../states/wait.h"
 #include "../states/explore.h"
 #include "../states/fetch_object.h"
@@ -32,10 +33,8 @@ public:
     {
         auto objects = GlobalState::getInstance().getObjects();
         ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
-        for(const sbc15_msgs::Object& o : objects) {
-            if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
-                event_object_found.trigger();
-            }
+        if(!objects.empty()) {
+            event_object_found.trigger();
         }
     }
 };
@@ -44,18 +43,31 @@ int main(int argc, char *argv[])
 {
     ros::init(argc, argv, "sbc15_state_machine_node_map_exploration_test");
     ros::NodeHandle nh;
+    ros::NodeHandle p_nh("~");
 
     sbc15_fsm_global::waitForRosTime();
+
+    bool store = p_nh.param("store", true);
 
     // STATES
     WaitForObject wait(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
-    PickupObject get_cup(State::NO_PARENT);
+
+    SelectTask select(State::NO_PARENT);
+
+    Explore explore(State::NO_PARENT);
+    PickupObject get_object(State::NO_PARENT, store);
 
     // ACTION
     goal.event_done >> goal;
 
-    wait.event_object_found >> get_cup;
+    wait.event_object_found >> select;
+
+    select.event_object_selected >> get_object;
+    select.event_object_unknown >> explore;
+    select.event_all_objects_collected >> goal;
+
+    explore.event_object_found >> select;
 
     StateMachine state_machine(&wait);
 

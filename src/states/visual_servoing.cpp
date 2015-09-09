@@ -16,6 +16,24 @@ VisualServoing::VisualServoing(State* parent,int retries):
     client_("servoingActionController", true),
     started_(false)
 {
+    event_object_gripped  << [this]() {
+        GlobalState& global = GlobalState::getInstance();
+
+        int type = global.getCurrentObject()->type;
+
+        std::string talk = "collected.";
+        switch(type) {
+        case sbc15_msgs::Object::OBJECT_CUP:
+            talk = "Cup " + talk;
+            break;
+        case sbc15_msgs::Object::OBJECT_BATTERY:
+            talk = "Battery " + talk;
+            break;
+        }
+
+        global.talk(talk);
+        global.setObjectCollected(type);
+    };
 }
 
 void VisualServoing::entryAction()

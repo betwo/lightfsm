@@ -95,6 +95,12 @@ public:
 
     std::vector<sbc15_msgs::Object> getObjects();
 
+    sbc15_msgs::ObjectPtr getCurrentObject();
+    void setCurrentObject(sbc15_msgs::ObjectPtr current);
+
+    bool isObjectCollected(int type);
+    void setObjectCollected(int type);
+
     void setSystemEnabled(const std::string& name, bool enabled);
     void sendSystemCommand(const std::string& name, const std::string& command);
 
@@ -127,6 +133,9 @@ private:
     tf::TransformListener tfl_;
 
     double desired_speed_;
+
+    std::map<int, bool> object_collected_;
+    sbc15_msgs::ObjectPtr current_object_;
 };
 
 #endif // GLOBAL_STATE_H
