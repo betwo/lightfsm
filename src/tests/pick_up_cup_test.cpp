@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
     select.event_object_unknown >> explore;
     select.event_all_objects_collected >> goal;
 
+    get_object.event_object_pickedup >> select;
+
     explore.event_object_found >> select;
 
     StateMachine state_machine(&wait);
