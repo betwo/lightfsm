@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
     explore.event_object_found >> select;
 
-    StateMachine state_machine(&wait);
+    StateMachine state_machine(&select);
 
     state_machine.run(boost::bind(&tick, _1));
 
