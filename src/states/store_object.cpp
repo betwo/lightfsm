@@ -9,18 +9,50 @@ StoreObject::StoreObject(State *parent, int retries):
     object_stored(this,"object is stored"),
     event_failure(this,"error occured"),
 
-    place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP /* or 2 for battery... */, retries),
-    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
-    rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP  /* or 6 for battery... */, retries)
+    event_cup(this,"cup"),
+    event_battery(this,"battery"),
+
+    place_cup(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP, retries),
+    open_gripper_cup(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    rest_position_cup(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP, retries),
+
+    place_battery(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_BOX, retries),
+    open_gripper_battery(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    rest_position_battery(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_BOX, retries)
 
 {
-    event_entry_meta >> place_object;
+    //event_entry_meta >> place_cup;
 
-    place_object.event_done >> open_gripper;
-    place_object.event_failure >> place_object;
+    event_cup >> place_cup;
+    place_cup.event_done >> open_gripper_cup;
+    place_cup.event_failure >> place_cup;
 
-    open_gripper.event_done >> rest_position;
+    open_gripper_cup.event_done >> rest_position_cup;
 
-    rest_position.event_done >> object_stored;
-    rest_position.event_failure >> rest_position;
+    rest_position_cup.event_done >> object_stored;
+    rest_position_cup.event_failure >> rest_position_cup;
+
+
+    event_battery >> place_battery;
+    place_battery.event_done >> open_gripper_battery;
+    place_battery.event_failure >> place_battery;
+
+    open_gripper_battery.event_done >> rest_position_battery;
+
+    rest_position_battery.event_done >> object_stored;
+    rest_position_battery.event_failure >> rest_position_battery;
+}
+
+void StoreObject::entryAction()
+{
+
+    GlobalState& global = GlobalState::getInstance();
+
+    sbc15_msgs::ObjectPtr o = global.getCurrentObject();
+
+    if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
+        event_cup.trigger();
+    } else if(o->type == sbc15_msgs::Object::OBJECT_BATTERY) {
+        event_battery.trigger();
+    }
 }

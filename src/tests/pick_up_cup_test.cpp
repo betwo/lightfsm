@@ -8,9 +8,11 @@
 #include "../global.h"
 
 #include "../states/select_task.h"
+#include "../states/goto_object.h"
 #include "../states/wait.h"
 #include "../states/explore.h"
 #include "../states/fetch_object.h"
+#include "../states/back_up.h"
 
 void tick(State* current_state)
 {
@@ -55,19 +57,28 @@ int main(int argc, char *argv[])
 
     SelectTask select(State::NO_PARENT);
 
+    BackUp forward(State::NO_PARENT, 1.0, 0.1);
     Explore explore(State::NO_PARENT);
-    PickupObject get_object(State::NO_PARENT, store);
+
+    GoToObject goto_object(State::NO_PARENT);
+    PickupObject pickup_object(State::NO_PARENT, store);
 
     // ACTION
     goal.event_done >> goal;
 
     wait.event_object_found >> select;
 
-    select.event_object_selected >> get_object;
-    select.event_object_unknown >> explore;
+    forward.event_positioned >> explore;
+
+    select.event_object_selected >> goto_object;
+    select.event_object_unknown >> forward;
     select.event_all_objects_collected >> goal;
 
-    get_object.event_object_pickedup >> select;
+    goto_object.event_object_reached >> pickup_object;
+    goto_object.event_object_unknown >> select;
+    goto_object.event_path_failure >> goto_object;
+
+    pickup_object.event_object_pickedup >> select;
 
     explore.event_object_found >> select;
 

@@ -24,58 +24,58 @@ void GoToObject::entryAction()
 {
     const double offset = 0.45 /*m*/;
 
-    auto objects = GlobalState::getInstance().getObjects();
-    ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
-    for(const sbc15_msgs::Object& o : objects) {
-        if(o.type == sbc15_msgs::Object::OBJECT_CUP) {
-            target_ = o;
+    GlobalState& global = GlobalState::getInstance();
 
-            tf::Pose object_map;
-            tf::poseMsgToTF(target_.pose, object_map);
+    sbc15_msgs::ObjectPtr o = global.getCurrentObject();
 
-            tf::Pose robot_map = GlobalState::getInstance().pose;
+    if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
+        target_ = *o;
 
-            tf::Vector3 delta = (robot_map.getOrigin() - object_map.getOrigin());
+        tf::Pose object_map;
+        tf::poseMsgToTF(target_.pose, object_map);
 
-            tf::Vector3 pos_map = object_map.getOrigin() + delta * offset / delta.length();
-            tf::Quaternion rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+        tf::Pose robot_map = GlobalState::getInstance().pose;
 
-            tf::Pose object_offset_map(rot_map, pos_map);
+        tf::Vector3 delta = (robot_map.getOrigin() - object_map.getOrigin());
 
-            follow_path.moveTo(object_offset_map, event_sent_goal);
-            return;
-        }
+        tf::Vector3 pos_map = object_map.getOrigin() + delta * offset / delta.length();
+        tf::Quaternion rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
 
-        if(o.type == sbc15_msgs::Object::OBJECT_BATTERY) {
-            target_ = o;
+        tf::Pose object_offset_map(rot_map, pos_map);
 
-            tf::Pose object_map;
-            tf::poseMsgToTF(target_.pose, object_map);
+        follow_path.moveTo(object_offset_map, event_sent_goal);
+        return;
+    }
 
-            tf::Pose robot_map = GlobalState::getInstance().pose;
+    if(o->type == sbc15_msgs::Object::OBJECT_BATTERY) {
+        target_ = *o;
 
-            tf::Quaternion rot_map = tf::createQuaternionFromYaw(tf::getYaw(object_map.getRotation()));
+        tf::Pose object_map;
+        tf::poseMsgToTF(target_.pose, object_map);
 
-            tf::Vector3 delta_obj(offset, 0, 0);
-            tf::Vector3 delta_world = tf::quatRotate(rot_map, delta_obj);
+        tf::Pose robot_map = GlobalState::getInstance().pose;
 
-            tf::Vector3 pos_map_a = object_map.getOrigin() + delta_world;
-            tf::Vector3 pos_map_b = object_map.getOrigin() + delta_world;
+        tf::Quaternion rot_map = tf::createQuaternionFromYaw(tf::getYaw(object_map.getRotation()));
 
-            double dist_a = (pos_map_a - robot_map.getOrigin()).length();
-            double dist_b = (pos_map_b - robot_map.getOrigin()).length();
+        tf::Vector3 delta_obj(offset, 0, 0);
+        tf::Vector3 delta_world = tf::quatRotate(rot_map, delta_obj);
 
-            tf::Vector3 pos_map = (dist_a < dist_b) ? pos_map_a : pos_map_b;
+        tf::Vector3 pos_map_a = object_map.getOrigin() + delta_world;
+        tf::Vector3 pos_map_b = object_map.getOrigin() + delta_world;
 
-            tf::Vector3 delta = object_map.getOrigin() - pos_map;
+        double dist_a = (pos_map_a - robot_map.getOrigin()).length();
+        double dist_b = (pos_map_b - robot_map.getOrigin()).length();
 
-            rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+        tf::Vector3 pos_map = (dist_a < dist_b) ? pos_map_a : pos_map_b;
 
-            tf::Pose object_offset_map(rot_map, pos_map);
+        tf::Vector3 delta = object_map.getOrigin() - pos_map;
 
-            follow_path.moveTo(object_offset_map, event_sent_goal);
-            return;
-        }
+        rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+
+        tf::Pose object_offset_map(rot_map, pos_map);
+
+        follow_path.moveTo(object_offset_map, event_sent_goal);
+        return;
     }
 
     event_object_unknown.trigger();
