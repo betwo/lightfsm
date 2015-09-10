@@ -68,8 +68,12 @@ void VisualServoing::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
         switch(result->error_code)
         {
         case sbc15_msgs::visual_servoingResult::TARGET_OUT_OF_RANGE:
+        {
+            double dist =result->distance;
+            GlobalState::getInstance().setDesiredDistance(dist);
             event_out_of_range.trigger();
             break;
+        }
         case sbc15_msgs::visual_servoingResult::SERVO_CONTROLL_FAILD:
             event_servo_control_failed.trigger();
             break;

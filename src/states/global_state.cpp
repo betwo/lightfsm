@@ -95,6 +95,16 @@ void GlobalState::setObjectCollected(int type)
     object_collected_[type] = true;
 }
 
+void GlobalState::setDesiredDistance(double &dist)
+{
+    desired_distance_ = dist;
+}
+
+double GlobalState::getDesiredDistance() const
+{
+    return desired_distance_;
+}
+
 void GlobalState::setSystemEnabled(const std::string &name, bool enabled)
 {
     std::cerr << "[SBC15 State Maching] " << (enabled? "enable" : "disable") << " subsystem" << name << std::endl;
@@ -307,41 +317,4 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
     }
 }
 
-//void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                             boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb)
-//{
-//    sbc15_msgs::visual_servoingGoal goal;
-//    goal.timeout = t;
-//    goal.object = object;
-//    goal.phi = phi;
-//    goal.theta = theta;
-//    grapObject(goal,doneCb,feedbackCb);
 
-//}
-
-//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal &goal,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb)
-//{
-//    grapObject(goal, doneCb, boost::bind(&GlobalState::feedbackVsCb, this, _1));
-//}
-
-//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal& goal,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                             boost::function<void (const sbc15_msgs::visual_servoingFeedbackConstPtr &)> feedbackCb)
-//{
-//    client_vs_.sendGoal(goal,
-//                        doneCb,
-//                        boost::bind(&GlobalState::activeVsCp, this),
-//                        feedbackCb);
-//}
-
-//void GlobalState::activeVsCp()
-//{
-
-//}
-
-//void GlobalState::feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr &feedback)
-//{
-
-//}

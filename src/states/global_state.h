@@ -104,6 +104,10 @@ public:
     void setSystemEnabled(const std::string& name, bool enabled);
     void sendSystemCommand(const std::string& name, const std::string& command);
 
+    void setDesiredDistance(double & dist);
+    double getDesiredDistance() const ;
+
+
 private:
     void activeCb();
     void feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& feedback);
@@ -133,6 +137,7 @@ private:
     tf::TransformListener tfl_;
 
     double desired_speed_;
+    double desired_distance_;
 
     std::map<int, bool> object_collected_;
     sbc15_msgs::ObjectPtr current_object_;

@@ -26,17 +26,48 @@ public:
 
 public:
     WaitForObject(State* parent)
-        : State(parent), event_object_found(this, "Object found")
+        : State(parent), event_object_found(this, "Object found"),
+          found_(false),
+          obj_(new sbc15_msgs::Object)
     {
+        subObject_ = GlobalState::getInstance().private_nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
     }
 
     void iteration()
     {
-        sbc15_msgs::ObjectPtr o(new sbc15_msgs::Object);
-        o->type = sbc15_msgs::Object::OBJECT_BATTERY;
-        GlobalState::getInstance().setCurrentObject(o);
+        //sbc15_msgs::ObjectPtr o(new sbc15_msgs::Object);
+        //o->type = sbc15_msgs::Object::OBJECT_BATTERY;
+        //ros::spinOnce();
+        //if(found_)
+        //{
+        //    GlobalState::getInstance().setCurrentObject(obj_);
 
-        event_object_found.trigger();
+          //  event_object_found.trigger();
+        //}
+    }
+private:
+    ros::Subscriber subObject_;
+    sbc15_msgs::ObjectPtr obj_;
+    //bool found_;
+
+    void objectCb(sbc15_msgs::ObjectConstPtr object)
+    {
+        if(object->type == sbc15_msgs::Object::OBJECT_BATTERY || object->type == sbc15_msgs::Object::OBJECT_CUP)
+        {
+            obj_->type = object->type;
+            obj_->detection_type = object->detection_type;
+            obj_->header.frame_id = object->header.frame_id;
+            obj_->header.stamp = ros::Time::now();
+            obj_->pose = object->pose;
+            found_ = true;
+            GlobalState::getInstance().setCurrentObject(obj_);
+            event_object_found.trigger();
+        }
+        else
+        {
+            found_ = false;
+        }
+
     }
 };
 

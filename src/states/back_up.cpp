@@ -14,6 +14,12 @@ BackUp::BackUp(State *parent, double distance, double velocity)
 void BackUp::entryAction()
 {
     start_pose_ = GlobalState::getInstance().pose;
+
+    if(GlobalState::getInstance().getDesiredDistance() != 0)
+    {
+
+        distance_ = GlobalState::getInstance().getDesiredDistance();
+    }
 }
 
 void BackUp::iteration()
