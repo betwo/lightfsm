@@ -28,16 +28,15 @@ public:
     WaitForObject(State* parent)
         : State(parent), event_object_found(this, "Object found")
     {
-
     }
 
     void iteration()
     {
-        auto objects = GlobalState::getInstance().getObjects();
-        ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
-        if(!objects.empty()) {
-            event_object_found.trigger();
-        }
+        sbc15_msgs::ObjectPtr o(new sbc15_msgs::Object);
+        o->type = sbc15_msgs::Object::OBJECT_BATTERY;
+        GlobalState::getInstance().setCurrentObject(o);
+
+        event_object_found.trigger();
     }
 };
 
