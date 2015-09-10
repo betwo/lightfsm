@@ -43,7 +43,7 @@ void VisualServoing::entryAction()
     goal_.timeout = ros::Duration(120);
     goal_.phi = 0;
     goal_.theta = 0;
-    goal_.object = sbc15_msgs::Object::OBJECT_CUP;
+    goal_.object = GlobalState::getInstance().getCurrentObject()->type;
 }
 
 void VisualServoing::iteration()
