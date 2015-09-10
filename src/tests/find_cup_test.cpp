@@ -58,22 +58,14 @@ int main(int argc, char *argv[])
     WaitForGo wait(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
 
-    SelectTask select(State::NO_PARENT);
-
     Explore explore(State::NO_PARENT);
-    FetchObject get_object(State::NO_PARENT, store);
 
     // ACTIONS
     explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
-    explore.event_object_found >> select;
     explore.event_object_found << []() {
         GlobalState& global = GlobalState::getInstance();
         global.talk("An object has been found");
     };
-
-    select.event_object_selected >> get_object;
-    select.event_object_unknown >> explore;
-    select.event_all_objects_collected >> goal;
 
     goal.event_done >> goal;
 
