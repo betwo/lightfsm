@@ -117,3 +117,16 @@ add_executable(sbc15_test_pick_up_cup
 target_link_libraries(sbc15_test_pick_up_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
+
+
+
+
+
+
+
+add_executable(sbc15_pick_up
+    src/tests/pickup.cpp
+)
+target_link_libraries(sbc15_pick_up
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
