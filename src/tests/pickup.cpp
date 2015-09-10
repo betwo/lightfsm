@@ -27,7 +27,6 @@ public:
 public:
     WaitForObject(State* parent)
         : State(parent), event_object_found(this, "Object found"),
-          found_(false),
           obj_(new sbc15_msgs::Object)
     {
         subObject_ = GlobalState::getInstance().private_nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
@@ -59,15 +58,10 @@ private:
             obj_->header.frame_id = object->header.frame_id;
             obj_->header.stamp = ros::Time::now();
             obj_->pose = object->pose;
-            found_ = true;
+            //found_ = true;
             GlobalState::getInstance().setCurrentObject(obj_);
             event_object_found.trigger();
         }
-        else
-        {
-            found_ = false;
-        }
-
     }
 };
 
