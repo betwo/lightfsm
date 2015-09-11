@@ -16,6 +16,7 @@ public:
     PreplannedState place_object;
     GripperState open_gripper;
     PreplannedState pre_rest_position;
+    GripperState close_gripper;
     PreplannedState rest_position;
 
 public:
