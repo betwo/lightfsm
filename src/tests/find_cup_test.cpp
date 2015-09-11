@@ -55,18 +55,15 @@ int main(int argc, char *argv[])
     bool store = p_nh.param("store", true);
 
     // STATES
-    WaitForGo wait(State::NO_PARENT);
+    Wait wait(State::NO_PARENT, 10.0);
     Wait goal(State::NO_PARENT, 10.0);
 
     Explore explore(State::NO_PARENT);
 
     // ACTIONS
-    explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
-    explore.event_object_found << []() {
-        GlobalState& global = GlobalState::getInstance();
-        global.talk("An object has been found");
-    };
-
+    wait.event_done >> explore;
+    //explore.event_object_found >> explore;
+ 
     goal.event_done >> goal;
 
     StateMachine state_machine(&wait);

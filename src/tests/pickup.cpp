@@ -29,7 +29,7 @@ public:
         : State(parent), event_object_found(this, "Object found"),
           obj_(new sbc15_msgs::Object)
     {
-        subObject_ = GlobalState::getInstance().private_nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
+        subObject_ = GlobalState::getInstance().nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
     }
 
     void iteration()
@@ -51,6 +51,7 @@ private:
 
     void objectCb(sbc15_msgs::ObjectConstPtr object)
     {
+        ROS_WARN("object detected");
         if(object->type == sbc15_msgs::Object::OBJECT_BATTERY || object->type == sbc15_msgs::Object::OBJECT_CUP)
         {
             obj_->type = object->type;
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
 
     // ACTION
     wait_for_object.event_object_found >> pickup_object;
-    pickup_object.event_object_pickedup >> goal;
+    pickup_object.event_object_pickedup >> wait_for_object;
 
     StateMachine state_machine(&wait_for_object);
 
