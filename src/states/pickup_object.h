@@ -32,6 +32,10 @@ public:
     PreplannedState back_up;
     BackUp drive_backward;
 
+
+    GripperState abort;
+    PreplannedState abort2;
+
 public:
     TriggeredEvent event_object_pickedup;
     TriggeredEvent event_object_failure;
