@@ -8,7 +8,7 @@
 
 PlaceObject::PlaceObject(State *parent, int retries):
     MetaState(parent),
-    object_placed(this,"object is placed"),
+    event_object_placed(this,"object is placed"),
 
     place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PRE_POSITION, retries),
     open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
@@ -29,7 +29,7 @@ PlaceObject::PlaceObject(State *parent, int retries):
 
     close_gripper.event_done >> rest_position;
 
-    rest_position.event_done >> rest_position;
-    rest_position.event_failure >> rest_position;
+    rest_position.event_done >> event_object_placed;
+    rest_position.event_failure >> event_object_placed;
 }
 

@@ -39,7 +39,7 @@ PickupObject::PickupObject(State* parent, bool store)
 
     } else {
         visual_servoing.event_object_gripped >> place_object;
-        place_object.object_placed >> open_gripper;
+        place_object.event_object_placed >> open_gripper;
         open_gripper.event_done >> event_object_pickedup;
     }
 

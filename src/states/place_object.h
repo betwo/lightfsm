@@ -11,7 +11,7 @@
 class PlaceObject: public MetaState
 {
 public:
-    TriggeredEvent object_placed;
+    TriggeredEvent event_object_placed;
 
     PreplannedState place_object;
     GripperState open_gripper;
