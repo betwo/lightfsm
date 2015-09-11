@@ -6,15 +6,17 @@
 
 VisualServoing::VisualServoing(State* parent,int retries):
     State(parent),
-    retries_(retries),
     event_object_gripped(this,"gripped object"),
+    event_timeout(this,"More Time Needed"),
     event_failure(this,"failed"),
     event_out_of_range(this,"Object is out of range"),
     event_servo_control_failed(this,"Controll of Arm failed"),
-    event_timeout(this,"More Time Needed"),
     event_no_object(this,"No object Visible"),
-    client_("servoingActionController", true),
-    started_(false)
+
+    retries_(retries),
+    started_(false),
+
+    client_("servoingActionController", true)
 {
     event_object_gripped  << [this]() {
         GlobalState& global = GlobalState::getInstance();

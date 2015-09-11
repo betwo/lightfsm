@@ -12,7 +12,7 @@ PickupObject::PickupObject(State* parent, bool store)
       visual_servoing(this,2),
 
       store_object(this,2),
-      place_object(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION),
+      place_object(this, 1),
       open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
 
       pre_pos(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION, 1),
