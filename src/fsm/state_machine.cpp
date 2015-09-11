@@ -6,11 +6,18 @@
 
 /// SYSTEM
 #include <ros/ros.h>
+#include <std_msgs/Bool.h>
 
 StateMachine::StateMachine(State* initial_state)
     : state_(initial_state)
 {
     state_->performEntryAction();
+}
+
+namespace {
+void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
+    k = true;
+}
 }
 
 void StateMachine::run(boost::function<void(State*)> callback)
@@ -19,11 +26,21 @@ void StateMachine::run(boost::function<void(State*)> callback)
 
     check();
 
+    bool kill = false;
+
+    ros::NodeHandle pnh("~");
+    ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
+
+
     while(ros::ok()) {
         callback(state_);
         bool terminal = !step();
 
         if(terminal) {
+            return;
+        }
+
+        if(kill) {
             return;
         }
 
