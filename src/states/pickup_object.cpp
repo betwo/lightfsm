@@ -13,6 +13,7 @@ PickupObject::PickupObject(State* parent, bool store)
 
       store_object(this,2),
       place_object(this, store),
+      open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
 
       pre_pos(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION, 1),
       drive_forward(this, 0.02, 0.05),
@@ -38,7 +39,8 @@ PickupObject::PickupObject(State* parent, bool store)
 
     } else {
         visual_servoing.event_object_gripped >> place_object;
-        place_object.object_placed >> event_object_pickedup;
+        place_object.object_placed >> open_gripper;
+        open_gripper.event_done >> event_object_pickedup;
     }
 
     plan_arm_motion.event_failure >> event_object_failure;

@@ -23,7 +23,9 @@ public:
     VisualServoing visual_servoing;
 
     StoreObject store_object;
+
     PlaceObject place_object;
+    GripperState open_gripper;
 
     PreplannedState pre_pos;
     BackUp drive_forward;
