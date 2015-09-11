@@ -24,7 +24,7 @@ public:
 
     StoreObject store_object;
 
-    PlaceObject place_object;
+    PreplannedState place_object;
     GripperState open_gripper;
 
     PreplannedState pre_pos;
