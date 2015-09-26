@@ -70,7 +70,7 @@ void GoToObject::entryAction()
 
         tf::Vector3 delta = object_map.getOrigin() - pos_map;
 
-        rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
+        rot_map = tf::createQuaternionFromYaw(std::atan2(delta.y(), delta.x()));
 
         tf::Pose object_offset_map(rot_map, pos_map);
 

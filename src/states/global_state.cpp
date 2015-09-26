@@ -226,6 +226,8 @@ void GlobalState::moveTo(const tf::Pose &target,
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
+    msg.header.frame_id = "/map";
+    msg.header.stamp = ros::Time::now();
     moveTo(msg, velocity, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
@@ -316,5 +318,6 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
         break;
     }
 }
+
 
 
