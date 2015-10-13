@@ -69,7 +69,8 @@ private:
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node_map_exploration_test");
+    ros::init(argc, argv, "sbc15_state_machine_node",
+              ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
     ros::NodeHandle p_nh("~");
 
