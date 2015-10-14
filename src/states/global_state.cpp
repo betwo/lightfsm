@@ -246,7 +246,6 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.2);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode, planning_algorithm);
@@ -270,14 +269,26 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.75);
 
     path_msgs::NavigateToGoalGoal goal;
-    goal.goal_pose = target_msg;
+    goal.goal.pose = target_msg;
+    goal.goal.algorithm.data = planning_algorithm;
     goal.failure_mode = failure_mode;
     goal.velocity = velocity;
-    goal.planning_algorithm.data = planning_algorithm;
+
+    moveTo(goal, doneCb, feedbackCb);
+}
+
+void GlobalState::moveTo(const NavigateToGoalGoal &goal,
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+{
+    if(!client_.isServerConnected()) {
+        ROS_WARN("waiting for navigation server");
+        client_.waitForServer();
+    }
+
     client_.sendGoal(goal,
                      doneCb,
                      boost::bind(&GlobalState::activeCb, this),

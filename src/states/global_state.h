@@ -88,6 +88,10 @@ public:
                 int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
                 const std::string& planning_algorithm = "");
 
+    void moveTo(const path_msgs::NavigateToGoalGoal& goal,
+                boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb);
+
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
