@@ -3,6 +3,7 @@
 /// COMPONENT
 #include "../fsm/state.h"
 #include "../fsm/triggered_event.h"
+#include "global_state.h"
 
 #include <actionlib/client/simple_action_client.h>
 #include <sbc15_msgs/MoveManipulatorGripperFrameAction.h>
@@ -19,6 +20,7 @@ public:
 
 public:
     MoveitMotion(State* parent, int retries);
+    MoveitMotion(State* parent, int retries, ArmGoal& goal);
 
     void entryAction();
     void iteration();
@@ -27,9 +29,11 @@ private:
     int retries_;
     int retries_left_;
     bool started_;
+    bool takeGlobalStateGoal_;
 
     sbc15_msgs::MoveManipulatorGripperFrameGoal goal_;
     actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorGripperFrameAction> client_;
+    ArmGoal constantGoal_;
 
     void doneCb(const actionlib::SimpleClientGoalState& state,
            const sbc15_msgs::MoveManipulatorGripperFrameResultConstPtr& result);

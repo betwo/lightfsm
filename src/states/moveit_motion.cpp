@@ -12,20 +12,48 @@ MoveitMotion::MoveitMotion(State* parent, int retries ):
     event_servo_control_failed(this,"Servo Control failed"),
     retries_(retries),
     started_(false),
+    takeGlobalStateGoal_(true),
     client_("arm_plan_move_server",true)
+{
+}
+
+MoveitMotion::MoveitMotion(State *parent, int retries, ArmGoal &goal):
+    State(parent),
+    event_done(this,"Arm positioned"),
+    event_timeout(this,"Did not reach goal in time."),
+    event_failure(this,"Faliure"),
+    event_planning_failed (this,"Planning Failed"),
+    event_servo_control_failed(this,"Servo Control failed"),
+    retries_(retries),
+    started_(false),
+    takeGlobalStateGoal_(true),
+    client_("arm_plan_move_server",true),
+    constantGoal_(goal)
 {
 
 }
 
+
 void MoveitMotion::entryAction()
 {
-    retries_left_ = retries_;
     started_ = false;
-    goal_.position.resize(3);
-    goal_.position[0] = GlobalState::getInstance().getCurrentArmGoal().x;
-    goal_.position[1] = GlobalState::getInstance().getCurrentArmGoal().y;
-    goal_.position[2] = GlobalState::getInstance().getCurrentArmGoal().z;
-    goal_.pitch = GlobalState::getInstance().getCurrentArmGoal().pitch;
+    retries_left_ = retries_;
+    if(takeGlobalStateGoal_)
+    {
+        goal_.position.resize(3);
+        goal_.position[0] = GlobalState::getInstance().getCurrentArmGoal().x;
+        goal_.position[1] = GlobalState::getInstance().getCurrentArmGoal().y;
+        goal_.position[2] = GlobalState::getInstance().getCurrentArmGoal().z;
+        goal_.pitch = GlobalState::getInstance().getCurrentArmGoal().pitch;
+    }
+    else
+    {
+        goal_.position.resize(3);
+        goal_.position[0] = constantGoal_.x;
+        goal_.position[1] = constantGoal_.y;
+        goal_.position[2] = constantGoal_.z;
+        goal_.pitch = constantGoal_.pitch;
+    }
 }
 
 void MoveitMotion::iteration()
@@ -41,7 +69,7 @@ void MoveitMotion::iteration()
 
 
 void MoveitMotion::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
-                            const sbc15_msgs::MoveManipulatorGripperFrameResultConstPtr &result)
+                          const sbc15_msgs::MoveManipulatorGripperFrameResultConstPtr &result)
 {
     if(result->error_code == sbc15_msgs::MoveManipulatorGripperFrameResult::SUCCESS) {
         std::cout << "Pose reached" << std::endl;
@@ -111,7 +139,7 @@ void MoveitMotion::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
             event_failure.trigger();
             break;
         case sbc15_msgs::MoveManipulatorGripperFrameResult::ROBOT_STATE_STALE:
-             event_planning_failed.trigger();
+            event_planning_failed.trigger();
             break;
         case sbc15_msgs::MoveManipulatorGripperFrameResult::SENSOR_INFO_STALE:
             event_planning_failed.trigger();

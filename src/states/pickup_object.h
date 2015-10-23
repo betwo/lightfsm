@@ -11,6 +11,7 @@
 #include "back_up.h"
 #include "gripper_state.h"
 #include "place_object.h"
+#include "moveit_motion.h"
 
 /// PROJECT
 #include <sbc15_msgs/Object.h>
@@ -21,6 +22,7 @@ public:
     // states:
     PlanArmMotion plan_arm_motion;
     VisualServoing visual_servoing;
+    MoveitMotion pose_interim;
 
     StoreObject store_object;
     PlaceObject place_object;
@@ -41,9 +43,10 @@ public:
     TriggeredEvent event_object_failure;
     TriggeredEvent event_object_out_of_range;
     TriggeredEvent event_servo_control_failed;
+    TriggeredEvent event_planning_failed;
 
 public:
-    PickupObject(State* parent, bool store);
+    PickupObject(State* parent, bool store, ArmGoal &armInterimPose);
 
 protected:
     double desiredFrequency() const;
