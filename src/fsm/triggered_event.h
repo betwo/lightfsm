@@ -18,7 +18,6 @@ protected:
 
 private:
     mutable bool triggered_;
-    std::string description_;
 };
 
 #endif // TRIGGERED_EVENT_H

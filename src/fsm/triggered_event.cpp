@@ -5,7 +5,7 @@
 #include "state.h"
 
 TriggeredEvent::TriggeredEvent(State *parent, const std::string& description)
-    : Event(parent), triggered_(false), description_(description)
+    : Event(parent, description), triggered_(false)
 {
 }
 

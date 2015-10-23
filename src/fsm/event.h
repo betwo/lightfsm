@@ -13,7 +13,7 @@ class State;
 class Event : private boost::noncopyable
 {
 public:
-    Event(State* parent);
+    Event(State* parent, const std::string &description);
     virtual ~Event();
 
     void connect(State* state, Guard guard = Guard(), Action action = Action());
@@ -24,12 +24,18 @@ public:
     void connect(Action action);
 
     virtual void getPossibleTransitions(std::vector<const Transition *> &possible_transitions) const;
+    void getAllTransitions(std::vector<const Transition *> &transitions) const;
+
+    std::string getDescription() const;
+
     void performTransitionActions();
 
     virtual void forwardEvent();
 
 protected:
     State* parent_;
+    std::string description_;
+
     std::vector<Transition> transitions_;
     std::vector<Event*> connected_events_;
     std::vector<Action> actions_on_transition_;

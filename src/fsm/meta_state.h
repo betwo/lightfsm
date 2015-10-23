@@ -17,6 +17,14 @@ public:
     MetaState(State *parent);
 
     void entryAction();
+
+    std::vector<State*> getChildren() const;
+
+private:
+    void registerChildState(State* child) override;
+
+private:
+    std::vector<State*> children_;
 };
 
 #endif // META_STATE_H

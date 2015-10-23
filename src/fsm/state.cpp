@@ -8,14 +8,38 @@
 
 State* State::NO_PARENT = NULL;
 
+std::vector<State*> State::g_states;
+
 State::State(State* parent)
-    : event_default(this), rate_(1), parent_(parent)
+    : event_default(this, "default"), rate_(1), parent_(parent), uuid_(nextId())
 {
+    g_states.push_back(this);
+
+    if(parent != NO_PARENT) {
+        parent->registerChildState(this);
+    }
 }
 
 State::~State()
 {
+    auto pos = std::find(g_states.begin(), g_states.end(), this);
+    g_states.erase(pos);
+}
 
+void State::registerChildState(State */*child*/)
+{
+    // do nothing
+}
+
+int State::getUniqueId() const
+{
+    return uuid_;
+}
+
+int State::nextId()
+{
+    static int id = 0;
+    return id++;
 }
 
 std::string State::getName() const
@@ -102,4 +126,9 @@ void State::registerEvent(Event *event)
 State* State::getParent() const
 {
     return parent_;
+}
+
+std::vector<Event*> State::getEvents() const
+{
+    return events_;
 }
