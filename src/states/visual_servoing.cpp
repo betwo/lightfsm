@@ -12,7 +12,6 @@ VisualServoing::VisualServoing(State* parent,int retries):
     event_out_of_range(this,"Object is out of range"),
     event_servo_control_failed(this,"Controll of Arm failed"),
     event_no_object(this,"No object Visible"),
-
     retries_(retries),
     started_(false),
 

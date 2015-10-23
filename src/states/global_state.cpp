@@ -105,6 +105,25 @@ double GlobalState::getDesiredDistance() const
     return desired_distance_;
 }
 
+ArmGoal& GlobalState::getCurrentArmGoal()
+{
+    return current_arm_goal_;
+}
+
+void GlobalState::setCurrentArmGoal(double &x, double &y, double &z, double &pitch)
+{
+    current_arm_goal_.valid = true;
+    current_arm_goal_.x = x;
+    current_arm_goal_.y = y;
+    current_arm_goal_.z = z;
+    current_arm_goal_.pitch = pitch;
+}
+
+void GlobalState::setCurrentArmGoalInvalid()
+{
+    current_arm_goal_.valid = false;
+}
+
 void GlobalState::setSystemEnabled(const std::string &name, bool enabled)
 {
     std::cerr << "[SBC15 State Maching] " << (enabled? "enable" : "disable") << " subsystem" << name << std::endl;

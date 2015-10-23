@@ -76,6 +76,7 @@ set(STATES
     src/states/plan_arm_motion.cpp
     src/states/store_object.cpp
     src/states/place_object.cpp
+    src/states/moveit_motion.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
