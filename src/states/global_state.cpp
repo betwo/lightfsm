@@ -27,7 +27,7 @@ GlobalState::GlobalState()
     client_objects_ = nh.serviceClient<sbc15_msgs::GetObjects>("/get_objects");
 
 //    client_.waitForServer();
-    tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
+    //tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
 }
 
 GlobalState& GlobalState::getInstance()
@@ -55,7 +55,7 @@ tf::Transform GlobalState::getTransform(const std::string &from, const std::stri
 
 void GlobalState::update(State* current_state)
 {
-    pose = getTransform("/map", "/base_link");
+    //pose = getTransform("/map", "/base_link");
 
     std_msgs::String state;
     state.data = current_state->getName();
@@ -73,6 +73,55 @@ std::vector<sbc15_msgs::Object> GlobalState::getObjects()
             return std::vector<sbc15_msgs::Object>();
         }
     }
+}
+
+sbc15_msgs::ObjectPtr GlobalState::getCurrentObject()
+{
+    return current_object_;
+}
+
+void GlobalState::setCurrentObject(sbc15_msgs::ObjectPtr current)
+{
+    current_object_ = current;
+}
+
+bool GlobalState::isObjectCollected(int type)
+{
+    return object_collected_[type];
+}
+
+void GlobalState::setObjectCollected(int type)
+{
+    object_collected_[type] = true;
+}
+
+void GlobalState::setDesiredDistance(double &dist)
+{
+    desired_distance_ = dist;
+}
+
+double GlobalState::getDesiredDistance() const
+{
+    return desired_distance_;
+}
+
+ArmGoal& GlobalState::getCurrentArmGoal()
+{
+    return current_arm_goal_;
+}
+
+void GlobalState::setCurrentArmGoal(double &x, double &y, double &z, double &pitch)
+{
+    current_arm_goal_.valid = true;
+    current_arm_goal_.x = x;
+    current_arm_goal_.y = y;
+    current_arm_goal_.z = z;
+    current_arm_goal_.pitch = pitch;
+}
+
+void GlobalState::setCurrentArmGoalInvalid()
+{
+    current_arm_goal_.valid = false;
 }
 
 void GlobalState::setSystemEnabled(const std::string &name, bool enabled)
@@ -196,6 +245,8 @@ void GlobalState::moveTo(const tf::Pose &target,
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
+    msg.header.frame_id = "/map";
+    msg.header.stamp = ros::Time::now();
     moveTo(msg, velocity, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
@@ -214,7 +265,6 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.2);
 
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode, planning_algorithm);
@@ -238,14 +288,26 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    ROS_DEBUG("Send goal...");
     private_nh.param<double>("desired_speed", desired_speed_, 0.75);
 
     path_msgs::NavigateToGoalGoal goal;
-    goal.goal_pose = target_msg;
+    goal.goal.pose = target_msg;
+    goal.goal.algorithm.data = planning_algorithm;
     goal.failure_mode = failure_mode;
     goal.velocity = velocity;
-    goal.planning_algorithm.data = planning_algorithm;
+
+    moveTo(goal, doneCb, feedbackCb);
+}
+
+void GlobalState::moveTo(const NavigateToGoalGoal &goal,
+                         boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                         boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb)
+{
+    if(!client_.isServerConnected()) {
+        ROS_WARN("waiting for navigation server");
+        client_.waitForServer();
+    }
+
     client_.sendGoal(goal,
                      doneCb,
                      boost::bind(&GlobalState::activeCb, this),
@@ -287,41 +349,5 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
     }
 }
 
-//void GlobalState::grapObject(int object, double phi, double theta, ros::Duration t,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                             boost::function<void(const sbc15_msgs::visual_servoingFeedbackConstPtr&)> feedbackCb)
-//{
-//    sbc15_msgs::visual_servoingGoal goal;
-//    goal.timeout = t;
-//    goal.object = object;
-//    goal.phi = phi;
-//    goal.theta = theta;
-//    grapObject(goal,doneCb,feedbackCb);
 
-//}
 
-//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal &goal,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb)
-//{
-//    grapObject(goal, doneCb, boost::bind(&GlobalState::feedbackVsCb, this, _1));
-//}
-
-//void GlobalState::grapObject(sbc15_msgs::visual_servoingGoal& goal,
-//                             boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::visual_servoingResultConstPtr &)> doneCb,
-//                             boost::function<void (const sbc15_msgs::visual_servoingFeedbackConstPtr &)> feedbackCb)
-//{
-//    client_vs_.sendGoal(goal,
-//                        doneCb,
-//                        boost::bind(&GlobalState::activeVsCp, this),
-//                        feedbackCb);
-//}
-
-//void GlobalState::activeVsCp()
-//{
-
-//}
-
-//void GlobalState::feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr &feedback)
-//{
-
-//}

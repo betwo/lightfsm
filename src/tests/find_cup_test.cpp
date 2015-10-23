@@ -11,32 +11,63 @@
 #include "../states/wait.h"
 #include "../states/explore.h"
 #include "../states/fetch_object.h"
+#include "../states/select_task.h"
 
 void tick(State* current_state)
 {
     GlobalState::getInstance().update(current_state);
 }
 
+struct WaitForGo: public State
+{
+public:
+    TriggeredEvent event_go;
+
+public:
+    WaitForGo(State* parent)
+        : State(parent), event_go(this, "Go Signal")
+    {
+        sub = GlobalState::getInstance().nh.subscribe<std_msgs::Bool>("/go", 1, boost::bind(&WaitForGo::go, this, _1));
+    }
+
+    void go(const std_msgs::BoolConstPtr&)
+    {
+        event_go.trigger();
+    }
+
+    void iteration()
+    {
+
+    }
+
+private:
+    ros::Subscriber sub;
+};
+
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node_map_exploration_test");
+    ros::init(argc, argv, "sbc15_state_machine_node",
+              ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
+    ros::NodeHandle p_nh("~");
 
     sbc15_fsm_global::waitForRosTime();
 
+    bool store = p_nh.param("store", true);
+
     // STATES
-    Explore explore(State::NO_PARENT);
+    Wait wait(State::NO_PARENT, 10.0);
     Wait goal(State::NO_PARENT, 10.0);
-    FetchObject get_cup(State::NO_PARENT);
+
+    Explore explore(State::NO_PARENT);
 
     // ACTIONS
-    explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
-    explore.event_object_found >> get_cup;
-    explore.event_object_found.connect(Action(boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been found.")));
-
+    wait.event_done >> explore;
+    //explore.event_object_found >> explore;
+ 
     goal.event_done >> goal;
 
-    StateMachine state_machine(&explore);
+    StateMachine state_machine(&wait);
 
     state_machine.run(boost::bind(&tick, _1));
 

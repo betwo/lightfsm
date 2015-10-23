@@ -26,13 +26,21 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   visualization_msgs
   path_msgs
+  actionlib
+  rviz
 )
 
-find_package(catkin REQUIRED )
+find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+include(${QT_USE_FILE})
+
+add_definitions(-DQT_NO_KEYWORDS)
+
 
 find_package(OpenCV REQUIRED)
 
 include_directories(${catkin_INCLUDE_DIRS})
+link_directories(${catkin_LIBRARY_DIRS})
+
 
 catkin_package(
 )
@@ -55,6 +63,7 @@ set(STATES
     src/states/wait_for_go_signal.cpp
     src/states/follow_path.cpp
 
+    src/states/select_task.cpp
     src/states/explore.cpp
     src/states/fetch_object.cpp
     src/states/goto_object.cpp
@@ -66,6 +75,8 @@ set(STATES
     src/states/preplanned_state.cpp
     src/states/plan_arm_motion.cpp
     src/states/store_object.cpp
+    src/states/place_object.cpp
+    src/states/moveit_motion.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
@@ -84,7 +95,7 @@ add_dependencies(sbc15_state_machine
     path_msgs_generate_messages_cpp
     sbc15_msgs_generate_messages_cpp
 )
-target_link_libraries(sbc15_state_machine ${OpenCV_LIBS})
+target_link_libraries(sbc15_state_machine ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 add_executable(sbc15_state_machine_node
     src/state_machine_node.cpp
@@ -115,3 +126,54 @@ add_executable(sbc15_test_pick_up_cup
 target_link_libraries(sbc15_test_pick_up_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
+
+
+
+
+
+add_executable(sbc15_pick_up
+    src/tests/pickup.cpp
+)
+target_link_libraries(sbc15_pick_up
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
+
+
+# RVIZ
+
+qt4_wrap_cpp(MOC_FILES
+  src/rviz/exploration_control.h
+)
+
+set(SOURCE_FILES
+  src/rviz/exploration_control.cpp
+  ${MOC_FILES}
+)
+
+add_library(${PROJECT_NAME}_rviz ${SOURCE_FILES})
+
+target_link_libraries(${PROJECT_NAME}_rviz ${QT_LIBRARIES} ${catkin_LIBRARIES})
+
+
+## Install rules
+
+install(TARGETS
+  ${PROJECT_NAME}_rviz
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(FILES
+  plugin_description.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY media/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/media)
+
+install(DIRECTORY icons/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons)
+
+install(PROGRAMS scripts/send_test_msgs.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+

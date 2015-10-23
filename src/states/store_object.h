@@ -14,12 +14,23 @@ public:
     TriggeredEvent object_stored;
     TriggeredEvent event_failure;
 
-    PreplannedState place_object;
-    GripperState open_gripper;
-    PreplannedState rest_position;
+    TriggeredEvent event_cup;
+    TriggeredEvent event_battery;
+
+
+    PreplannedState place_cup;
+    GripperState open_gripper_cup;
+    PreplannedState rest_position_cup;
+
+    PreplannedState place_battery;
+    GripperState open_gripper_battery;
+    PreplannedState rest_position_battery;
 
 public:
     StoreObject(State* parent, int retries);
+
+public:
+    void entryAction();
 };
 
 #endif // STORE_OBJECT_H

@@ -26,6 +26,25 @@
 
 class State;
 
+struct ArmGoal
+{
+    ArmGoal():
+        valid(false),
+        x(0),
+        y(0),
+        z(0),
+        pitch(0)
+    {
+    }
+
+
+    bool valid;
+    double x;
+    double y;
+    double z;
+    double pitch;
+};
+
 class GlobalState : private boost::noncopyable
 {
 public:
@@ -88,6 +107,10 @@ public:
                 int failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_REPLAN,
                 const std::string& planning_algorithm = "");
 
+    void moveTo(const path_msgs::NavigateToGoalGoal& goal,
+                boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
+                boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb);
+
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
@@ -95,8 +118,22 @@ public:
 
     std::vector<sbc15_msgs::Object> getObjects();
 
+    sbc15_msgs::ObjectPtr getCurrentObject();
+    void setCurrentObject(sbc15_msgs::ObjectPtr current);
+
+    ArmGoal& getCurrentArmGoal();
+    void setCurrentArmGoal(double &x,double &y, double &z, double & pitch);
+    void setCurrentArmGoalInvalid();
+
+    bool isObjectCollected(int type);
+    void setObjectCollected(int type);
+
     void setSystemEnabled(const std::string& name, bool enabled);
     void sendSystemCommand(const std::string& name, const std::string& command);
+
+    void setDesiredDistance(double & dist);
+    double getDesiredDistance() const ;
+
 
 private:
     void activeCb();
@@ -127,6 +164,11 @@ private:
     tf::TransformListener tfl_;
 
     double desired_speed_;
+    double desired_distance_;
+
+    std::map<int, bool> object_collected_;
+    sbc15_msgs::ObjectPtr current_object_;
+    ArmGoal current_arm_goal_;
 };
 
 #endif // GLOBAL_STATE_H

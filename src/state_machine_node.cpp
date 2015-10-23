@@ -22,7 +22,8 @@ void tick(State* current_state)
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node");
+    ros::init(argc, argv, "sbc15_state_machine_node",
+              ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
 
     sbc15_fsm_global::waitForRosTime();

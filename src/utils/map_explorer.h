@@ -25,14 +25,19 @@ public:
 
     bool isExploring();
 
+protected:
+    nav_msgs::OccupancyGridPtr generateSearchSpace(double min_distance);
+    
+    void searchDirectionCallback(const geometry_msgs::PointConstPtr& point);
+
 private:
     void findExplorationPoint();
     void doneCb(const actionlib::SimpleClientGoalState& state,
                 const path_msgs::NavigateToGoalResultConstPtr& result);
 
     void splitMap(const nav_msgs::OccupancyGrid& map, cv::Point2i map_pos);
-    cv::Point2i findNearestFreePoint(const cv::Point2i& start, cv::Mat &debug);
-    cv::Point2i findPOI(const cv::Point2i& start, double theta, double min_distance, cv::Mat &debug);
+    cv::Point2i findNearestFreePoint(const cv::Point2i& start);
+    cv::Point2i findPOI(const cv::Point2i& start, double min_distance);
 
 private:
     enum STATES {
@@ -46,11 +51,18 @@ private:
 
     ros::ServiceClient map_service_client;
 
+    bool last_planning_failed_;
+    std::string planner_;
     nav_msgs::OccupancyGrid last_map;
 
     cv::Mat search_space;
     cv::Mat distance_to_obstacle;
+    cv::Mat distance_to_unknown;
 
+    bool has_search_dir_;
+    geometry_msgs::Point search_dir_;
+
+    ros::Subscriber search_dir_sub_;
     ros::Publisher search_space_map_pub_;
 
     std::vector<cv::Point2i> blacklist_;

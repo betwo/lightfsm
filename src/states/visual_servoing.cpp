@@ -6,16 +6,35 @@
 
 VisualServoing::VisualServoing(State* parent,int retries):
     State(parent),
-    retries_(retries),
     event_object_gripped(this,"gripped object"),
+    event_timeout(this,"More Time Needed"),
     event_failure(this,"failed"),
     event_out_of_range(this,"Object is out of range"),
     event_servo_control_failed(this,"Controll of Arm failed"),
-    event_timeout(this,"More Time Needed"),
     event_no_object(this,"No object Visible"),
-    client_("servoingActionController", true),
-    started_(false)
+    retries_(retries),
+    started_(false),
+
+    client_("servoingActionController", true)
 {
+    event_object_gripped  << [this]() {
+        GlobalState& global = GlobalState::getInstance();
+
+        int type = global.getCurrentObject()->type;
+
+        std::string talk = "collected.";
+        switch(type) {
+        case sbc15_msgs::Object::OBJECT_CUP:
+            talk = "Cup " + talk;
+            break;
+        case sbc15_msgs::Object::OBJECT_BATTERY:
+            talk = "Battery " + talk;
+            break;
+        }
+
+        global.talk(talk);
+        global.setObjectCollected(type);
+    };
 }
 
 void VisualServoing::entryAction()
@@ -25,7 +44,7 @@ void VisualServoing::entryAction()
     goal_.timeout = ros::Duration(120);
     goal_.phi = 0;
     goal_.theta = 0;
-    goal_.object = sbc15_msgs::Object::OBJECT_CUP;
+    goal_.object = GlobalState::getInstance().getCurrentObject()->type;
 }
 
 void VisualServoing::iteration()
@@ -50,8 +69,12 @@ void VisualServoing::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
         switch(result->error_code)
         {
         case sbc15_msgs::visual_servoingResult::TARGET_OUT_OF_RANGE:
+        {
+            double dist =result->distance;
+            GlobalState::getInstance().setDesiredDistance(dist);
             event_out_of_range.trigger();
             break;
+        }
         case sbc15_msgs::visual_servoingResult::SERVO_CONTROLL_FAILD:
             event_servo_control_failed.trigger();
             break;
