@@ -22,7 +22,7 @@ GoToObject::GoToObject(State* parent)
 
 void GoToObject::entryAction()
 {
-    const double offset = 0.45 /*m*/;
+    const double offset = 0.65 /*m*/;
 
     GlobalState& global = GlobalState::getInstance();
 

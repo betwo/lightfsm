@@ -30,6 +30,10 @@ public:
     {
 
     }
+    double desiredFrequency() const override
+    {
+        return 1.0;
+    }
 
     void iteration()
     {

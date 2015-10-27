@@ -32,6 +32,12 @@ public:
         subObject_ = GlobalState::getInstance().nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
     }
 
+    double desiredFrequency() const override
+    {
+        return 1.0;
+    }
+
+
     void iteration()
     {
         //sbc15_msgs::ObjectPtr o(new sbc15_msgs::Object);
