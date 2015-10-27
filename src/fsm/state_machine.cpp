@@ -3,14 +3,18 @@
 
 /// COMPONENT
 #include "transition.h"
+#include "meta_state.h"
 
 /// SYSTEM
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include <fstream>
 
 StateMachine::StateMachine(State* initial_state)
-    : state_(initial_state)
+    : start_state_(initial_state), state_(initial_state)
 {
+    check();
+
     state_->performEntryAction();
 }
 
@@ -23,8 +27,6 @@ void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
 void StateMachine::run(boost::function<void(State*)> callback)
 {
     ROS_INFO_STREAM("starting withstate " << state_->getName());
-
-    check();
 
     bool kill = false;
 
@@ -71,10 +73,99 @@ bool StateMachine::step()
     return true;
 }
 
+template <class Stream>
+Stream& StateMachine::printState(Stream& stream, const State* s, const std::string& prefix) const
+{
+    if(const MetaState* ms = dynamic_cast<const MetaState*>(s)) {
+        //        stream << prefix << s->getName() << "_" << s->getUniqueId() << " [shape=record];\n";
+        stream << "subgraph cluster_" << s->getUniqueId() << " {\n"
+               << "node [style=filled, fontsize=10];\n"
+               << "\"" << s->getName() << "_" << s->getUniqueId() << "\" [color=\"white\",fontcolor=\"white\"];\n"
+               << "label = \"" << s->getName() << "\";\n";
+
+        for(const State* nested : ms->getChildren()) {
+            printState(stream, nested, prefix);
+        }
+
+        stream << "color=blue;\n"
+               << "fontsize=24;\n"
+               << "}\n";
+
+    } else {
+        stream << prefix << s->getName() << "_" << s->getUniqueId();
+        if(s->getParent() == State::NO_PARENT) {
+            stream << "[fontsize=24";
+            if(s == start_state_) {
+                stream << ";color=blue";
+                stream << ";fontcolor=white";
+                stream << ";style=filled";
+            }
+            stream << "]";
+        }
+        stream << ";\n";
+    }
+
+    return stream;
+}
+
+template <class Stream>
+Stream& StateMachine::printConnections(Stream& stream, const State* s, const std::string& prefix) const
+{
+    for(const Event* e: s->getEvents()) {
+        std::vector<const Transition*> transitions;
+        e->getAllTransitions(transitions);
+        for(const Transition* t : transitions) {
+            const State* target = t->getTarget();
+            stream << prefix << s->getName() << "_" << s->getUniqueId() << " -> "
+                   << target->getName() << "_" << target->getUniqueId()
+                   << "[label=\"" << t->getEvent()->getDescription() << "\"]"
+                   << ";\n";
+        }
+    }
+    return stream;
+}
 
 void StateMachine::check()
 {
+}
 
+std::string StateMachine::generateGraphDescription() const
+{
+    std::stringstream graph;
+
+    graph << "digraph fsm {\n";
+
+    graph << "concentrate=true;\n";
+
+    for(const State* s : State::g_states) {
+        if(s->getParent() == State::NO_PARENT) {
+            printState(graph, s, "  ");
+        }
+    }
+
+    graph << "\n";
+
+    for(const State* s : State::g_states) {
+        printConnections(graph, s, "  ");
+    }
+
+    graph << "\n";
+
+    graph << "{\n";
+    graph << " rank=min;\n";
+    graph << " " << start_state_->getName() << "_" << start_state_->getUniqueId() << ";\n";
+    graph << "}\n";
+
+    graph << "}";
+
+//    std::ofstream of("/tmp/graph.dot");
+//    of << graph.str();
+//    of.close();
+
+//    std::cerr << graph.str() << std::endl;
+//    std::abort();
+
+    return graph.str();
 }
 
 void StateMachine::perform(const Transition& transition)

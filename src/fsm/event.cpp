@@ -7,8 +7,8 @@
 /// SYSTEM
 #include <iostream>
 
-Event::Event(State *parent)
-    : parent_(parent)
+Event::Event(State *parent, const std::string &description)
+    : parent_(parent), description_(description)
 {
     parent_->registerEvent(this);
 }
@@ -16,6 +16,11 @@ Event::Event(State *parent)
 Event::~Event()
 {
 
+}
+
+std::string Event::getDescription() const
+{
+    return description_;
 }
 
 void Event::connect(State *state, Guard guard, Action action)
@@ -51,6 +56,22 @@ void Event::getPossibleTransitions(std::vector<const Transition*>& possible_tran
 
         event->forwardEvent();
         event->getPossibleTransitions(possible_transitions);
+    }
+}
+
+
+void Event::getAllTransitions(std::vector<const Transition *> &transitions) const
+{
+    for(std::vector<Transition>::const_iterator t = transitions_.begin(); t != transitions_.end(); ++t) {
+        const Transition& transition = *t;
+
+        transitions.push_back(&transition);
+    }
+    for(std::vector<Event*>::const_iterator e = connected_events_.begin(); e != connected_events_.end(); ++e) {
+        Event* event = *e;
+
+        event->forwardEvent();
+        event->getAllTransitions(transitions);
     }
 }
 

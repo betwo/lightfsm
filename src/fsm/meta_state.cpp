@@ -12,3 +12,13 @@ void MetaState::entryAction()
 {
     event_entry_meta.trigger();
 }
+
+std::vector<State*> MetaState::getChildren() const
+{
+    return children_;
+}
+
+void MetaState::registerChildState(State *child)
+{
+    children_.push_back(child);
+}

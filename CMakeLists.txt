@@ -96,6 +96,7 @@ add_dependencies(sbc15_state_machine
     sbc15_msgs_generate_messages_cpp
 )
 target_link_libraries(sbc15_state_machine ${OpenCV_LIBS} ${catkin_LIBRARIES})
+add_dependencies(sbc15_state_machine ${catkin_EXPORTED_TARGETS})
 
 add_executable(sbc15_state_machine_node
     src/state_machine_node.cpp

@@ -21,7 +21,7 @@ void Wait::entryAction()
 
 void Wait::iteration()
 {
-    GlobalState& global = GlobalState::getInstance();
+//    GlobalState& global = GlobalState::getInstance();
 
     ros::Time now = ros::Time::now();
     if(now >= continue_at_) {

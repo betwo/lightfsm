@@ -12,11 +12,22 @@ public:
     void run(boost::function<void(State *)> callback);
     bool step();
 
+    std::string generateGraphDescription() const;
+
 private:
     void check();
     void perform(const Transition& perform);
 
 private:
+
+    template <class Stream>
+    Stream& printConnections(Stream& stream, const State* s, const std::string& prefix) const;
+
+    template <class Stream>
+    Stream& printState(Stream& stream, const State* s, const std::string& prefix) const;
+
+private:
+    State* start_state_;
     State* state_;
 };
 

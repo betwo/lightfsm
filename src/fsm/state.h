@@ -24,6 +24,8 @@ private:
 public:
     Event event_default;
 
+    static std::vector<State*> g_states;
+
 public:
     Actions action_entry;
     Actions action_exit;
@@ -43,19 +45,29 @@ public:
     State* getParent() const;
     std::string getName() const;
 
+    std::vector<Event*> getEvents() const;
+
+    int getUniqueId() const;
+
 protected:
     virtual void entryAction();
     virtual void exitAction();
     virtual void iteration();
     virtual double desiredFrequency() const;
 
+    virtual void registerChildState(State* child);
+
 private:
     friend class Event;
     void registerEvent(Event* event);
 
+    static int nextId();
+
 private:
     ros::Rate rate_;
     State* parent_;
+
+    int uuid_;
 };
 
 
