@@ -6,6 +6,7 @@
 #include "../fsm/triggered_event.h"
 #include "../states/preplanned_state.h"
 #include "../states/gripper_state.h"
+#include "../states/moveit_motion.h"
 #include "ros/ros.h"
 
 class PlanArmMotion: public MetaState
@@ -17,7 +18,7 @@ public:
     GripperState semi_open_gripper;
     PreplannedState start_arm;
     GripperState open_gripper;
-    PreplannedState pre_pos;
+    MoveitMotion pre_pos;
 
 public:
     PlanArmMotion(State* parent, int retries);

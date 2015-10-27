@@ -5,11 +5,12 @@
 #include "../states/global_state.h"
 
 
-PickupObject::PickupObject(State* parent, bool store)
+PickupObject::PickupObject(State* parent, bool store,ArmGoal& armInterimPose)
     : MetaState(parent),
 
       plan_arm_motion(this,1),
       visual_servoing(this,2),
+      pose_interim(this,2,armInterimPose),
 
       store_object(this,2),
       place_object(this, 1),
@@ -28,6 +29,7 @@ PickupObject::PickupObject(State* parent, bool store)
       event_object_failure(this, "The object pose is not known"),
       event_object_out_of_range(this, "Object is out of range"),
       event_servo_control_failed(this,"Control of arm failed"),
+      event_planning_failed(this,"Planning was not possible."),
 
       store_(store)
 {
@@ -36,7 +38,8 @@ PickupObject::PickupObject(State* parent, bool store)
     plan_arm_motion.event_done >> visual_servoing;
 
     if(store_) {
-        visual_servoing.event_object_gripped >> store_object;
+        visual_servoing.event_object_gripped >> pose_interim;
+        pose_interim.event_done >>  store_object;
         store_object.object_stored >> event_object_pickedup;
         store_object.event_failure >> store_object;
 
@@ -64,6 +67,12 @@ PickupObject::PickupObject(State* parent, bool store)
 
     back_up.event_done >> drive_backward;
     drive_backward.event_positioned >> visual_servoing;
+
+    pose_interim.event_failure >> event_planning_failed;
+    pose_interim.event_planning_failed >> event_planning_failed;
+    pose_interim.event_servo_control_failed >> event_servo_control_failed;
+    pose_interim.event_timeout >> pose_interim;
+
 
 }
 
