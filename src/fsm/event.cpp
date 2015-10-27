@@ -70,7 +70,6 @@ void Event::getAllTransitions(std::vector<const Transition *> &transitions) cons
     for(std::vector<Event*>::const_iterator e = connected_events_.begin(); e != connected_events_.end(); ++e) {
         Event* event = *e;
 
-        event->forwardEvent();
         event->getAllTransitions(transitions);
     }
 }

@@ -80,8 +80,13 @@ Stream& StateMachine::printState(Stream& stream, const State* s, const std::stri
         //        stream << prefix << s->getName() << "_" << s->getUniqueId() << " [shape=record];\n";
         stream << "subgraph cluster_" << s->getUniqueId() << " {\n"
                << "node [style=filled, fontsize=10];\n"
-               << "\"" << s->getName() << "_" << s->getUniqueId() << "\" [color=\"white\",fontcolor=\"white\"];\n"
-               << "label = \"" << s->getName() << "\";\n";
+               << "\"" << s->getName() << "_" << s->getUniqueId();
+        if(s == state_) {
+            stream << "\" [color=\"blue\",fontcolor=\"white\"];\n";
+        } else {
+            stream << "\" [color=\"white\",fontcolor=\"white\"];\n";
+        }
+        stream << "label = \"" << s->getName() << "\";\n";
 
         for(const State* nested : ms->getChildren()) {
             printState(stream, nested, prefix);
@@ -93,15 +98,19 @@ Stream& StateMachine::printState(Stream& stream, const State* s, const std::stri
 
     } else {
         stream << prefix << s->getName() << "_" << s->getUniqueId();
+        stream << "[";
         if(s->getParent() == State::NO_PARENT) {
-            stream << "[fontsize=24";
-            if(s == start_state_) {
-                stream << ";color=blue";
-                stream << ";fontcolor=white";
-                stream << ";style=filled";
-            }
-            stream << "]";
+            stream << "fontsize=24";
+        } else {
+            stream << "fontsize=16";
         }
+        if(s == state_) {
+            stream << ";color=blue";
+            stream << ";fontcolor=white";
+            stream << ";style=filled";
+        } 
+        stream << "]";
+        
         stream << ";\n";
     }
 
