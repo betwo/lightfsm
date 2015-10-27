@@ -2,6 +2,7 @@
 #include "moveit_motion.h"
 /// COMPONENT
 #include "global_state.h"
+#include <sbc15_msgs/MoveManipulatorGripperFrameResult.h>
 
 MoveitMotion::MoveitMotion(State* parent, int retries ):
     State(parent),
