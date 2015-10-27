@@ -1,0 +1,9 @@
+<library path="lib/libsbc15_fsm_rviz">
+  <class name="sbc15_fsm/ExplorationControl"
+         type="sbc15_fsm::ExplorationControl"
+         base_class_type="rviz::Tool">
+    <description>
+      Tool for manipulating the exploration at the SpaceBot Cup 2015.
+    </description>
+  </class>
+</library>

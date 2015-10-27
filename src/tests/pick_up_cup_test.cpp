@@ -55,6 +55,17 @@ int main(int argc, char *argv[])
     sbc15_fsm_global::waitForRosTime();
 
     bool store = p_nh.param("store", true);
+    double x = p_nh.param("prePlannedPosX",0.223); // -0.006, 0.309
+    double y = p_nh.param("prePlannedPosY",-0.006);
+    double z = p_nh.param("prePlannedPosZ",0.309);
+    double pitch = p_nh.param("prePlannedPosePitch",M_PI_2);
+    ArmGoal interimPose;
+    interimPose.valid = true;
+    interimPose.x = x;
+    interimPose.y = y;
+    interimPose.z = z;
+    interimPose.pitch = pitch;
+
 
     // STATES
     WaitForObject wait(State::NO_PARENT);
@@ -66,7 +77,7 @@ int main(int argc, char *argv[])
     Explore explore(State::NO_PARENT);
 
     GoToObject goto_object(State::NO_PARENT);
-    PickupObject pickup_object(State::NO_PARENT, store);
+    PickupObject pickup_object(State::NO_PARENT, store, interimPose);
 
     // ACTION
     goal.event_done >> goal;

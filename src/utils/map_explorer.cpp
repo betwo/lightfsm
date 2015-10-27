@@ -11,7 +11,8 @@
 #include <queue>
 
 MapExplorer::MapExplorer()
-    : exploring_(false), last_planning_failed_(false)
+    : exploring_(false), last_planning_failed_(false),
+      has_search_dir_(false)
 {
     GlobalState& global = GlobalState::getInstance();
 
@@ -21,6 +22,9 @@ MapExplorer::MapExplorer()
     //    map_service_client.waitForExistence();
 
     search_space_map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
+
+    search_dir_sub_ = global.private_nh.subscribe<geometry_msgs::Point>("/exploration_direction", 1,
+                                                                        boost::bind(&MapExplorer::searchDirectionCallback, this, _1));
 }
 
 void MapExplorer::startExploring()
@@ -37,6 +41,13 @@ void MapExplorer::stopExploring()
 {
 }
 
+void MapExplorer::searchDirectionCallback(const geometry_msgs::PointConstPtr &point)
+{
+    search_dir_ = *point;
+    has_search_dir_ = true;
+
+    ROS_WARN_STREAM("setting exploration direction to " << point);
+}
 
 void MapExplorer::findExplorationPoint()
 {
@@ -76,7 +87,7 @@ void MapExplorer::findExplorationPoint()
 
 
     // PUBLISH SEARCH SPACE AS GRID MAP
-    auto ss = generateSearchSpace(2.0);
+    auto ss = generateSearchSpace(1.25);
     search_space_map_pub_.publish(ss);
 
 
@@ -84,7 +95,15 @@ void MapExplorer::findExplorationPoint()
     goal.goal.type = path_msgs::Goal::GOAL_TYPE_MAP;
     goal.goal.min_dist = 2.0;
     goal.goal.map = *ss;
-    goal.velocity = 0.2;
+    if(has_search_dir_) {
+        goal.goal.has_search_dir = true;
+        goal.goal.search_dir = search_dir_;
+
+    } else {
+        goal.goal.has_search_dir = false;
+    }
+
+    goal.velocity = 1.0;
     goal.failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_ABORT;
 
     if(planner_.empty()) {
@@ -192,13 +211,15 @@ nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(double min_distance)
     ss->info = last_map.info;
     ss->data.resize(w*h, 0);
 
+    double res = last_map.info.resolution;
+
     int8_t* dataP = &ss->data[0];
     for(int row = 0; row < h; ++row) {
         for(int col = 0; col < w; ++col) {
             const uchar& val = search_space.at<uchar>(row, col);
 
-            float dist_to_obstacles = distance_to_obstacle.at<float>(row, col);
-            float dist_to_unknown = distance_to_unknown.at<float>(row, col);
+            float dist_to_obstacles = distance_to_obstacle.at<float>(row, col) * res;
+            float dist_to_unknown = distance_to_unknown.at<float>(row, col) * res;
 
             if(dist_to_obstacles < min_distance) {
                 *dataP = -1;
@@ -325,8 +346,8 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
         for(int col = 0; col < w; ++col) {
             const char& cell = data.at<char>(row, col);
 
-            bool free = cell >= 0 && cell <= 10;
-            bool occupied = cell > 10;
+            bool free = cell >= 0 && cell <= 50;
+            bool occupied = cell > 50;
 
             double distance = std::hypot(row - map_pos.y, col - map_pos.x);
             if(distance < 10.0) {

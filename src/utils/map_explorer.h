@@ -28,6 +28,8 @@ public:
 protected:
     nav_msgs::OccupancyGridPtr generateSearchSpace(double min_distance);
     
+    void searchDirectionCallback(const geometry_msgs::PointConstPtr& point);
+
 private:
     void findExplorationPoint();
     void doneCb(const actionlib::SimpleClientGoalState& state,
@@ -57,6 +59,10 @@ private:
     cv::Mat distance_to_obstacle;
     cv::Mat distance_to_unknown;
 
+    bool has_search_dir_;
+    geometry_msgs::Point search_dir_;
+
+    ros::Subscriber search_dir_sub_;
     ros::Publisher search_space_map_pub_;
 
     std::vector<cv::Point2i> blacklist_;

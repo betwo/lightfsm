@@ -19,6 +19,8 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>visualization_msgs</build_depend>
+  <build_depend>rviz</build_depend>
+  <build_depend>actionlib</build_depend>
 
   <run_depend>rospy</run_depend>
   <run_depend>sbc15_msgs</run_depend>
@@ -28,11 +30,11 @@
   <run_depend>geometry_msgs</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>visualization_msgs</run_depend>
-
+  <run_depend>rviz</run_depend>
+  <run_depend>actionlib</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
-
+      <rviz plugin="${prefix}/plugin_description.xml"/>
   </export>
 </package>

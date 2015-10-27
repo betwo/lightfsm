@@ -8,7 +8,7 @@ PlanArmMotion::PlanArmMotion(State* parent, int retries):
     semi_open_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
     start_arm(this, sbc15_msgs::PreplannedTrajectoriesRequest::START_ARM, retries),
     open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
-    pre_pos(this, sbc15_msgs::PreplannedTrajectoriesRequest::PRE_POSITION, retries)
+    pre_pos(this, retries)
 {
     event_entry_meta >> semi_open_gripper;
 
@@ -21,4 +21,8 @@ PlanArmMotion::PlanArmMotion(State* parent, int retries):
 
     pre_pos.event_done >> event_done;
     pre_pos.event_failure >> event_failure;
+    pre_pos.event_planning_failed >> event_failure;
+    pre_pos.event_servo_control_failed >> event_failure;
+    pre_pos.event_timeout >> pre_pos;
+
 }

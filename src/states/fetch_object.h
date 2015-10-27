@@ -16,7 +16,7 @@ public:
     TriggeredEvent event_object_unknown;
 
 public:
-    FetchObject(State* parent, bool store);
+    FetchObject(State* parent, bool store,ArmGoal& goal);
 
 public:
     GoToObject goto_object;

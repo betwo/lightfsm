@@ -26,6 +26,25 @@
 
 class State;
 
+struct ArmGoal
+{
+    ArmGoal():
+        valid(false),
+        x(0),
+        y(0),
+        z(0),
+        pitch(0)
+    {
+    }
+
+
+    bool valid;
+    double x;
+    double y;
+    double z;
+    double pitch;
+};
+
 class GlobalState : private boost::noncopyable
 {
 public:
@@ -102,6 +121,10 @@ public:
     sbc15_msgs::ObjectPtr getCurrentObject();
     void setCurrentObject(sbc15_msgs::ObjectPtr current);
 
+    ArmGoal& getCurrentArmGoal();
+    void setCurrentArmGoal(double &x,double &y, double &z, double & pitch);
+    void setCurrentArmGoalInvalid();
+
     bool isObjectCollected(int type);
     void setObjectCollected(int type);
 
@@ -145,6 +168,7 @@ private:
 
     std::map<int, bool> object_collected_;
     sbc15_msgs::ObjectPtr current_object_;
+    ArmGoal current_arm_goal_;
 };
 
 #endif // GLOBAL_STATE_H
