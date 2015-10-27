@@ -56,13 +56,14 @@ bool State::isTerminal() const
     return false;
 }
 
-ros::Rate State::getRate() const
+ros::Rate& State::getRate()
 {
     return rate_;
 }
 
 void State::performEntryAction()
 {
+    std::cerr << "freq; " << desiredFrequency() << std::endl;
     rate_ = ros::Rate(desiredFrequency());
 
     for(std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {
@@ -86,7 +87,7 @@ void State::performExitAction()
 
 void State::entryAction()
 {
-    rate_ = ros::Rate(desiredFrequency());
+//    rate_ = ros::Rate(desiredFrequency());
 }
 
 void State::exitAction()

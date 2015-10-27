@@ -40,6 +40,7 @@ public:
 
     void iteration()
     {
+        ROS_WARN("waiting for object");
         //sbc15_msgs::ObjectPtr o(new sbc15_msgs::Object);
         //o->type = sbc15_msgs::Object::OBJECT_BATTERY;
         //ros::spinOnce();
@@ -105,7 +106,28 @@ int main(int argc, char *argv[])
 
     StateMachine state_machine(&wait_for_object);
 
-    state_machine.run(boost::bind(&tick, _1));
+    ros::Publisher state_pub = nh.advertise<std_msgs::String>("/fsm_state", 1);
+
+    ros::Time last_pub = ros::Time(0);
+    ros::Duration state_pub_rate(1.0);
+
+    state_machine.run([&](State* current_state) {
+        static State* last_state = nullptr;
+
+        tick(current_state);
+
+        ros::Time now = ros::Time::now();
+        if(now > last_pub + state_pub_rate ||
+            last_state != current_state) {
+ 
+            last_state = current_state;
+            last_pub = now;
+            std_msgs::String msg;
+            msg.data = state_machine.generateGraphDescription();
+            state_pub.publish(msg);
+        }
+    });    
+
 
     return 0;
 }

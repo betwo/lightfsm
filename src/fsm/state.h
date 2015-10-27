@@ -37,7 +37,7 @@ public:
     void tick(std::vector<const Transition *> &possible_transitions);
 
     virtual bool isTerminal() const;
-    ros::Rate getRate() const;
+    ros::Rate& getRate();
 
     void performEntryAction();
     void performExitAction();
