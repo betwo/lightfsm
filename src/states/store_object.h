@@ -25,6 +25,7 @@ public:
     PreplannedState place_battery;
     GripperState open_gripper_battery;
     PreplannedState rest_position_battery;
+    GripperState gripper_semi_close;
 
 public:
     StoreObject(State* parent, int retries);
