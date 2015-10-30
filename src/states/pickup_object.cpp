@@ -37,9 +37,20 @@ PickupObject::PickupObject(State* parent, bool store,ArmGoal& armInterimPose)
 
     plan_arm_motion.event_done >> visual_servoing;
 
+//    if(store_) {
+//        visual_servoing.event_object_gripped >> pose_interim;
+//        pose_interim.event_done >>  store_object;
+//        store_object.object_stored >> event_object_pickedup;
+//        store_object.event_failure >> store_object;
+
+//    } else {
+//        visual_servoing.event_object_gripped >> place_object;
+//        place_object.event_object_placed >> open_gripper;
+//        open_gripper.event_done >> event_object_pickedup;
+//    }
+
     if(store_) {
-        visual_servoing.event_object_gripped >> pose_interim;
-        pose_interim.event_done >>  store_object;
+        visual_servoing.event_object_gripped >> store_object;
         store_object.object_stored >> event_object_pickedup;
         store_object.event_failure >> store_object;
 
