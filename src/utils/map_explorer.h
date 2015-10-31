@@ -26,7 +26,7 @@ public:
     bool isExploring();
 
 protected:
-    nav_msgs::OccupancyGridPtr generateSearchSpace(double min_distance);
+    nav_msgs::OccupancyGridPtr generateSearchSpace(const cv::Point2i& map_pos, double min_move_distance, double min_distance_to_obstacles, double max_distance_to_unknown);
     
     void searchDirectionCallback(const geometry_msgs::PointConstPtr& point);
 
@@ -64,6 +64,7 @@ private:
 
     ros::Subscriber search_dir_sub_;
     ros::Publisher search_space_map_pub_;
+    ros::Publisher map_pub_;
 
     std::vector<cv::Point2i> blacklist_;
 };

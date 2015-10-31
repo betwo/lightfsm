@@ -22,6 +22,7 @@ MapExplorer::MapExplorer()
     //    map_service_client.waitForExistence();
 
     search_space_map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
+    map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("map", 1);
 
     search_dir_sub_ = global.private_nh.subscribe<geometry_msgs::Point>("/exploration_direction", 1,
                                                                         boost::bind(&MapExplorer::searchDirectionCallback, this, _1));
@@ -63,6 +64,10 @@ void MapExplorer::findExplorationPoint()
 
     const nav_msgs::OccupancyGrid& map = map_service.response.map;
 
+    if(map_pub_.getNumSubscribers() > 0) {
+        map_pub_.publish(map);
+    }
+
     tf::Vector3 own_pos = global.pose.getOrigin();
     cv::Point2i map_pos;
     map_pos.x = (own_pos.x() - map.info.origin.position.x) / map.info.resolution;
@@ -87,7 +92,10 @@ void MapExplorer::findExplorationPoint()
 
 
     // PUBLISH SEARCH SPACE AS GRID MAP
-    auto ss = generateSearchSpace(1.25);
+    double min_move_distance = 1.0;
+    double min_distance_to_obstacles = 0.25;
+    double max_distance_to_unknown = 1.0;
+    auto ss = generateSearchSpace(map_pos, min_move_distance, min_distance_to_obstacles, max_distance_to_unknown);
     search_space_map_pub_.publish(ss);
 
 
@@ -201,7 +209,10 @@ cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i &start)
     return start;
 }
 
-nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(double min_distance)
+nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& map_pos,
+                                                            double min_move_distance,
+                                                            double min_distance_to_obstacles,
+                                                            double max_distance_to_unknown)
 {
     int w = last_map.info.width;
     int h = last_map.info.height;
@@ -220,21 +231,16 @@ nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(double min_distance)
 
             float dist_to_obstacles = distance_to_obstacle.at<float>(row, col) * res;
             float dist_to_unknown = distance_to_unknown.at<float>(row, col) * res;
+            float dist_to_robot = std::hypot(map_pos.x - col, map_pos.y - row) * res;
 
-            if(dist_to_obstacles < min_distance) {
+            if(dist_to_obstacles < min_distance_to_obstacles) {
                 *dataP = -1;
             } else {
-                if(val != UNKNOWN && val != OBSTACLE) {
-//                    *dataP = 0;
-//                    if(dist_to_unknown > min_distance &&
-//                            dist_to_unknown < 2 * min_distance) {
-//                        *dataP = 100;
-//                    }
-                } else if (val == UNKNOWN) {
-                    *dataP = 100;
+                if (dist_to_unknown < max_distance_to_unknown) {
+                    if(dist_to_robot > min_move_distance) {
+                        *dataP = 100;
+                    }
                 }
-                // val is in [0,254]
-//                *dataP = (val / 254.0) * 100.0;
             }
             ++dataP;
         }
