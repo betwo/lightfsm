@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
     explore.event_object_found >> select;
 
-    ros::Publisher state_pub = nh.advertise<std_msgs::String>("/fsm_state", 1);
+    ros::Publisher state_pub = nh.advertise<std_msgs::String>("fsm_state", 1);
 
     ros::Time last_pub = ros::Time(0);
     ros::Duration state_pub_rate(1.0);

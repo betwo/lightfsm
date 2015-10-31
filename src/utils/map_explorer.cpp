@@ -111,7 +111,7 @@ void MapExplorer::findExplorationPoint()
         goal.goal.has_search_dir = false;
     }
 
-    goal.velocity = 1.0;
+    goal.velocity = 0.25;
     goal.failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_ABORT;
 
     if(planner_.empty()) {

@@ -20,6 +20,7 @@ void Explore::iteration()
 {
     if(!explorer_.isExploring()) {
         ROS_INFO("start exploring");
+        GlobalState::getInstance().talk("exploring the environment");
         explorer_.startExploring();
     }
 
