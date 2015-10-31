@@ -13,12 +13,13 @@ StoreObject::StoreObject(State *parent, int retries):
     event_battery(this,"battery"),
 
     place_cup(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP, retries),
-    open_gripper_cup(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    open_gripper_cup(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
     rest_position_cup(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP, retries),
 
     place_battery(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_BOX, retries),
-    open_gripper_battery(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
-    rest_position_battery(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_BOX, retries)
+    open_gripper_battery(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
+    rest_position_battery(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_BOX, retries),
+    gripper_semi_close(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE)
 
 {
     //event_entry_meta >> place_cup;

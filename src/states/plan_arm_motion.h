@@ -18,7 +18,8 @@ public:
     GripperState semi_open_gripper;
     PreplannedState start_arm;
     GripperState open_gripper;
-    MoveitMotion pre_pos;
+    //MoveitMotion pre_pos;
+    PreplannedState pre_pos;
 
 public:
     PlanArmMotion(State* parent, int retries);
