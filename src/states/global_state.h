@@ -134,6 +134,7 @@ public:
     void setDesiredDistance(double & dist);
     double getDesiredDistance() const ;
 
+    double getDesiredVelocity() const;
 
 private:
     void activeCb();
@@ -141,6 +142,9 @@ private:
 
     void activeVsCp();
 //    void feedbackVsCb(const sbc15_msgs::visual_servoingFeedbackConstPtr& feedback);
+
+
+    void publishVelocity();
 
 public:
     ros::NodeHandle private_nh;
@@ -154,6 +158,9 @@ private:
     ros::Publisher pub_marker_;
     ros::Publisher pub_sound_;
     ros::Publisher pub_state_;
+    ros::Publisher pub_velo_;
+
+    ros::Subscriber sub_set_velocity_;
 
     std::map<std::string, ros::Publisher> pubs_systems_;
 

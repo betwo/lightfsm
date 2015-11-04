@@ -9,6 +9,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <sound_play/SoundRequest.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Float32.h>
 
 using namespace path_msgs;
 
@@ -22,9 +23,23 @@ GlobalState::GlobalState()
     pub_move_unsafe_ = nh.advertise<geometry_msgs::Twist> ("/cmd_vel_unsafe", 10, true);
     pub_marker_ = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 100, true);
     pub_sound_ = nh.advertise<sound_play::SoundRequest>("/robotsound", 1, true);
-    pub_state_ = nh.advertise<std_msgs::String>("state", 100, true);
+    pub_state_ = private_nh.advertise<std_msgs::String>("state", 100, true);
+
+
+    pub_velo_ = nh.advertise<std_msgs::Float32>("/velocity", 1, true);
+
+    boost::function<void(const std_msgs::Float32ConstPtr&)> set_velo = [&](const std_msgs::Float32ConstPtr& msg){
+        desired_speed_ = std::max(0.1f, std::min(2.0f, msg->data));
+        std::cerr << "updating velocity to " << desired_speed_ << std::endl;
+        nh.setParam("desired_speed", desired_speed_);
+        publishVelocity();
+    };
+    sub_set_velocity_ = nh.subscribe<std_msgs::Float32>("/set_velocity", 10, set_velo);
 
     client_objects_ = nh.serviceClient<sbc15_msgs::GetObjects>("/get_objects");
+
+    nh.param<double>("desired_speed", desired_speed_, 0.2);
+    publishVelocity();
 
 //    client_.waitForServer();
     //tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
@@ -103,6 +118,11 @@ void GlobalState::setDesiredDistance(double &dist)
 double GlobalState::getDesiredDistance() const
 {
     return desired_distance_;
+}
+
+double GlobalState::getDesiredVelocity() const
+{
+    return desired_speed_;
 }
 
 ArmGoal& GlobalState::getCurrentArmGoal()
@@ -265,8 +285,6 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    private_nh.param<double>("desired_speed", desired_speed_, 0.2);
-
     moveTo(target_msg, desired_speed_, doneCb, feedbackCb, failure_mode, planning_algorithm);
 }
 
@@ -288,8 +306,6 @@ void GlobalState::moveTo(const geometry_msgs::PoseStamped &target_msg,
                          int failure_mode,
                          const std::string& planning_algorithm)
 {
-    private_nh.param<double>("desired_speed", desired_speed_, 0.75);
-
     path_msgs::NavigateToGoalGoal goal;
     goal.goal.pose = target_msg;
     goal.goal.algorithm.data = planning_algorithm;
@@ -349,5 +365,11 @@ void GlobalState::feedbackCb(const path_msgs::NavigateToGoalFeedbackConstPtr& fe
     }
 }
 
+void GlobalState::publishVelocity()
+{
+    std_msgs::Float32 velo;
+    velo.data = desired_speed_;
+    pub_velo_.publish(velo);
+};
 
 
