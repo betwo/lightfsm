@@ -22,17 +22,25 @@ GoToObject::GoToObject(State* parent)
 
 void GoToObject::entryAction()
 {
-    const double offset = 0.65 /*m*/;
+    const double offset = 0.45 /*m*/;
 
     GlobalState& global = GlobalState::getInstance();
 
     sbc15_msgs::ObjectPtr o = global.getCurrentObject();
 
-    if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
+    tf::Pose object_map;
+    tf::poseMsgToTF(target_.pose, object_map);
+
+    if(o->header.frame_id != "/map") {
+        tf::Transform trafo = global.getTransform("/map", o->header.frame_id, o->header.stamp);
+        object_map = trafo * object_map;
+    }
+
+    switch(o->type) {
+    case sbc15_msgs::Object::OBJECT_CUP:
+    {
         target_ = *o;
 
-        tf::Pose object_map;
-        tf::poseMsgToTF(target_.pose, object_map);
 
         tf::Pose robot_map = GlobalState::getInstance().pose;
 
@@ -44,14 +52,12 @@ void GoToObject::entryAction()
         tf::Pose object_offset_map(rot_map, pos_map);
 
         follow_path.moveTo(object_offset_map, event_sent_goal);
-        return;
     }
+        break;
 
-    if(o->type == sbc15_msgs::Object::OBJECT_BATTERY) {
+    case sbc15_msgs::Object::OBJECT_BATTERY:
+    {
         target_ = *o;
-
-        tf::Pose object_map;
-        tf::poseMsgToTF(target_.pose, object_map);
 
         tf::Pose robot_map = GlobalState::getInstance().pose;
 
@@ -75,10 +81,12 @@ void GoToObject::entryAction()
         tf::Pose object_offset_map(rot_map, pos_map);
 
         follow_path.moveTo(object_offset_map, event_sent_goal);
-        return;
     }
+        break;
 
-    event_object_unknown.trigger();
+    default:
+        event_object_unknown.trigger();
+    }
 }
 
 void GoToObject::iteration()
