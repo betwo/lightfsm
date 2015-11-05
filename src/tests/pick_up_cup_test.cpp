@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 
     SelectTask select(State::NO_PARENT);
 
-    BackUp forward(State::NO_PARENT, 1.0, 0.1);
+    //BackUp forward(State::NO_PARENT, 1.0, 0.1);
     Explore explore(State::NO_PARENT);
 
     FetchObject fetch_object(State::NO_PARENT, true);
@@ -70,10 +70,10 @@ int main(int argc, char *argv[])
 
     wait.event_object_found >> select;
 
-    forward.event_positioned >> explore;
+    //forward.event_positioned >> explore;
 
     select.event_object_selected >> fetch_object;
-    select.event_object_unknown >> forward;
+    select.event_object_unknown >> explore;//forward;
     select.event_all_objects_collected >> goal;
 
     fetch_object.event_object_unknown >> select;

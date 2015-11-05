@@ -12,9 +12,9 @@ FetchObject::FetchObject(State* parent, bool store)
       event_object_fetched(this, "The object has been fetched"),
       event_failure(this, "An error happened"),
 
-      goto_before_object(this, 1.2 /*m*/),
+      goto_before_object(this, 0.9 /*m*/),
       wait(this, 10),
-      goto_object(this, 0.7 /*m*/),
+      goto_object(this, 0.65 /*m*/),
       pickup_object(this, store)
 {
     event_entry_meta >> goto_before_object;

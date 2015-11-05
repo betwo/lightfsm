@@ -96,6 +96,13 @@ std::vector<sbc15_msgs::Object> GlobalState::getObjects()
 
 sbc15_msgs::ObjectPtr GlobalState::getCurrentObject()
 {
+    if(current_object_) {
+        for(const sbc15_msgs::Object& o : getObjects()) {
+            if(o.type == current_object_->type) {
+                current_object_ = sbc15_msgs::ObjectPtr(new sbc15_msgs::Object(o));
+            }
+        }
+    }
     return current_object_;
 }
 
