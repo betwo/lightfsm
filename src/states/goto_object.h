@@ -21,7 +21,7 @@ public:
     FollowPath follow_path;
 
 public:
-    GoToObject(State* parent);
+    GoToObject(State* parent, double offset);
 
     void entryAction();
     void iteration();
@@ -31,6 +31,8 @@ protected:
 
 private:
     sbc15_msgs::Object target_;
+
+    double offset_;
 };
 
 #endif // GOTOOBJECT_H

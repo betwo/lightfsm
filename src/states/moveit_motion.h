@@ -20,7 +20,7 @@ public:
 
 public:
     MoveitMotion(State* parent, int retries);
-    MoveitMotion(State* parent, int retries, ArmGoal& goal);
+    MoveitMotion(State* parent, int retries, const ArmGoal& goal);
 
     void entryAction();
     void iteration();

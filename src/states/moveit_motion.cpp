@@ -18,7 +18,7 @@ MoveitMotion::MoveitMotion(State* parent, int retries ):
 {
 }
 
-MoveitMotion::MoveitMotion(State *parent, int retries, ArmGoal &goal):
+MoveitMotion::MoveitMotion(State *parent, int retries, const ArmGoal &goal):
     State(parent),
     event_done(this,"Arm positioned"),
     event_timeout(this,"Did not reach goal in time."),
@@ -27,7 +27,7 @@ MoveitMotion::MoveitMotion(State *parent, int retries, ArmGoal &goal):
     event_servo_control_failed(this,"Servo Control failed"),
     retries_(retries),
     started_(false),
-    takeGlobalStateGoal_(true),
+    takeGlobalStateGoal_(false),
     client_("arm_plan_move_server",true),
     constantGoal_(goal)
 {

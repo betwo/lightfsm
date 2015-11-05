@@ -5,14 +5,16 @@
 #include "../states/global_state.h"
 
 
-GoToObject::GoToObject(State* parent)
+GoToObject::GoToObject(State* parent, double offset)
     : MetaState(parent),
       event_object_reached(this, "The object has been reached"),
       event_object_unknown(this, "The object pose is not known"),
       event_sent_goal(this, "Sent a waypoint"),
       event_path_failure(this, "failure: cannot reach the object"),
 
-      follow_path(this, 4)
+      follow_path(this, 4),
+
+      offset_(offset)
 {
     event_sent_goal >> follow_path;
 
@@ -22,8 +24,6 @@ GoToObject::GoToObject(State* parent)
 
 void GoToObject::entryAction()
 {
-    const double offset = 0.45 /*m*/;
-
     GlobalState& global = GlobalState::getInstance();
 
     sbc15_msgs::ObjectPtr o = global.getCurrentObject();
@@ -46,7 +46,7 @@ void GoToObject::entryAction()
 
         tf::Vector3 delta = (robot_map.getOrigin() - object_map.getOrigin());
 
-        tf::Vector3 pos_map = object_map.getOrigin() + delta * offset / delta.length();
+        tf::Vector3 pos_map = object_map.getOrigin() + delta * offset_ / delta.length();
         tf::Quaternion rot_map = tf::createQuaternionFromYaw(std::atan2(-delta.y(), -delta.x()));
 
         tf::Pose object_offset_map(rot_map, pos_map);
@@ -63,7 +63,7 @@ void GoToObject::entryAction()
 
         tf::Quaternion rot_map = tf::createQuaternionFromYaw(tf::getYaw(object_map.getRotation()));
 
-        tf::Vector3 delta_obj(offset, 0, 0);
+        tf::Vector3 delta_obj(offset_, 0, 0);
         tf::Vector3 delta_world = tf::quatRotate(rot_map, delta_obj);
 
         tf::Vector3 pos_map_a = object_map.getOrigin() + delta_world;

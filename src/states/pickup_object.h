@@ -46,7 +46,9 @@ public:
     TriggeredEvent event_planning_failed;
 
 public:
-    PickupObject(State* parent, bool store, ArmGoal &armInterimPose);
+    PickupObject(State* parent, bool store);
+
+    static ArmGoal createInterimPose();
 
 protected:
     double desiredFrequency() const;

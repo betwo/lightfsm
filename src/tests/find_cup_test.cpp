@@ -53,8 +53,6 @@ int main(int argc, char *argv[])
 
     sbc15_fsm_global::waitForRosTime();
 
-    bool store = p_nh.param("store", true);
-
     // STATES
     Wait wait(State::NO_PARENT, 10.0);
     Wait goal(State::NO_PARENT, 10.0);

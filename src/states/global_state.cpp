@@ -51,21 +51,25 @@ GlobalState& GlobalState::getInstance()
     return s;
 }
 
-tf::Transform GlobalState::getTransform(const std::string &from, const std::string &to, const ros::Time &time)
+tf::Transform GlobalState::getTransform(const std::string &from, const std::string &to, const ros::Time &time, const ros::Duration& wait)
 {
     assert(!from.empty());
     assert(!to.empty());
 
     tf::StampedTransform t;
     try {
-        tfl_.waitForTransform(from, to, time, ros::Duration(0.1));
-        tfl_.lookupTransform(from, to, time, t);
-        return t;
+        if(tfl_.waitForTransform(from, to, time, wait)) {
+            tfl_.lookupTransform(from, to, time, t);
+            return t;
+
+        } else {
+            ROS_ERROR_STREAM("cannot lookup transform from " << from << " to " << to << " at time " << time);
+        }
 
     } catch(const tf2::TransformException& e) {
         ROS_ERROR_STREAM("cannot lookup transform from " << from << " to " << to << ": " << e.what());
-        return tf::Pose();
     }
+    return tf::Pose();
 }
 
 void GlobalState::update(State* current_state)

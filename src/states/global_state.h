@@ -57,7 +57,8 @@ public:
     void talk(const std::string& text);
     void sound(int sound);
 
-    tf::Transform getTransform(const std::string& from, const std::string& to, const ros::Time& time = ros::Time(0));
+    tf::Transform getTransform(const std::string& from, const std::string& to,
+                               const ros::Time& time = ros::Time(0), const ros::Duration &wait = ros::Duration(0.1));
 
     void move(const geometry_msgs::Twist& twist);
     void moveUnsafe(const geometry_msgs::Twist& twist);

@@ -4,13 +4,30 @@
 /// COMPONENT
 #include "../states/global_state.h"
 
+ArmGoal PickupObject::createInterimPose()
+{
+    ros::NodeHandle p_nh("~");
 
-PickupObject::PickupObject(State* parent, bool store,ArmGoal& armInterimPose)
+    double x = p_nh.param("prePlannedPosX",0.223); // -0.006, 0.309
+    double y = p_nh.param("prePlannedPosY",-0.006);
+    double z = p_nh.param("prePlannedPosZ",0.309);
+    double pitch = p_nh.param("prePlannedPosePitch",M_PI_2);
+    ArmGoal interimPose;
+    interimPose.valid = true;
+    interimPose.x = x;
+    interimPose.y = y;
+    interimPose.z = z;
+    interimPose.pitch = pitch;
+
+    return interimPose;
+}
+
+PickupObject::PickupObject(State* parent, bool store)
     : MetaState(parent),
 
       plan_arm_motion(this,1),
       visual_servoing(this,2),
-      pose_interim(this,2,armInterimPose),
+      pose_interim(this,2, createInterimPose()),
 
       store_object(this,2),
       place_object(this, 1),

@@ -54,19 +54,6 @@ int main(int argc, char *argv[])
 
     sbc15_fsm_global::waitForRosTime();
 
-    bool store = p_nh.param("store", true);
-    double x = p_nh.param("prePlannedPosX",0.223); // -0.006, 0.309
-    double y = p_nh.param("prePlannedPosY",-0.006);
-    double z = p_nh.param("prePlannedPosZ",0.309);
-    double pitch = p_nh.param("prePlannedPosePitch",M_PI_2);
-    ArmGoal interimPose;
-    interimPose.valid = true;
-    interimPose.x = x;
-    interimPose.y = y;
-    interimPose.z = z;
-    interimPose.pitch = pitch;
-
-
     // STATES
     WaitForObject wait(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
@@ -76,8 +63,7 @@ int main(int argc, char *argv[])
     BackUp forward(State::NO_PARENT, 1.0, 0.1);
     Explore explore(State::NO_PARENT);
 
-    GoToObject goto_object(State::NO_PARENT);
-    PickupObject pickup_object(State::NO_PARENT, store, interimPose);
+    FetchObject fetch_object(State::NO_PARENT, true);
 
     // ACTION
     goal.event_done >> goal;
@@ -86,17 +72,21 @@ int main(int argc, char *argv[])
 
     forward.event_positioned >> explore;
 
-    select.event_object_selected >> goto_object;
+    select.event_object_selected >> fetch_object;
     select.event_object_unknown >> forward;
     select.event_all_objects_collected >> goal;
 
-    goto_object.event_object_reached >> pickup_object;
-    goto_object.event_object_unknown >> select;
-    goto_object.event_path_failure >> goto_object;
-
-    pickup_object.event_object_pickedup >> select;
+    fetch_object.event_object_unknown >> select;
+    fetch_object.event_failure >> select;
+    fetch_object.event_object_fetched >> select;
 
     explore.event_object_found >> select;
+
+
+    // TALK
+    explore.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Exploring the environment.");
+    fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
+    fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
 
     ros::Publisher state_pub = nh.advertise<std_msgs::String>("fsm_state", 1);
 
