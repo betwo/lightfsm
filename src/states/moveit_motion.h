@@ -6,7 +6,7 @@
 #include "global_state.h"
 
 #include <actionlib/client/simple_action_client.h>
-#include <sbc15_msgs/MoveManipulatorGripperFrameAction.h>
+#include <sbc15_msgs/MoveManipulatorAction.h>
 
 class MoveitMotion: public State
 {
@@ -31,12 +31,12 @@ private:
     bool started_;
     bool takeGlobalStateGoal_;
 
-    sbc15_msgs::MoveManipulatorGripperFrameGoal goal_;
-    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorGripperFrameAction> client_;
+    sbc15_msgs::MoveManipulatorGoal goal_;
+    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorAction> client_;
     ArmGoal constantGoal_;
 
     void doneCb(const actionlib::SimpleClientGoalState& state,
-           const sbc15_msgs::MoveManipulatorGripperFrameResultConstPtr& result);
+           const sbc15_msgs::MoveManipulatorResultConstPtr& result);
 };
 
 #endif // MOVEITMOTION_H
