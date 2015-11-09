@@ -77,6 +77,7 @@ set(STATES
     src/states/store_object.cpp
     src/states/place_object.cpp
     src/states/moveit_motion.cpp
+    src/states/approach_object.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
