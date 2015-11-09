@@ -63,7 +63,6 @@ ros::Rate& State::getRate()
 
 void State::performEntryAction()
 {
-    std::cerr << "freq; " << desiredFrequency() << std::endl;
     rate_ = ros::Rate(desiredFrequency());
 
     for(std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {

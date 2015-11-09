@@ -5,6 +5,9 @@
 #include "../fsm/state.h"
 #include "../fsm/triggered_event.h"
 
+/// PROJECT
+#include <sbc15_msgs/Object.h>
+
 /// SYSTEM
 #include <tf/tf.h>
 
@@ -22,7 +25,7 @@ public:
     void exitAction();
     void iteration();
 
-    void position(const tf::Stamped<tf::Transform>& object_pose, int object_type);
+    void position(const sbc15_msgs::ObjectConstPtr &object_odom);
 
 private:
     ros::Subscriber sub_objects;
@@ -34,10 +37,13 @@ private:
     tf::Pose start_pose_;
 
     int type;
-    std::deque< tf::Stamped<tf::Pose> > objects_;
+    std::deque< sbc15_msgs::ObjectConstPtr > objects_;
 
     ros::Duration observe_time_;
     ros::Duration keep_time_;
+
+    double last_error_pos_;
+    double last_error_ang_;
 };
 
 #endif // APPROACH_OBJECT_H

@@ -33,7 +33,8 @@ struct ArmGoal
         x(0),
         y(0),
         z(0),
-        pitch(0)
+        pitch(0),
+        yaw(0)
     {
     }
 
@@ -43,6 +44,7 @@ struct ArmGoal
     double y;
     double z;
     double pitch;
+    double yaw;
 };
 
 class GlobalState : private boost::noncopyable

@@ -41,8 +41,8 @@ GlobalState::GlobalState()
     nh.param<double>("desired_speed", desired_speed_, 0.2);
     publishVelocity();
 
-    //    client_.waitForServer();
-    //tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
+    client_.waitForServer();
+    tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
 }
 
 GlobalState& GlobalState::getInstance()
@@ -74,7 +74,7 @@ tf::Transform GlobalState::getTransform(const std::string &from, const std::stri
 
 void GlobalState::update(State* current_state)
 {
-    //pose = getTransform("/map", "/base_link");
+    pose = getTransform("/map", "/base_link");
 
     std_msgs::String state;
     state.data = current_state->getName();

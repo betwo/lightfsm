@@ -131,6 +131,15 @@ target_link_libraries(sbc15_test_pick_up_cup
 
 
 
+add_executable(sbc15_test_approach_object
+    src/tests/approach_object_test.cpp
+)
+target_link_libraries(sbc15_test_approach_object
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
+
+
+
 
 
 add_executable(sbc15_pick_up
