@@ -28,22 +28,29 @@ void GoToObject::entryAction()
 
     sbc15_msgs::ObjectPtr o = global.getCurrentObject();
 
+    tf::Pose object_frame;
     tf::Pose object_map;
-    tf::poseMsgToTF(target_.pose, object_map);
+
+    target_ = *o;
+    tf::poseMsgToTF(target_.pose, object_frame);
 
     if(o->header.frame_id != "/map") {
         tf::Transform trafo = global.getTransform("/map", o->header.frame_id, o->header.stamp);
-        object_map = trafo * object_map;
+        object_map = trafo * object_frame;
+    } else {
+        object_map = object_frame;
     }
 
+    tf::Pose robot_map = GlobalState::getInstance().pose;
+   
+    ROS_INFO_STREAM("going to object @" << o->pose.position.x << "\t / " << o->pose.position.y);   
+    ROS_INFO_STREAM("map      object @" << object_map.getOrigin().x() << "\t / " << object_map.getOrigin().y());   
+    ROS_INFO_STREAM("robot is        @" << robot_map.getOrigin().x() << "\t / " << robot_map.getOrigin().y());   
+
+ 
     switch(o->type) {
     case sbc15_msgs::Object::OBJECT_CUP:
     {
-        target_ = *o;
-
-
-        tf::Pose robot_map = GlobalState::getInstance().pose;
-
         tf::Vector3 delta = (robot_map.getOrigin() - object_map.getOrigin());
 
         tf::Vector3 pos_map = object_map.getOrigin() + delta * offset_ / delta.length();
@@ -57,10 +64,6 @@ void GoToObject::entryAction()
 
     case sbc15_msgs::Object::OBJECT_BATTERY:
     {
-        target_ = *o;
-
-        tf::Pose robot_map = GlobalState::getInstance().pose;
-
         tf::Quaternion rot_map = tf::createQuaternionFromYaw(tf::getYaw(object_map.getRotation()));
 
         tf::Vector3 delta_obj(offset_, 0, 0);

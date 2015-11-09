@@ -18,7 +18,7 @@ GlobalState::GlobalState()
       client_("navigate_to_goal", true),
       tfl_(ros::Duration(15.0))
 {
-//    pub_speech_ = nh.advertise<std_msgs::String> ("/speech", 10, true);
+    //    pub_speech_ = nh.advertise<std_msgs::String> ("/speech", 10, true);
     pub_move_ = nh.advertise<geometry_msgs::Twist> ("/cmd_vel", 10, true);
     pub_move_unsafe_ = nh.advertise<geometry_msgs::Twist> ("/cmd_vel_unsafe", 10, true);
     pub_marker_ = nh.advertise<visualization_msgs::Marker>("/visualization_marker", 100, true);
@@ -41,8 +41,8 @@ GlobalState::GlobalState()
     nh.param<double>("desired_speed", desired_speed_, 0.2);
     publishVelocity();
 
-//    client_.waitForServer();
-    //tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
+    client_.waitForServer();
+    tfl_.waitForTransform("/map", "/base_link", ros::Time(0), ros::Duration(2.0));
 }
 
 GlobalState& GlobalState::getInstance()
@@ -74,7 +74,7 @@ tf::Transform GlobalState::getTransform(const std::string &from, const std::stri
 
 void GlobalState::update(State* current_state)
 {
-    //pose = getTransform("/map", "/base_link");
+    pose = getTransform("/map", "/base_link");
 
     std_msgs::String state;
     state.data = current_state->getName();
@@ -83,19 +83,18 @@ void GlobalState::update(State* current_state)
 
 std::vector<sbc15_msgs::Object> GlobalState::getObjects()
 {
-    while(true) {
-        sbc15_msgs::GetObjects srv;
-        if(client_objects_.call(srv)) {
-            return srv.response.objects;
-        } else {
-            ROS_ERROR_THROTTLE(1, "cannot get objects via /get_objects");
-            return std::vector<sbc15_msgs::Object>();
-        }
+    sbc15_msgs::GetObjects srv;
+    if(client_objects_.call(srv)) {
+        return srv.response.objects;
+    } else {
+        ROS_ERROR_THROTTLE(1, "cannot get objects via /get_objects");
+        return std::vector<sbc15_msgs::Object>();
     }
 }
 
 sbc15_msgs::ObjectPtr GlobalState::getCurrentObject()
 {
+    // refresh object pose
     if(current_object_) {
         for(const sbc15_msgs::Object& o : getObjects()) {
             if(o.type == current_object_->type) {

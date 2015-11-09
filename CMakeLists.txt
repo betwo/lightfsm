@@ -80,7 +80,10 @@ set(STATES
     src/states/rest_to_pre_position.cpp
     src/states/moveit_motion.cpp
 
-   src/states/position_to_base.cpp
+    src/states/position_to_base.cpp
+
+    src/states/approach_object.cpp
+
 )
 set(UTILS
     src/utils/map_explorer.cpp
@@ -138,6 +141,15 @@ add_executable(sbc15_test_place_cup
 target_link_libraries(sbc15_test_place_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
+
+
+add_executable(sbc15_test_approach_object
+    src/tests/approach_object_test.cpp
+)
+target_link_libraries(sbc15_test_approach_object
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
+
 
 
 
