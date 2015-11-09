@@ -27,7 +27,7 @@ public:
 
 private:
     void position(const sbc15_msgs::ObjectConstPtr &object_odom);
-    void driveToPose(tf::Pose object_base_link, double d);
+    void driveToPose(const tf::Pose& object_base_link);
 
 private:
     ros::Subscriber sub_objects;

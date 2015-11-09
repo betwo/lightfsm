@@ -124,8 +124,6 @@ void ApproachObject::exitAction()
 
 void ApproachObject::iteration()
 {
-    GlobalState& global = GlobalState::getInstance();
-
     ros::Time now = ros::Time::now();
     if(start_time_ + observe_time_ > now) {
         return;
@@ -151,6 +149,10 @@ void ApproachObject::position(const sbc15_msgs::ObjectConstPtr& object_odom)
     tf::Transform odom_to_base_link = global.getTransform("/arm_base_link", "/odom");
     tf::Pose object_base_link = odom_to_base_link * pose_object_odom;
 
+    tf::Vector3 pos = object_base_link.getOrigin();
+
+    global.setCurrentArmGoal(pos.x(),pos.y(),pos.z(), M_PI_2, std::atan2(pos.y(), pos.x()));
+
     ROS_INFO_STREAM("going to object @" << object_base_link.getOrigin().x() << "\t / " << object_base_link.getOrigin().y());
 
     double d = distance_;
@@ -165,7 +167,7 @@ void ApproachObject::position(const sbc15_msgs::ObjectConstPtr& object_odom)
 
         tf::Pose error = tf::Pose(tf::createQuaternionFromYaw(std::atan2(desired_pos.y(), desired_pos.x())), desired_pos);
 
-        driveToPose(error, dp);
+        driveToPose(error);
         break;
     }
 
@@ -205,7 +207,7 @@ void ApproachObject::position(const sbc15_msgs::ObjectConstPtr& object_odom)
 
         error.setRotation(tf::createQuaternionFromYaw(std::atan2(error.getOrigin().y(), error.getOrigin()   .x())));
 
-        driveToPose(error, dp);
+        driveToPose(error);
     }
         break;
 
@@ -216,7 +218,7 @@ void ApproachObject::position(const sbc15_msgs::ObjectConstPtr& object_odom)
 }
 
 
-void ApproachObject::driveToPose(tf::Pose error, double d)
+void ApproachObject::driveToPose(const tf::Pose &error)
 {
     geometry_msgs::Twist twist;
     double error_yaw = tf::getYaw(error.getRotation());
@@ -229,7 +231,6 @@ void ApproachObject::driveToPose(tf::Pose error, double d)
     ROS_INFO_STREAM("pos error: " << e << "\tangular error: " << error_yaw);
 
     if(pos_good && ang_good) {
-        //        ++stage_;
         event_approached.trigger();
 
     } else {

@@ -6,6 +6,7 @@
 #include "../fsm/triggered_event.h"
 #include "goto_object.h"
 #include "pickup_object.h"
+#include "approach_object.h"
 #include "wait.h"
 
 /// SYSTEM
@@ -22,9 +23,8 @@ public:
     FetchObject(State* parent, bool store);
 
 public:
-    GoToObject goto_before_object;
-    Wait wait;
     GoToObject goto_object;
+    ApproachObject approach;
     PickupObject pickup_object;
 
 };
