@@ -7,6 +7,7 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <sbc15_msgs/MoveManipulatorAction.h>
+#include <sbc15_msgs/MoveManipulatorHightOffsetAction.h>
 
 class MoveitMotion: public State
 {
@@ -21,6 +22,7 @@ public:
 public:
     MoveitMotion(State* parent, int retries);
     MoveitMotion(State* parent, int retries, const ArmGoal& goal);
+    MoveitMotion(State* parent, int retries, const double offset1, const double offset2);
 
     void entryAction();
     void iteration();
@@ -30,13 +32,18 @@ private:
     int retries_left_;
     bool started_;
     bool takeGlobalStateGoal_;
+    bool withOffset_;
 
-    sbc15_msgs::MoveManipulatorGoal goal_;
     actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorAction> client_;
+    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorHightOffsetAction> clientOffset_;
     ArmGoal constantGoal_;
+    sbc15_msgs::MoveManipulatorGoal goal_;
+    sbc15_msgs::MoveManipulatorHightOffsetGoal goalOffset_;
 
     void doneCb(const actionlib::SimpleClientGoalState& state,
            const sbc15_msgs::MoveManipulatorResultConstPtr& result);
+    void doneCbOffset(const actionlib::SimpleClientGoalState& state,
+                      const sbc15_msgs::MoveManipulatorHightOffsetResultConstPtr& result);
 };
 
 #endif // MOVEITMOTION_H

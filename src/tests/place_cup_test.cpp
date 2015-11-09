@@ -8,8 +8,7 @@
 #include "../global.h"
 
 #include "../utils/map_explorer.h"
-#include "../states/wait.h"
-#include "../states/explore.h"
+#include "../states/place_cup.h"
 
 void tick(State* current_state)
 {
@@ -25,20 +24,17 @@ int main(int argc, char *argv[])
     sbc15_fsm_global::waitForRosTime();
 
     // STATES
-    Explore explore(State::NO_PARENT);
-    Wait goal(State::NO_PARENT, 10.0);
+    PlaceCup placeCup(State::NO_PARENT);
 
     // ACTIONS
-    explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
-    explore.event_object_found >> goal;
-    explore.event_object_found << boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been found.");
+    placeCup.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing placement of the cup.")));
+    placeCup.event_cup_placed<< boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been placed.");
 
-    goal.event_done >> goal;
-
-    StateMachine state_machine(&explore);
+    StateMachine state_machine(&placeCup);
 
     state_machine.run(boost::bind(&tick, _1));
 
     return 0;
 }
+
 

@@ -141,13 +141,14 @@ ArmGoal& GlobalState::getCurrentArmGoal()
     return current_arm_goal_;
 }
 
-void GlobalState::setCurrentArmGoal(double &x, double &y, double &z, double &pitch)
+void GlobalState::setCurrentArmGoal(double x, double y, double z, double pitch, double yaw)
 {
     current_arm_goal_.valid = true;
     current_arm_goal_.x = x;
     current_arm_goal_.y = y;
     current_arm_goal_.z = z;
     current_arm_goal_.pitch = pitch;
+    current_arm_goal_.yaw = yaw;
 }
 
 void GlobalState::setCurrentArmGoalInvalid()

@@ -5,7 +5,7 @@
 #include "../fsm/meta_state.h"
 #include "../fsm/triggered_event.h"
 #include "follow_path.h"
-#include "plan_arm_motion.h"
+#include "rest_to_pre_position.h"
 #include "visual_servoing.h"
 #include "store_object.h"
 #include "back_up.h"
@@ -20,7 +20,7 @@ class PickupObject : public MetaState
 {
 public:
     // states:
-    PlanArmMotion plan_arm_motion;
+    RestToPrePosition plan_arm_motion;
     VisualServoing visual_servoing;
     MoveitMotion pose_interim;
 

@@ -125,7 +125,7 @@ public:
     void setCurrentObject(sbc15_msgs::ObjectPtr current);
 
     ArmGoal& getCurrentArmGoal();
-    void setCurrentArmGoal(double &x,double &y, double &z, double & pitch);
+    void setCurrentArmGoal(double x, double y, double z, double pitch, double yaw);
     void setCurrentArmGoalInvalid();
 
     bool isObjectCollected(int type);

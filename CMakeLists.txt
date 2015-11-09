@@ -67,16 +67,20 @@ set(STATES
     src/states/explore.cpp
     src/states/fetch_object.cpp
     src/states/goto_object.cpp
+
     src/states/pickup_object.cpp
-    src/states/visual_servoing.cpp
-
-    src/states/gripper_state.cpp
-
-    src/states/preplanned_state.cpp
-    src/states/plan_arm_motion.cpp
+    src/states/place_cup.cpp
     src/states/store_object.cpp
     src/states/place_object.cpp
+
+    src/states/visual_servoing.cpp
+    src/states/gripper_state.cpp
+    src/states/preplanned_state.cpp
+    src/states/recorded_trajectory.cpp
+    src/states/rest_to_pre_position.cpp
     src/states/moveit_motion.cpp
+
+   src/states/position_to_base.cpp
 )
 set(UTILS
     src/utils/map_explorer.cpp
@@ -128,6 +132,12 @@ target_link_libraries(sbc15_test_pick_up_cup
   sbc15_state_machine ${catkin_LIBRARIES}
 )
 
+add_executable(sbc15_test_place_cup
+    src/tests/place_cup_test.cpp
+)
+target_link_libraries(sbc15_test_place_cup
+  sbc15_state_machine ${catkin_LIBRARIES}
+)
 
 
 
