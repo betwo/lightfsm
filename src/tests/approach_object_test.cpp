@@ -35,7 +35,7 @@ public:
         boost::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
                 [this](const sbc15_msgs::ObjectConstPtr& o)
         {
-            if(o->type == sbc15_msgs::Object::OBJECT_BATTERY) {
+            if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
                 GlobalState& global = GlobalState::getInstance();
 
                 tf::Transform trafo_to_base_link = global.getTransform("/arm_base_link", o->header.frame_id, o->header.stamp, ros::Duration(0.5));
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     WaitForObject wait(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
 
-    ApproachObject approach(State::NO_PARENT, 0.4, 0.1);
+    ApproachObject approach(State::NO_PARENT, 0.55, 0.1);
     PickupObject pickup_object(State::NO_PARENT, true);
 
     // ACTION
@@ -102,8 +102,8 @@ int main(int argc, char *argv[])
     wait.event_object_found >> approach;
 
     approach.event_failure >> goal;
-    approach.event_approached >> goal;
-    approach.event_orientation_mismatch >> pickup_object;
+    approach.event_approached >> pickup_object;
+    approach.event_orientation_mismatch >> goal;
 
     pickup_object.event_object_failure >> goal;
     pickup_object.event_object_out_of_range >> goal;
