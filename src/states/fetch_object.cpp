@@ -13,7 +13,7 @@ FetchObject::FetchObject(State* parent, bool store)
       event_failure(this, "An error happened"),
 
       goto_object(this, 1.2 /*m*/),
-      approach(this, 0.4, 0.1),
+      approach(this, 0.55, 0.1),
       pickup_object(this, store)
 {
     event_entry_meta >> goto_object;
