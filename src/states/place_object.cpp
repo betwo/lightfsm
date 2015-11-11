@@ -11,9 +11,9 @@ PlaceObject::PlaceObject(State *parent, int retries):
     event_object_placed(this,"object is placed"),
 
     place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PRE_POSITION, retries),
-    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER,0),
     pre_rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP, retries),
-    close_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
+    close_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
     rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP, retries)
 
 {

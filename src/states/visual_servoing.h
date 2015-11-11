@@ -11,7 +11,7 @@
 class VisualServoing: public State
 {
 public:
-    TriggeredEvent event_object_gripped;
+    TriggeredEvent event_done;
     TriggeredEvent event_timeout;
     TriggeredEvent event_failure;
     TriggeredEvent event_out_of_range;

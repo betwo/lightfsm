@@ -6,7 +6,7 @@
 
 VisualServoing::VisualServoing(State* parent,int retries):
     State(parent),
-    event_object_gripped(this,"gripped object"),
+    event_done(this,"Arm in Position Ready to Grab."),
     event_timeout(this,"More Time Needed"),
     event_failure(this,"failed"),
     event_out_of_range(this,"Object is out of range"),
@@ -17,12 +17,12 @@ VisualServoing::VisualServoing(State* parent,int retries):
 
     client_("servoingActionController", true)
 {
-    event_object_gripped  << [this]() {
+    event_done  << [this]() {
         GlobalState& global = GlobalState::getInstance();
 
         int type = global.getCurrentObject()->type;
 
-        std::string talk = "collected.";
+        std::string talk = "Ready to grasp.";
         switch(type) {
         case sbc15_msgs::Object::OBJECT_CUP:
             talk = "Cup " + talk;
@@ -64,7 +64,7 @@ void VisualServoing::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
 {
     if(result->error_code == sbc15_msgs::visual_servoingResult::SUCCESS) {
         std::cout << "Object is grasped" << std::endl;
-        event_object_gripped.trigger();
+        event_done.trigger();
     } else {
         switch(result->error_code)
         {

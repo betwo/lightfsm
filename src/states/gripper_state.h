@@ -13,7 +13,7 @@ public:
     TriggeredEvent event_done;
 
 public:
-    GripperState(State* parent, int type);
+    GripperState(State* parent, int type, double effort);
 
     void entryAction();
     void iteration();
@@ -22,5 +22,9 @@ private:
     ros::ServiceClient gripper_client_;
 
     int type_;
+    double cup_effort_;
+    double bat_effort_;
+    double effort_;
+
 };
 #endif // GRIPPERSTATE_H

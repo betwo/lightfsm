@@ -29,43 +29,32 @@ ArmGoal tmp2() //TODO remove
 PlaceCup::PlaceCup(State* parent):
     MetaState(parent),
      goToBase(this),
-     prePos(this,sbc15_msgs::PreplannedTrajectories::Request::START_ARM,1),      // TODO: Replace with take cup from storage
-     preVs(this,1,tmp()),                                                        // TODO: remove
-     visualServo(this,1),                                                        // TODO: remove
-     planToCrane(this,1,tmp2()),                                                 // TODO: remove
-     planToCrane2(this,1,tmp2()),
-     planToCrane3(this,1,tmp2()),
+     goToCup(this,"pickCup1"),
+     closeGripper(this,sbc15_msgs::GripperServices::Request::GRAB,0.5),
+     takeCup(this,"pickCup2"),
      placeCup(this,1,0.08,0.08),
-     openGri(this,sbc15_msgs::GripperServices::Request::RESET_GRIPPER),
-     openGri2(this,sbc15_msgs::GripperServices::Request::RESET_GRIPPER),
+     openGri(this,sbc15_msgs::GripperServices::Request::RESET_GRIPPER,0),
+     goToCrane(this,1,tmp2()),
      goToRest(this,sbc15_msgs::PreplannedTrajectories::Request::PLACE_ARM_FROM_FRONT,1),
      event_cup_placed(this,"Cup is placed"),
      event_failure(this,"Failure")
 
 {
-    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
-    obj->type = sbc15_msgs::Object::OBJECT_CUP;
-    GlobalState::getInstance().setCurrentObject(obj);
+//    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
+//    obj->type = sbc15_msgs::Object::OBJECT_CUP;
+//    GlobalState::getInstance().setCurrentObject(obj);
     // Success
     event_entry_meta >> goToBase;
 
-    goToBase.event_done >> prePos;
-    prePos.event_done >> openGri;
-    openGri.event_done >> preVs;
-    preVs.event_done << boost::bind(&sbc15_fsm_global::action::say, "Starting Visual Servoing.");
-    preVs.event_done >> visualServo;
-    preVs.event_timeout << boost::bind(&sbc15_fsm_global::action::say, "Starting Visual Servoing.");
-    preVs.event_timeout >> visualServo;
-    visualServo.event_object_gripped << boost::bind(&sbc15_fsm_global::action::say, "Cup grabbed.");
-    visualServo.event_object_gripped >> planToCrane;
-    planToCrane.event_done >> placeCup;
-    planToCrane.event_timeout >>placeCup;
+    goToBase.event_done >> goToCup;
+    goToCup.event_done >> closeGripper;
+    closeGripper.event_done >>takeCup;
+    takeCup.event_done >> placeCup;
     placeCup.event_done << boost::bind(&sbc15_fsm_global::action::say, "Cup is placed.");
-    placeCup.event_timeout >> openGri2;
-    placeCup.event_done >> openGri2;
-    openGri2.event_done >> planToCrane2;
-    planToCrane2.event_done >> goToRest;
-    planToCrane2.event_timeout >> goToRest;
+    placeCup.event_done >> openGri;
+    openGri.event_done >> goToCrane;
+    goToCrane.event_done >> goToRest;
+
     goToRest.event_done >> event_cup_placed;
 
 
@@ -76,20 +65,20 @@ PlaceCup::PlaceCup(State* parent):
     placeCup.event_planning_failed >> goToBase;
     placeCup.event_servo_control_failed >>placeCup;
 
-    planToCrane.event_planning_failed >> planToCrane;
-    planToCrane.event_servo_control_failed >> planToCrane;
-    planToCrane.event_failure >> event_failure;
+    goToCup.event_failure >> event_failure;
+    takeCup.event_failure >> event_failure;
+
+    goToCrane.event_planning_failed >> goToCrane;
+    goToCrane.event_servo_control_failed >> goToCrane;
+    goToCrane.event_failure >> event_failure;
 
     goToRest.event_failure >> goToRest;
 
+}
 
-    //TODO remove
-    prePos.event_failure >> event_failure;
-    preVs.event_failure >>event_failure;
-    preVs.event_planning_failed >>event_failure;
-
-
-
-
-
+void PlaceCup::entryAction()
+{
+    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
+    obj->type = sbc15_msgs::Object::OBJECT_CUP;
+    GlobalState::getInstance().setCurrentObject(obj);
 }

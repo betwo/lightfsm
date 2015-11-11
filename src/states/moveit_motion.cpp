@@ -7,23 +7,23 @@
 MoveitMotion::MoveitMotion(State* parent, int retries ):
     State(parent),
     event_done(this,"Arm positioned"),
-    event_timeout(this,"Did not reach goal in time."),
+//    event_timeout(this,"Did not reach goal in time."),
     event_failure(this,"Faliure"),
     event_planning_failed (this,"Planning Failed"),
     event_servo_control_failed(this,"Servo Control failed"),
     retries_(retries),
     started_(false),
     takeGlobalStateGoal_(true),
-    withOffset_(false),
-    client_("/arm_plan_move_server",true),
-    clientOffset_("/arm_plan_move_server_hight_offset",true)
+    withOffset_(false)
+//    client_("/arm_plan_move_server",true),
+//    clientOffset_("/arm_plan_move_server_hight_offset",true)
 {
 }
 
 MoveitMotion::MoveitMotion(State *parent, int retries, const ArmGoal &goal):
     State(parent),
     event_done(this,"Arm positioned"),
-    event_timeout(this,"Did not reach goal in time."),
+//    event_timeout(this,"Did not reach goal in time."),
     event_failure(this,"Faliure"),
     event_planning_failed (this,"Planning Failed"),
     event_servo_control_failed(this,"Servo Control failed"),
@@ -31,8 +31,8 @@ MoveitMotion::MoveitMotion(State *parent, int retries, const ArmGoal &goal):
     started_(false),
     takeGlobalStateGoal_(false),
     withOffset_(false),
-    client_("arm_plan_move_server",true),
-    clientOffset_("/arm_plan_move_server_hight_offset",true),
+//    client_("arm_plan_move_server",true),
+//    clientOffset_("/arm_plan_move_server_hight_offset",true),
     constantGoal_(goal)
 {
 
@@ -41,16 +41,16 @@ MoveitMotion::MoveitMotion(State *parent, int retries, const ArmGoal &goal):
 MoveitMotion::MoveitMotion(State *parent, int retries, const double offset1, const double offset2):
     State(parent),
     event_done(this,"Arm positioned"),
-    event_timeout(this,"Did not reach goal in time."),
+//    event_timeout(this,"Did not reach goal in time."),
     event_failure(this,"Faliure"),
     event_planning_failed (this,"Planning Failed"),
     event_servo_control_failed(this,"Servo Control failed"),
     retries_(retries),
     started_(false),
     takeGlobalStateGoal_(true),
-    withOffset_(true),
-    client_("arm_plan_move_server",true),
-    clientOffset_("/arm_plan_move_server_hight_offset",true)
+    withOffset_(true)//,
+//    client_("arm_plan_move_server",true),
+//    clientOffset_("/arm_plan_move_server_hight_offset",true)
 {
     goalOffset_.offset.push_back(offset1);
     goalOffset_.offset.push_back(offset2);
@@ -97,13 +97,15 @@ void MoveitMotion::iteration()
         {
             started_ = true;
             --retries_left_;
-            client_.sendGoal(goal_,boost::bind(&MoveitMotion::doneCb, this, _1, _2));
+//            client_.sendGoal(goal_,boost::bind(&MoveitMotion::doneCb, this, _1, _2));
+            GlobalState::getInstance().moveArmTo(goal_,boost::bind(&MoveitMotion::doneCb, this, _1, _2));
         }
         if(withOffset_ && GlobalState::getInstance().getCurrentArmGoal().valid)
         {
             started_ = true;
             --retries_left_;
-            clientOffset_.sendGoal(goalOffset_,boost::bind(&MoveitMotion::doneCbOffset, this, _1, _2));
+//            clientOffset_.sendGoal(goalOffset_,boost::bind(&MoveitMotion::doneCbOffset, this, _1, _2));
+            GlobalState::getInstance().moveArmTo(goalOffset_,boost::bind(&MoveitMotion::doneCbOffset, this, _1, _2));
         }
     }
 
@@ -122,7 +124,8 @@ void MoveitMotion::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
         {
         case sbc15_msgs::MoveManipulatorResult::TIMED_OUT:
         {
-            event_timeout.trigger();
+//            event_timeout.trigger();
+            event_done.trigger();
             break;
         }
         case sbc15_msgs::MoveManipulatorResult::PLANNING_FAILED:
@@ -215,7 +218,8 @@ void MoveitMotion::doneCbOffset(const actionlib::SimpleClientGoalState& /*state*
         {
         case sbc15_msgs::MoveManipulatorHightOffsetResult::TIMED_OUT:
         {
-            event_timeout.trigger();
+//            event_timeout.trigger();
+            event_done.trigger();
             break;
         }
         case sbc15_msgs::MoveManipulatorHightOffsetResult::PLANNING_FAILED:

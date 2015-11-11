@@ -16,6 +16,9 @@ using namespace path_msgs;
 GlobalState::GlobalState()
     : private_nh("~"),
       client_("navigate_to_goal", true),
+      clientMoveArm_("arm_plan_move_server",true),
+      clientMoveArmOffset_("/arm_plan_move_server_hight_offset",true),
+      clientRecordedTrajectory_("playAction",true),
       tfl_(ros::Duration(15.0))
 {
     //    pub_speech_ = nh.advertise<std_msgs::String> ("/speech", 10, true);
@@ -177,6 +180,15 @@ void GlobalState::sendSystemCommand(const std::string &name, const std::string &
 void GlobalState::mark(const visualization_msgs::Marker &marker)
 {
     pub_marker_.publish(marker);
+}
+
+double GlobalState::getDesiredGrabStrength() const
+{
+    return desired_grab_strength_;
+}
+void GlobalState::setDesiredGrabStrength(double val)
+{
+    desired_grab_strength_ = val;
 }
 
 visualization_msgs::Marker GlobalState::makeMarker(float r, float g, float b, const std::string& ns, int id)
@@ -341,7 +353,23 @@ void GlobalState::moveTo(const NavigateToGoalGoal &goal,
                      feedbackCb);
 }
 
+void GlobalState::moveArmTo(const sbc15_msgs::MoveManipulatorGoal &goal,
+                            boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::MoveManipulatorResultConstPtr &)> doneCb)
+{
+    clientMoveArm_.sendGoal(goal,doneCb);
+}
 
+void GlobalState::moveArmTo(const sbc15_msgs::MoveManipulatorHightOffsetGoal &goal,
+                            boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::MoveManipulatorHightOffsetResultConstPtr &)> doneCb)
+{
+    clientMoveArmOffset_.sendGoal(goal,doneCb);
+}
+
+void GlobalState::playRecordedTrajectory(const sbc15_msgs::PlayGoal &goal,
+                                         boost::function<void (const actionlib::SimpleClientGoalState &, const sbc15_msgs::PlayResultConstPtr &)> doneCb)
+{
+    clientRecordedTrajectory_.sendGoal(goal,doneCb);
+}
 
 void GlobalState::activeCb()
 {

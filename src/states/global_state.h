@@ -9,6 +9,9 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <path_msgs/NavigateToGoalAction.h>
 #include <sbc15_msgs/Object.h>
+#include <sbc15_msgs/MoveManipulatorAction.h>
+#include <sbc15_msgs/MoveManipulatorHightOffsetAction.h>
+#include <sbc15_msgs/PlayAction.h>
 
 #include <actionlib/client/simple_action_client.h>
 #include <ros/ros.h>
@@ -21,6 +24,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
+
 #pragma GCC diagnostic pop
 /////////////////////////////////////////////////////////
 
@@ -114,6 +118,14 @@ public:
                 boost::function<void(const actionlib::SimpleClientGoalState&,const path_msgs::NavigateToGoalResultConstPtr&)> doneCb,
                 boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> feedbackCb);
 
+    void moveArmTo(const sbc15_msgs::MoveManipulatorGoal& goal,
+                   boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::MoveManipulatorResultConstPtr&)> doneCb);
+    void moveArmTo(const sbc15_msgs::MoveManipulatorHightOffsetGoal& goal,
+                    boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::MoveManipulatorHightOffsetResultConstPtr&)> doneCb);
+
+    void playRecordedTrajectory(const sbc15_msgs::PlayGoal& goal,
+                   boost::function<void(const actionlib::SimpleClientGoalState&,const sbc15_msgs::PlayResultConstPtr&)> doneCb);
+
     void update(State *current_state);
     void mark(const visualization_msgs::Marker& marker);
 
@@ -138,6 +150,9 @@ public:
     double getDesiredDistance() const ;
 
     double getDesiredVelocity() const;
+
+    double getDesiredGrabStrength() const;
+    void setDesiredGrabStrength(double val);
 
 private:
     void activeCb();
@@ -168,6 +183,9 @@ private:
     std::map<std::string, ros::Publisher> pubs_systems_;
 
     actionlib::SimpleActionClient<path_msgs::NavigateToGoalAction> client_;
+    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorAction> clientMoveArm_;
+    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorHightOffsetAction> clientMoveArmOffset_;
+     actionlib::SimpleActionClient<sbc15_msgs::PlayAction> clientRecordedTrajectory_;
 
     ros::ServiceClient client_objects_;
 
@@ -175,6 +193,7 @@ private:
 
     double desired_speed_;
     double desired_distance_;
+    double desired_grab_strength_;
 
     std::map<int, bool> object_collected_;
     sbc15_msgs::ObjectPtr current_object_;

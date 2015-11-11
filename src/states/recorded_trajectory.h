@@ -14,14 +14,14 @@ public:
     TriggeredEvent event_done;
     TriggeredEvent event_failure;
 public:
-    RecordedTrajectory(State* parent, std::string trajecory);
+    RecordedTrajectory(State* parent, std::string trajectory);
 
     void entryAction();
     void iteration();
 
 private:
-    std::string trajectory_;
-    actionlib::SimpleActionClient<sbc15_msgs::PlayAction> client_;
+//    std::string trajectory_;
+//    actionlib::SimpleActionClient<sbc15_msgs::PlayAction> client_;
     bool started_;
     sbc15_msgs::PlayGoal goal_;
 

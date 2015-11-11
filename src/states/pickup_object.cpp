@@ -29,11 +29,12 @@ PickupObject::PickupObject(State* parent, bool store)
 
       plan_arm_motion(this,1),
       visual_servoing(this,1),
+      grab_obj(this,sbc15_msgs::GripperServices::Request::GRAB,0.5),
       pose_interim(this,2, createInterimPose()),
 
       store_object(this,2),
       place_object(this, 1),
-      open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+      open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER,0),
 
       pre_pos(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION, 1),
       drive_forward(this, 0.02, 0.05),
@@ -41,7 +42,7 @@ PickupObject::PickupObject(State* parent, bool store)
       back_up(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION, 1),
       drive_backward(this, 0.02, -0.05),
 
-      abort(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
+      abort(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
       abort2(this, sbc15_msgs::PreplannedTrajectories::Request::PLACE_ARM_FROM_FRONT, 1),
 
       event_object_pickedup(this, "The object has been reached"),
@@ -56,9 +57,24 @@ PickupObject::PickupObject(State* parent, bool store)
 
     plan_arm_motion.event_done >> visual_servoing;
 
-//    if(store_) {
+    if(store_) {
 //        visual_servoing.event_object_gripped >> pose_interim;
-//        pose_interim.event_done >>  store_object;
+        visual_servoing.event_done >> grab_obj;
+        grab_obj.event_done >> pose_interim;
+        pose_interim.event_done >>  store_object;
+        store_object.object_stored >> event_object_pickedup;
+        store_object.event_failure >> store_object;
+
+    } else {
+//        visual_servoing.event_object_gripped >> place_object;
+        visual_servoing.event_done >> grab_obj;
+        grab_obj.event_done >> place_object;
+        place_object.event_object_placed >> open_gripper;
+        open_gripper.event_done >> event_object_pickedup;
+    }
+
+//    if(store_) {
+//        visual_servoing.event_object_gripped >> store_object;
 //        store_object.object_stored >> event_object_pickedup;
 //        store_object.event_failure >> store_object;
 
@@ -67,17 +83,6 @@ PickupObject::PickupObject(State* parent, bool store)
 //        place_object.event_object_placed >> open_gripper;
 //        open_gripper.event_done >> event_object_pickedup;
 //    }
-
-    if(store_) {
-        visual_servoing.event_object_gripped >> store_object;
-        store_object.object_stored >> event_object_pickedup;
-        store_object.event_failure >> store_object;
-
-    } else {
-        visual_servoing.event_object_gripped >> place_object;
-        place_object.event_object_placed >> open_gripper;
-        open_gripper.event_done >> event_object_pickedup;
-    }
 
     plan_arm_motion.event_failure >> event_object_failure;
 
@@ -101,7 +106,7 @@ PickupObject::PickupObject(State* parent, bool store)
     pose_interim.event_failure >> event_planning_failed;
     pose_interim.event_planning_failed >> event_planning_failed;
     pose_interim.event_servo_control_failed >> event_servo_control_failed;
-    pose_interim.event_timeout >> pose_interim;
+//    pose_interim.event_timeout >> pose_interim;
 
 
 }

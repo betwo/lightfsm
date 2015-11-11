@@ -22,6 +22,7 @@ public:
     // states:
     RestToPrePosition plan_arm_motion;
     VisualServoing visual_servoing;
+    GripperState grab_obj;
     MoveitMotion pose_interim;
 
     StoreObject store_object;

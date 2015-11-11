@@ -5,9 +5,9 @@ RestToPrePosition::RestToPrePosition(State* parent, int retries):
     event_done(this,"Arm positioned"),
     event_failure(this, "error happend"),
 
-    semi_open_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE),
+    semi_open_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
     start_arm(this, sbc15_msgs::PreplannedTrajectoriesRequest::START_ARM, retries),
-    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER),
+    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER,0),
     //pre_pos(this, retries)
     pre_pos(this, sbc15_msgs::PreplannedTrajectories::Request::PRE_POSITION, 1)
 {

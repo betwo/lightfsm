@@ -1,15 +1,16 @@
 #include "recorded_trajectory.h"
+#include "global_state.h"
 
-RecordedTrajectory::RecordedTrajectory(State *parent, std::string trajecory):
+RecordedTrajectory::RecordedTrajectory(State *parent, std::string trajectory):
        State(parent),
        event_done(this,"Goal position reached"),
        event_failure(this,"Failure"),
-       trajectory_(trajecory),
-       client_("playAction",true),
+//       trajectory_(trajecory),
+//       client_("playAction",true),
        started_(false)
 
 {
-    goal_.path =trajectory_;
+    goal_.path = trajectory;
 }
 
 
@@ -24,7 +25,7 @@ void RecordedTrajectory::iteration()
     if(!started_)
     {
         started_ = true;
-        client_.sendGoal(goal_,boost::bind(&RecordedTrajectory::doneCb, this, _1, _2));
+        GlobalState::getInstance().playRecordedTrajectory(goal_,boost::bind(&RecordedTrajectory::doneCb, this, _1, _2));
     }
 }
 
