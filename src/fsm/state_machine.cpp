@@ -4,6 +4,7 @@
 /// COMPONENT
 #include "transition.h"
 #include "meta_state.h"
+#include "../global.h"
 
 /// SYSTEM
 #include <ros/ros.h>
@@ -21,6 +22,7 @@ StateMachine::StateMachine(State* initial_state)
 
 namespace {
 void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
+    sbc15_fsm_global::action::say("reset requested");
     k = true;
 }
 }
@@ -57,6 +59,7 @@ void StateMachine::run(boost::function<void(State*)> callback)
         }
 
         if(reset) {
+            sbc15_fsm_global::action::say("resetting");
             state_ = start_state_;
         }
 
