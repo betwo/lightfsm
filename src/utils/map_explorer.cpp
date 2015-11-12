@@ -56,10 +56,9 @@ void MapExplorer::findExplorationPoint()
     ros::Rate rate(2);
 
     nav_msgs::GetMap map_service;
-    while(!map_service_client.call(map_service)) {
+    if(!map_service_client.call(map_service)) {
         ROS_ERROR("couldn't get map");
-        ros::spinOnce();
-        rate.sleep();
+        return;
     }
 
     const nav_msgs::OccupancyGrid& map = map_service.response.map;
