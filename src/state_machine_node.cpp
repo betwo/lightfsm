@@ -85,7 +85,22 @@ int main(int argc, char *argv[])
     ROS_INFO("starting state machine");
     StateMachine state_machine(&init);
 
-    state_machine.run(boost::bind(&tick, _1));
+    ros::Publisher state_pub = nh.advertise<std_msgs::String>("fsm_state", 1);
+
+    ros::Time last_pub = ros::Time(0);
+    ros::Duration state_pub_rate(1.0);
+
+    state_machine.run([&](State* current_state) {
+        tick(current_state);
+
+        ros::Time now = ros::Time::now();
+        if(now > last_pub + state_pub_rate) {
+            last_pub = now;
+            std_msgs::String msg;
+            msg.data = state_machine.generateGraphDescription();
+            state_pub.publish(msg);
+        }
+    });
 
     return 0;
 }

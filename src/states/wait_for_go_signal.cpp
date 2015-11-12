@@ -17,7 +17,6 @@ WaitForGoSignal::WaitForGoSignal(State* parent)
 
 void WaitForGoSignal::entryAction()
 {
-    GlobalState::getInstance().sound(sound_play::SoundRequest::NEEDS_PLUGGING);
 }
 
 void WaitForGoSignal::iteration()
