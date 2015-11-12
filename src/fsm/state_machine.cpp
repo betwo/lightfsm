@@ -63,7 +63,10 @@ void StateMachine::run(boost::function<void(State*)> callback)
 
         if(reset_) {
             sbc15_fsm_global::action::say("resetting");
+
             state_ = reset_state_;
+            state_->performEntryAction();
+
             ROS_WARN_STREAM("resetting state machine, going to state " << state_->getName());
             reset_ = false;
         }
