@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <fstream>
+#include <std_msgs/String.h>
 
 StateMachine::StateMachine(State* initial_state)
     : start_state_(initial_state), state_(initial_state)
@@ -33,6 +34,12 @@ void StateMachine::run(boost::function<void(State*)> callback)
     ros::NodeHandle pnh("~");
     ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
 
+    boost::function<void(const std_msgs::StringConstPtr&)> cb =
+            [&](const std_msgs::StringConstPtr&){
+
+    };
+
+    ros::Subscriber sub_cmd = pnh.subscribe<std_msgs::String>("/command", 100, cb);
 
     while(ros::ok()) {
         callback(state_);

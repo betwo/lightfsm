@@ -11,6 +11,7 @@ class GoToBase : public State
 {
 public:
     TriggeredEvent event_done;
+    TriggeredEvent event_base_unknown;
 
 public:
     GoToBase(State* parent);

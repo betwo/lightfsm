@@ -41,6 +41,15 @@ GlobalState::GlobalState()
 
     client_objects_ = nh.serviceClient<sbc15_msgs::GetObjects>("/get_objects");
 
+    bool cup_collected = nh.param(std::string("object_") + std::to_string(sbc15_msgs::Object::OBJECT_CUP) + "_collected", false);
+    if(cup_collected) {
+        setObjectCollected(sbc15_msgs::Object::OBJECT_CUP);
+    }
+    bool battery_collected = nh.param(std::string("object_") + std::to_string(sbc15_msgs::Object::OBJECT_BATTERY) + "_collected", false);
+    if(battery_collected) {
+        setObjectCollected(sbc15_msgs::Object::OBJECT_BATTERY);
+    }
+
     nh.param<double>("desired_speed", desired_speed_, 0.2);
     publishVelocity();
 
@@ -121,6 +130,7 @@ bool GlobalState::isObjectCollected(int type)
 void GlobalState::setObjectCollected(int type)
 {
     object_collected_[type] = true;
+    nh.setParam(std::string("object_") + std::to_string(type) + "_collected", true);
 }
 
 void GlobalState::setDesiredDistance(double &dist)

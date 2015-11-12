@@ -10,6 +10,14 @@
 #include "states/wait_for_go_signal.h"
 #include "states/global_state.h"
 #include "states/wait.h"
+#include "states/select_task.h"
+#include "states/goto_object.h"
+#include "states/wait.h"
+#include "states/explore.h"
+#include "states/fetch_object.h"
+#include "states/back_up.h"
+#include "states/go_to_base.h"
+
 
 /// SYSTEM
 #include <ros/ros.h>
@@ -31,14 +39,43 @@ int main(int argc, char *argv[])
     // STATES
     WaitForGoSignal init(State::NO_PARENT);
     Wait error(State::NO_PARENT, 2);
-    Error goal(State::NO_PARENT);
+    Wait goal(State::NO_PARENT, 2);
+    Wait done_loop(State::NO_PARENT, 30);
+
+    SelectTask select(State::NO_PARENT);
+
+    Explore explore(State::NO_PARENT);
+
+    FetchObject fetch_object(State::NO_PARENT, true);
+
+    GoToBase goto_base(State::NO_PARENT);
 
     // ACTIONS
-    init.action_entry << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
+    init.event_done >> select;
+
+    select.event_object_selected >> fetch_object;
+    select.event_object_unknown >> explore;
+    select.event_all_objects_collected >> goto_base;
+
+    goto_base.event_base_unknown >> explore;
+
+    fetch_object.event_object_unknown >> select;
+    fetch_object.event_failure >> select;
+    fetch_object.event_object_fetched >> select;
+
+    explore.event_object_found >> select;
+
+    goal.event_done >> done_loop;
+    done_loop.event_done >> done_loop;
 
     // TRANSITIONS
-    init.event_done >> goal;
     error.event_done >> goal;
+
+    // TALKING
+    init.action_exit << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
+    explore.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Exploring the environment.");
+    fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
+    fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
 
     StateMachine state_machine(&init);
 
