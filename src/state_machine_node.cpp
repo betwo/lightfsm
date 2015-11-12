@@ -33,10 +33,13 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "sbc15_state_machine_node",
               ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
-
+ 
+    ROS_WARN("waiting for ros time");
     sbc15_fsm_global::waitForRosTime();
-
+    
     // STATES
+    ROS_INFO("creating states");
+
     WaitForGoSignal init(State::NO_PARENT);
     Wait error(State::NO_PARENT, 2);
     Wait goal(State::NO_PARENT, 2);
@@ -51,6 +54,7 @@ int main(int argc, char *argv[])
     GoToBase goto_base(State::NO_PARENT);
 
     // ACTIONS
+    ROS_INFO("connecting events");
     init.event_done >> select;
 
     select.event_object_selected >> fetch_object;
@@ -72,11 +76,13 @@ int main(int argc, char *argv[])
     error.event_done >> goal;
 
     // TALKING
+    init.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Waiting for go signal!");
     init.action_exit << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
     explore.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Exploring the environment.");
     fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
     fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
 
+    ROS_INFO("starting state machine");
     StateMachine state_machine(&init);
 
     state_machine.run(boost::bind(&tick, _1));
