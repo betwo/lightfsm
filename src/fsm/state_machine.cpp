@@ -34,9 +34,12 @@ void StateMachine::run(boost::function<void(State*)> callback)
     ros::NodeHandle pnh("~");
     ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
 
+    bool reset = false;
     boost::function<void(const std_msgs::StringConstPtr&)> cb =
-            [&](const std_msgs::StringConstPtr&){
-
+            [&](const std_msgs::StringConstPtr& cmd){
+        if(cmd->data == "reset_fsm") {
+            reset = true;
+        }
     };
 
     ros::Subscriber sub_cmd = pnh.subscribe<std_msgs::String>("/command", 100, cb);
@@ -51,6 +54,10 @@ void StateMachine::run(boost::function<void(State*)> callback)
 
         if(kill) {
             return;
+        }
+
+        if(reset) {
+            state_ = start_state_;
         }
 
         // handle ros stuff

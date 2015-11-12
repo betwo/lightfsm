@@ -39,6 +39,7 @@ void WaitForGoSignal::joystickReceived(const sensor_msgs::Joy::ConstPtr &joy)
 
 void WaitForGoSignal::cmdReceived(const std_msgs::StringConstPtr &cmd)
 {
+    ROS_INFO_STREAM("command received: " << cmd->data);
     if(cmd->data == "start") {
         event_done.trigger();
     }
