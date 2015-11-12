@@ -98,14 +98,14 @@ int main(int argc, char *argv[])
 
         } else if(cmd->data == "fsm/pickup/cup") {
             sbc15_fsm_global::action::say("pickup cup requested");
-            sbc15_msgs::ObjectPtr cup = std::make_shared<sbc15_msgs::Object>();
+            sbc15_msgs::ObjectPtr cup = boost::make_shared<sbc15_msgs::Object>();
             cup->type = sbc15_msgs::Object::OBJECT_CUP;
             GlobalState::getInstance().setCurrentObject(cup);
             state_machine.gotoState(&fetch_object.pickup_object);
 
         } else if(cmd->data == "fsm/pickup/battery") {
             sbc15_fsm_global::action::say("pickup battery requested");
-            sbc15_msgs::ObjectPtr battery = std::make_shared<sbc15_msgs::Object>();
+            sbc15_msgs::ObjectPtr battery = boost::make_shared<sbc15_msgs::Object>();
             battery->type = sbc15_msgs::Object::OBJECT_BATTERY;
             GlobalState::getInstance().setCurrentObject(battery);
             state_machine.gotoState(&fetch_object.pickup_object);
