@@ -78,7 +78,6 @@ int main(int argc, char *argv[])
     // TALKING
     init.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Waiting for go signal!");
     init.action_exit << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
-    explore.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Exploring the environment.");
     fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
     fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
 

@@ -3,6 +3,7 @@
 
 /// COMPONENT
 #include "../states/global_state.h"
+#include "../global.h"
 
 /// SYSTEM
 #include <nav_msgs/GetMap.h>
@@ -60,6 +61,9 @@ void MapExplorer::findExplorationPoint()
         ROS_ERROR("couldn't get map");
         return;
     }
+
+    sbc15_fsm_global::action::say("Exploring the environment.");
+
 
     const nav_msgs::OccupancyGrid& map = map_service.response.map;
 
