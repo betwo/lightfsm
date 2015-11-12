@@ -92,13 +92,17 @@ int main(int argc, char *argv[])
 
     boost::function<void(const std_msgs::StringConstPtr&)> cb =
             [&](const std_msgs::StringConstPtr& cmd){
-        if(cmd->data == "reset_fsm") {
+        if(cmd->data == "fsm/reset") {
             sbc15_fsm_global::action::say("reset requested");
             state_machine.reset();
+
+        } else if(cmd->data == "fsm/pickup") {
+            sbc15_fsm_global::action::say("pickup requested");
+            state_machine.gotoState(&fetch_object.pickup_object);
         }
     };
 
-    ros::Subscriber sub_cmd = pnh.subscribe<std_msgs::String>("/command", 100, cb);
+    ros::Subscriber sub_cmd = nh.subscribe<std_msgs::String>("/command", 100, cb);
 
     state_machine.run([&](State* current_state) {
         tick(current_state);

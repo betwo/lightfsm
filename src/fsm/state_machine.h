@@ -15,6 +15,7 @@ public:
     std::string generateGraphDescription() const;
 
     void reset();
+    void gotoState(State* state);
 
 private:
     void check();

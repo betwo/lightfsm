@@ -33,9 +33,15 @@ void StateMachine::reset()
     reset_state_ = start_state_;
 }
 
+void StateMachine::gotoState(State *state)
+{
+    reset_ = true;
+    reset_state_ = state;
+}
+
 void StateMachine::run(boost::function<void(State*)> callback)
 {
-    ROS_INFO_STREAM("starting withstate " << state_->getName());
+    ROS_INFO_STREAM("starting with state " << state_->getName());
 
     bool kill = false;
 
@@ -58,6 +64,7 @@ void StateMachine::run(boost::function<void(State*)> callback)
         if(reset_) {
             sbc15_fsm_global::action::say("resetting");
             state_ = reset_state_;
+            ROS_WARN_STREAM("resetting state machine, going to state " << state_->getName());
             reset_ = false;
         }
 
@@ -123,9 +130,9 @@ Stream& StateMachine::printState(Stream& stream, const State* s, const std::stri
             stream << ";color=blue";
             stream << ";fontcolor=white";
             stream << ";style=filled";
-        } 
+        }
         stream << "]";
-        
+
         stream << ";\n";
     }
 
@@ -182,12 +189,12 @@ std::string StateMachine::generateGraphDescription() const
 
     graph << "}";
 
-//    std::ofstream of("/tmp/graph.dot");
-//    of << graph.str();
-//    of.close();
+    //    std::ofstream of("/tmp/graph.dot");
+    //    of << graph.str();
+    //    of.close();
 
-//    std::cerr << graph.str() << std::endl;
-//    std::abort();
+    //    std::cerr << graph.str() << std::endl;
+    //    std::abort();
 
     return graph.str();
 }
