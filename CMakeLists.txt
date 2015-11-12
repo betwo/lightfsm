@@ -83,6 +83,8 @@ set(STATES
     src/states/position_to_base.cpp
 
     src/states/approach_object.cpp
+    src/states/go_to_base.cpp
+    src/states/deliver_object.cpp
 
 )
 set(UTILS
