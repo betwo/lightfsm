@@ -27,7 +27,7 @@ void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
 
 void StateMachine::run(boost::function<void(State*)> callback)
 {
-    ROS_INFO_STREAM("starting withstate " << state_->getName());
+    ROS_INFO_STREAM("starting with state " << state_->getName());
 
     bool kill = false;
 
@@ -55,8 +55,10 @@ void StateMachine::run(boost::function<void(State*)> callback)
         if(kill) {
             return;
         }
-
+        ROS_INFO("step");
         if(reset) {
+            ROS_WARN_STREAM("resetting state machine, going to state " << state_->getName());
+            reset = false;
             state_ = start_state_;
         }
 
