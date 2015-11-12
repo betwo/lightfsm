@@ -14,6 +14,8 @@ public:
 
     std::string generateGraphDescription() const;
 
+    void reset();
+
 private:
     void check();
     void perform(const Transition& perform);
@@ -29,6 +31,9 @@ private:
 private:
     State* start_state_;
     State* state_;
+
+    bool reset_;
+    State* reset_state_;
 };
 
 #endif // STATE_MACHINE_H

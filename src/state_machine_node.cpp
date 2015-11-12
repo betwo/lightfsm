@@ -89,6 +89,17 @@ int main(int argc, char *argv[])
     ros::Time last_pub = ros::Time(0);
     ros::Duration state_pub_rate(1.0);
 
+
+    boost::function<void(const std_msgs::StringConstPtr&)> cb =
+            [&](const std_msgs::StringConstPtr& cmd){
+        if(cmd->data == "reset_fsm") {
+            sbc15_fsm_global::action::say("reset requested");
+            state_machine.reset();
+        }
+    };
+
+    ros::Subscriber sub_cmd = pnh.subscribe<std_msgs::String>("/command", 100, cb);
+
     state_machine.run([&](State* current_state) {
         tick(current_state);
 

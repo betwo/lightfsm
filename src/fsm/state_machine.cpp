@@ -13,7 +13,8 @@
 #include <std_msgs/String.h>
 
 StateMachine::StateMachine(State* initial_state)
-    : start_state_(initial_state), state_(initial_state)
+    : start_state_(initial_state), state_(initial_state),
+      reset_(false), reset_state_(nullptr)
 {
     check();
 
@@ -22,9 +23,14 @@ StateMachine::StateMachine(State* initial_state)
 
 namespace {
 void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
-    sbc15_fsm_global::action::say("reset requested");
     k = true;
 }
+}
+
+void StateMachine::reset()
+{
+    reset_ = true;
+    reset_state_ = start_state_;
 }
 
 void StateMachine::run(boost::function<void(State*)> callback)
@@ -36,15 +42,6 @@ void StateMachine::run(boost::function<void(State*)> callback)
     ros::NodeHandle pnh("~");
     ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
 
-    bool reset = false;
-    boost::function<void(const std_msgs::StringConstPtr&)> cb =
-            [&](const std_msgs::StringConstPtr& cmd){
-        if(cmd->data == "reset_fsm") {
-            reset = true;
-        }
-    };
-
-    ros::Subscriber sub_cmd = pnh.subscribe<std_msgs::String>("/command", 100, cb);
 
     while(ros::ok()) {
         callback(state_);
@@ -58,9 +55,10 @@ void StateMachine::run(boost::function<void(State*)> callback)
             return;
         }
 
-        if(reset) {
+        if(reset_) {
             sbc15_fsm_global::action::say("resetting");
-            state_ = start_state_;
+            state_ = reset_state_;
+            reset_ = false;
         }
 
         // handle ros stuff
