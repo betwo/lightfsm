@@ -21,8 +21,8 @@ StoreObject::StoreObject(State *parent, int retries):
     open_gripper_battery(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
     place_battery2(this, "placeBat2"),
     rest_position_battery(this,"crane"),
-    gripper_semi_close(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
-    sleep_from_battery(this,"rest")
+    sleep_from_battery(this,"rest"),
+    gripper_semi_close(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0)
 
 {
     //event_entry_meta >> place_cup;
