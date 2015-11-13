@@ -17,6 +17,7 @@
 #include "states/fetch_object.h"
 #include "states/back_up.h"
 #include "states/go_to_base.h"
+#include "states/back_up.h"
 
 
 /// SYSTEM
@@ -47,6 +48,8 @@ int main(int argc, char *argv[])
 
     SelectTask select(State::NO_PARENT);
 
+    BackUp forward(State::NO_PARENT, 1.0, 0.1);
+
     Explore explore(State::NO_PARENT);
 
     FetchObject fetch_object(State::NO_PARENT, true);
@@ -60,6 +63,9 @@ int main(int argc, char *argv[])
     select.event_object_selected >> fetch_object;
     select.event_object_unknown >> explore;
     select.event_all_objects_collected >> goto_base;
+    select.event_first_move >> forward;
+
+    forward.event_positioned >> select;
 
     goto_base.event_base_unknown >> explore;
 
@@ -109,6 +115,20 @@ int main(int argc, char *argv[])
             battery->type = sbc15_msgs::Object::OBJECT_BATTERY;
             GlobalState::getInstance().setCurrentObject(battery);
             state_machine.gotoState(&fetch_object.pickup_object);
+
+        } else if(cmd->data == "fsm/approach/cup") {
+            sbc15_fsm_global::action::say("approach cup requested");
+            sbc15_msgs::ObjectPtr cup = boost::make_shared<sbc15_msgs::Object>();
+            cup->type = sbc15_msgs::Object::OBJECT_CUP;
+            GlobalState::getInstance().setCurrentObject(cup);
+            state_machine.gotoState(&fetch_object.approach);
+
+        } else if(cmd->data == "fsm/approach/battery") {
+            sbc15_fsm_global::action::say("approach battery requested");
+            sbc15_msgs::ObjectPtr battery = boost::make_shared<sbc15_msgs::Object>();
+            battery->type = sbc15_msgs::Object::OBJECT_BATTERY;
+            GlobalState::getInstance().setCurrentObject(battery);
+            state_machine.gotoState(&fetch_object.approach);
         }
     };
 

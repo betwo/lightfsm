@@ -7,13 +7,22 @@ SelectTask::SelectTask(State* parent)
 
       event_object_selected(this, "object selected"),
       event_all_objects_collected(this, "all objects collected"),
-      event_object_unknown(this, "object unknown")
+      event_object_unknown(this, "object unknown"),
+      event_first_move(this, "object unknown"),
+
+      first_(true)
 {
 
 }
 
 void SelectTask::entryAction()
 {
+    if(first_) {
+        first_ = false;
+        event_first_move.trigger();
+        return;
+    }
+
     GlobalState& state = GlobalState::getInstance();
 
     if(state.isObjectCollected(sbc15_msgs::Object::OBJECT_BATTERY) &&
