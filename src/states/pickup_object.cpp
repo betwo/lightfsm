@@ -29,6 +29,7 @@ PickupObject::PickupObject(State* parent, bool store)
 
       plan_arm_motion(this,1),
       visual_servoing(this,1),
+
       grab_obj(this,sbc15_msgs::GripperServices::Request::GRAB,0.5),
       pose_interim(this,2, createInterimPose()),
 

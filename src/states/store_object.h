@@ -6,6 +6,7 @@
 #include "../fsm/triggered_event.h"
 #include "../states/preplanned_state.h"
 #include "../states/gripper_state.h"
+#include "../states/recorded_trajectory.h"
 #include "ros/ros.h"
 
 class StoreObject: public MetaState
@@ -18,13 +19,16 @@ public:
     TriggeredEvent event_battery;
 
 
-    PreplannedState place_cup;
+    RecordedTrajectory place_cup1;
     GripperState open_gripper_cup;
-    PreplannedState rest_position_cup;
+    RecordedTrajectory place_cup2;
+    RecordedTrajectory rest_position_cup;
 
-    PreplannedState place_battery;
+    RecordedTrajectory place_battery1;
     GripperState open_gripper_battery;
-    PreplannedState rest_position_battery;
+    RecordedTrajectory place_battery2;
+    RecordedTrajectory rest_position_battery;
+    RecordedTrajectory sleep_from_battery;
     GripperState gripper_semi_close;
 
 public:

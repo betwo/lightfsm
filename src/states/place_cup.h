@@ -36,7 +36,7 @@ public:
 public:
     PlaceCup(State* parent);
 
-    void entryAction();
+//    void entryAction();
 
 
 };

@@ -30,7 +30,7 @@ PlaceCup::PlaceCup(State* parent):
     MetaState(parent),
      goToBase(this),
      goToCup(this,"pickCup1"),
-     closeGripper(this,sbc15_msgs::GripperServices::Request::GRAB,0.5),
+     closeGripper(this,sbc15_msgs::GripperServices::Request::GRAB,0.3),
      takeCup(this,"pickCup2"),
      placeCup(this,1,0.08,0.08),
      openGri(this,sbc15_msgs::GripperServices::Request::RESET_GRIPPER,0),
@@ -40,9 +40,9 @@ PlaceCup::PlaceCup(State* parent):
      event_failure(this,"Failure")
 
 {
-//    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
-//    obj->type = sbc15_msgs::Object::OBJECT_CUP;
-//    GlobalState::getInstance().setCurrentObject(obj);
+    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
+    obj->type = sbc15_msgs::Object::OBJECT_CUP;
+    GlobalState::getInstance().setCurrentObject(obj);
     // Success
     event_entry_meta >> goToBase;
 
@@ -76,9 +76,9 @@ PlaceCup::PlaceCup(State* parent):
 
 }
 
-void PlaceCup::entryAction()
-{
-    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
-    obj->type = sbc15_msgs::Object::OBJECT_CUP;
-    GlobalState::getInstance().setCurrentObject(obj);
-}
+//void PlaceCup::entryAction()
+//{
+//    sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
+//    obj->type = sbc15_msgs::Object::OBJECT_CUP;
+//    GlobalState::getInstance().setCurrentObject(obj);
+//}
