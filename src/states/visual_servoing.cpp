@@ -3,8 +3,6 @@
 
 /// COMPONENT
 #include "global_state.h"
-#include "tf/tf.h"
-#include "tf/transform_listener.h"
 
 VisualServoing::VisualServoing(State* parent,int retries):
     State(parent),
@@ -16,7 +14,6 @@ VisualServoing::VisualServoing(State* parent,int retries):
     event_no_object(this,"No object Visible"),
     retries_(retries),
     started_(false),
-
 
     client_("servoingActionController", true)
 {
@@ -38,8 +35,6 @@ VisualServoing::VisualServoing(State* parent,int retries):
         global.talk(talk);
         global.setObjectCollected(type);
     };
-
-     listener_.waitForTransform("arm_base_link","gripper_palm",ros::Time(0),ros::Duration(3));
 }
 
 void VisualServoing::entryAction()
@@ -69,14 +64,6 @@ void VisualServoing::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
 {
     if(result->error_code == sbc15_msgs::visual_servoingResult::SUCCESS) {
         std::cout << "Object is grasped" << std::endl;
-        tf::StampedTransform transform;
-        listener_.lookupTransform("arm_base_link","gripper_palm",ros::Time(0),transform);
-        tf::Matrix3x3 mat(transform.getRotation());
-        double roll, pitch,yaw;
-        mat.getRPY(roll,pitch,yaw);
-        double x = transform.getOrigin().getX()+0.1;
-        double y = transform.getOrigin().getY();
-        GlobalState::getInstance().setCurrentArmGoal(x,y,transform.getOrigin().getZ(),pitch,atan2(y,x));
         event_done.trigger();
     } else {
         switch(result->error_code)

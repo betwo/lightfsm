@@ -7,8 +7,6 @@
 
 #include <actionlib/client/simple_action_client.h>
 #include <sbc15_msgs/visual_servoingAction.h>
-#include "tf/tf.h"
-#include "tf/transform_listener.h"
 
 class VisualServoing: public State
 {
@@ -29,7 +27,6 @@ private:
     int retries_;
     int retries_left_;
     bool started_;
-    tf::TransformListener listener_;
 
     sbc15_msgs::visual_servoingGoal goal_;
     actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> client_;
