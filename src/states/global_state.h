@@ -42,6 +42,16 @@ struct ArmGoal
     {
     }
 
+    ArmGoal(double poseX, double poseY, double poseZ, double posePitch, double poseYaw):
+        valid(true),
+        x(poseX),
+        y(poseY),
+        z(poseZ),
+        pitch(posePitch),
+        yaw(poseYaw)
+    {
+    }
+
 
     bool valid;
     double x;
