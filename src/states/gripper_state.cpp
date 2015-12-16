@@ -13,21 +13,10 @@ GripperState::GripperState(State* parent, int type,double effort)
       effort_(effort)
 {
     gripper_client_ = GlobalState::getInstance().nh.serviceClient<sbc15_msgs::GripperServices>("/gripper_services");
-    cup_effort_ = GlobalState::getInstance().nh.param("cup_effort",0.2);
-    bat_effort_ = GlobalState::getInstance().nh.param("battery_effort",0.9);
 }
 
 void GripperState::entryAction()
 {
-    sbc15_msgs::ObjectPtr obj =GlobalState::getInstance().getCurrentObject();
-    if(obj->type == sbc15_msgs::Object::OBJECT_CUP)
-    {
-        effort_ = cup_effort_;
-    }
-    if(obj->type == sbc15_msgs::Object::OBJECT_BATTERY)
-    {
-        effort_ = bat_effort_;
-    }
 
 }
 

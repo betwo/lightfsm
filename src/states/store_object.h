@@ -21,7 +21,7 @@ public:
 
     RecordedTrajectory place_cup1;
     GripperState open_gripper_cup;
-    RecordedTrajectory place_cup2;
+//    RecordedTrajectory place_cup2;
     RecordedTrajectory rest_position_cup;
 
     RecordedTrajectory place_battery1;

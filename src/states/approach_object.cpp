@@ -151,6 +151,9 @@ void ApproachObject::position(const sbc15_msgs::ObjectConstPtr& object_odom)
 
     tf::Vector3 pos = object_base_link.getOrigin();
 
+    double normXY = hypot(pos.x(),pos.y());
+    pos -= 0.14 * tf::Vector3(pos.x()/normXY,pos.y()/normXY,0);
+
     global.setCurrentArmGoal(pos.x(),pos.y(),pos.z(), M_PI_2, std::atan2(pos.y(), pos.x()));
 
     ROS_INFO_STREAM("going to object @" << object_base_link.getOrigin().x() << "\t / " << object_base_link.getOrigin().y());

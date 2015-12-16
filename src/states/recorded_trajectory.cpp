@@ -40,5 +40,4 @@ void RecordedTrajectory::doneCb(const actionlib::SimpleClientGoalState&/*state*/
     {
         event_failure.trigger();
     }
-    started_ = false;
 }

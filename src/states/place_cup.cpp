@@ -30,7 +30,7 @@ PlaceCup::PlaceCup(State* parent):
     MetaState(parent),
      goToBase(this),
      goToCup(this,"pickCup1"),
-     closeGripper(this,sbc15_msgs::GripperServices::Request::GRAB,0.3),
+     closeGripper(this,sbc15_msgs::GripperServices::Request::GRAB,0.6),
      takeCup(this,"pickCup2"),
      placeCup(this,1,0.08,0.08),
      openGri(this,sbc15_msgs::GripperServices::Request::RESET_GRIPPER,0),

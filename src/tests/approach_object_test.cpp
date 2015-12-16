@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     WaitForObject wait(State::NO_PARENT);
     Wait goal(State::NO_PARENT, 10.0);
 
-    ApproachObject approach(State::NO_PARENT, 0.55, 0.1);
+    ApproachObject approach(State::NO_PARENT, 0.50, 0.1);
     PickupObject pickup_object(State::NO_PARENT, true);
 
     // ACTION
