@@ -25,6 +25,5 @@ private:
     double cup_effort_;
     double bat_effort_;
     double effort_;
-
 };
-#endif // GRIPPERSTATE_H
+#endif  // GRIPPERSTATE_H

@@ -24,9 +24,8 @@ public:
 
 private:
     void findExplorationPoint();
-    void doneCb(const actionlib::SimpleClientGoalState& state,
-                const path_msgs::NavigateToGoalResultConstPtr& result);
-    void signCallback(const sick_msgs::SignConstPtr &sign);
+    void doneCb(const actionlib::SimpleClientGoalState& state, const path_msgs::NavigateToGoalResultConstPtr& result);
+    void signCallback(const sick_msgs::SignConstPtr& sign);
 
 private:
     ros::ServiceClient map_service_client;
@@ -37,4 +36,4 @@ private:
     double angle_offset_;
 };
 
-#endif // SIGN_EXPLORER_H
+#endif  // SIGN_EXPLORER_H

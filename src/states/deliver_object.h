@@ -13,6 +13,7 @@ class DeliverObject : public MetaState
 public:
     TriggeredEvent event_done;
     TriggeredEvent event_failure;
+
 public:
     GoToBase got_to_base;
     PlaceCup place_cup;
@@ -21,4 +22,4 @@ public:
     DeliverObject(State* parent);
 };
 
-#endif // DELIVER_OBJECT_H
+#endif  // DELIVER_OBJECT_H

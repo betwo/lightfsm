@@ -19,4 +19,4 @@ private:
     Condition condition_;
 };
 
-#endif // GUARD_H
+#endif  // GUARD_H

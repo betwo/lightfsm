@@ -19,7 +19,6 @@
 #include "states/go_to_base.h"
 #include "states/back_up.h"
 
-
 /// SYSTEM
 #include <ros/ros.h>
 #include <sound_play/SoundRequest.h>
@@ -29,15 +28,14 @@ void tick(State* current_state)
     GlobalState::getInstance().update(current_state);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node",
-              ros::InitOption::NoSigintHandler);
+    ros::init(argc, argv, "sbc15_state_machine_node", ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
- 
+
     ROS_WARN("waiting for ros time");
     sbc15_fsm_global::waitForRosTime();
-    
+
     // STATES
     ROS_INFO("creating states");
 
@@ -96,35 +94,33 @@ int main(int argc, char *argv[])
     ros::Time last_pub = ros::Time(0);
     ros::Duration state_pub_rate(1.0);
 
-
-    std::function<void(const std_msgs::StringConstPtr&)> cb =
-            [&](const std_msgs::StringConstPtr& cmd){
-        if(cmd->data == "fsm/reset") {
+    std::function<void(const std_msgs::StringConstPtr&)> cb = [&](const std_msgs::StringConstPtr& cmd) {
+        if (cmd->data == "fsm/reset") {
             sbc15_fsm_global::action::say("reset requested");
             state_machine.reset();
 
-        } else if(cmd->data == "fsm/pickup/cup") {
+        } else if (cmd->data == "fsm/pickup/cup") {
             sbc15_fsm_global::action::say("pickup cup requested");
             sbc15_msgs::ObjectPtr cup = boost::make_shared<sbc15_msgs::Object>();
             cup->type = sbc15_msgs::Object::OBJECT_CUP;
             GlobalState::getInstance().setCurrentObject(cup);
             state_machine.gotoState(&fetch_object.pickup_object);
 
-        } else if(cmd->data == "fsm/pickup/battery") {
+        } else if (cmd->data == "fsm/pickup/battery") {
             sbc15_fsm_global::action::say("pickup battery requested");
             sbc15_msgs::ObjectPtr battery = boost::make_shared<sbc15_msgs::Object>();
             battery->type = sbc15_msgs::Object::OBJECT_BATTERY;
             GlobalState::getInstance().setCurrentObject(battery);
             state_machine.gotoState(&fetch_object.pickup_object);
 
-        } else if(cmd->data == "fsm/approach/cup") {
+        } else if (cmd->data == "fsm/approach/cup") {
             sbc15_fsm_global::action::say("approach cup requested");
             sbc15_msgs::ObjectPtr cup = boost::make_shared<sbc15_msgs::Object>();
             cup->type = sbc15_msgs::Object::OBJECT_CUP;
             GlobalState::getInstance().setCurrentObject(cup);
             state_machine.gotoState(&fetch_object.approach);
 
-        } else if(cmd->data == "fsm/approach/battery") {
+        } else if (cmd->data == "fsm/approach/battery") {
             sbc15_fsm_global::action::say("approach battery requested");
             sbc15_msgs::ObjectPtr battery = boost::make_shared<sbc15_msgs::Object>();
             battery->type = sbc15_msgs::Object::OBJECT_BATTERY;
@@ -139,7 +135,7 @@ int main(int argc, char *argv[])
         tick(current_state);
 
         ros::Time now = ros::Time::now();
-        if(now > last_pub + state_pub_rate) {
+        if (now > last_pub + state_pub_rate) {
             last_pub = now;
             std_msgs::String msg;
             msg.data = state_machine.generateGraphDescription();
@@ -149,4 +145,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

@@ -9,7 +9,7 @@ class StateMachine
 public:
     StateMachine(State* initial_state);
 
-    void run(std::function<void(State *)> callback);
+    void run(std::function<void(State*)> callback);
     bool step();
 
     std::string generateGraphDescription() const;
@@ -22,7 +22,6 @@ private:
     void perform(const Transition& perform);
 
 private:
-
     template <class Stream>
     Stream& printConnections(Stream& stream, const State* s, const std::string& prefix) const;
 
@@ -37,4 +36,4 @@ private:
     State* reset_state_;
 };
 
-#endif // STATE_MACHINE_H
+#endif  // STATE_MACHINE_H

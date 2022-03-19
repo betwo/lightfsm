@@ -34,7 +34,7 @@ public:
     State(State* parent);
     virtual ~State();
 
-    void tick(std::vector<const Transition *> &possible_transitions);
+    void tick(std::vector<const Transition*>& possible_transitions);
 
     virtual bool isTerminal() const;
     ros::Rate& getRate();
@@ -70,19 +70,18 @@ private:
     int uuid_;
 };
 
-
-inline void operator >> (Event& e, State& s)
+inline void operator>>(Event& e, State& s)
 {
     e.connect(&s);
 }
-inline void operator >> (Event* e, State& s)
+inline void operator>>(Event* e, State& s)
 {
     e->connect(&s);
 }
 
-inline void operator >> (Event& e, State* s)
+inline void operator>>(Event& e, State* s)
 {
     e.connect(s);
 }
 
-#endif // STATE_H
+#endif  // STATE_H

@@ -4,8 +4,8 @@
 /// PROJECT
 #include "state.h"
 
-TriggeredEvent::TriggeredEvent(State *parent, const std::string& description)
-    : Event(parent, description), triggered_(false)
+TriggeredEvent::TriggeredEvent(State* parent, const std::string& description)
+  : Event(parent, description), triggered_(false)
 {
 }
 
@@ -15,17 +15,15 @@ void TriggeredEvent::trigger()
     std::cout << parent_->getName() << " triggered \"" << description_ << '\"' << std::endl;
 }
 
-void TriggeredEvent::getPossibleTransitions(std::vector<const Transition *> &possible_transitions) const
+void TriggeredEvent::getPossibleTransitions(std::vector<const Transition*>& possible_transitions) const
 {
-    if(triggered_) {
+    if (triggered_) {
         std::cout << parent_->getName() << ": " << description_ << " is triggered" << std::endl;
         Event::getPossibleTransitions(possible_transitions);
 
         triggered_ = false;
     }
-
 }
-
 
 void TriggeredEvent::forwardEvent()
 {

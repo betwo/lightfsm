@@ -11,22 +11,20 @@
 #include <path_msgs/NavigateToGoalGoal.h>
 #include <queue>
 
-MapExplorer::MapExplorer()
-    : exploring_(false), last_planning_failed_(false),
-      has_search_dir_(false)
+MapExplorer::MapExplorer() : exploring_(false), last_planning_failed_(false), has_search_dir_(false)
 {
     GlobalState& global = GlobalState::getInstance();
 
     std::string map_service = "/exploration/dynamic_map";
-    global.private_nh.param("map_service",map_service, map_service);
-    map_service_client = global.private_nh.serviceClient<nav_msgs::GetMap> (map_service);
+    global.private_nh.param("map_service", map_service, map_service);
+    map_service_client = global.private_nh.serviceClient<nav_msgs::GetMap>(map_service);
     //    map_service_client.waitForExistence();
 
     search_space_map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("search_space", 1);
     map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("map", 1);
 
-    search_dir_sub_ = global.private_nh.subscribe<geometry_msgs::Point>("/exploration_direction", 1,
-                                                                        std::bind(&MapExplorer::searchDirectionCallback, this, std::placeholders::_1));
+    search_dir_sub_ = global.private_nh.subscribe<geometry_msgs::Point>(
+        "/exploration_direction", 1, std::bind(&MapExplorer::searchDirectionCallback, this, std::placeholders::_1));
 }
 
 void MapExplorer::startExploring()
@@ -43,7 +41,7 @@ void MapExplorer::stopExploring()
 {
 }
 
-void MapExplorer::searchDirectionCallback(const geometry_msgs::PointConstPtr &point)
+void MapExplorer::searchDirectionCallback(const geometry_msgs::PointConstPtr& point)
 {
     search_dir_ = *point;
     has_search_dir_ = true;
@@ -57,17 +55,16 @@ void MapExplorer::findExplorationPoint()
     ros::Rate rate(2);
 
     nav_msgs::GetMap map_service;
-    if(!map_service_client.call(map_service)) {
+    if (!map_service_client.call(map_service)) {
         ROS_ERROR("couldn't get map");
         return;
     }
 
     sbc15_fsm_global::action::say("Exploring the environment.");
 
-
     const nav_msgs::OccupancyGrid& map = map_service.response.map;
 
-    if(map_pub_.getNumSubscribers() > 0) {
+    if (map_pub_.getNumSubscribers() > 0) {
         map_pub_.publish(map);
     }
 
@@ -93,7 +90,6 @@ void MapExplorer::findExplorationPoint()
 
     //    tf::Pose target(orientation, poi_pos);
 
-
     // PUBLISH SEARCH SPACE AS GRID MAP
     double min_move_distance = 1.0;
     double min_distance_to_obstacles = 0.25;
@@ -101,12 +97,11 @@ void MapExplorer::findExplorationPoint()
     auto ss = generateSearchSpace(map_pos, min_move_distance, min_distance_to_obstacles, max_distance_to_unknown);
     search_space_map_pub_.publish(ss);
 
-
     path_msgs::NavigateToGoalGoal goal;
     goal.goal.type = path_msgs::Goal::GOAL_TYPE_MAP;
     goal.goal.min_dist = 2.0;
     goal.goal.map = *ss;
-    if(has_search_dir_) {
+    if (has_search_dir_) {
         goal.goal.has_search_dir = true;
         goal.goal.search_dir = search_dir_;
 
@@ -117,12 +112,12 @@ void MapExplorer::findExplorationPoint()
     goal.velocity = global.getDesiredVelocity();
     goal.failure_mode = path_msgs::NavigateToGoalGoal::FAILURE_MODE_ABORT;
 
-    if(planner_.empty()) {
+    if (planner_.empty()) {
         planner_ = "summit_forward";
     }
 
-    if(last_planning_failed_) {
-        if(planner_ == "summit_forward") {
+    if (last_planning_failed_) {
+        if (planner_ == "summit_forward") {
             planner_ = "summit";
         } else {
             planner_ = "summit_forward";
@@ -134,8 +129,7 @@ void MapExplorer::findExplorationPoint()
     goal.goal.algorithm.data = planner_;
 
     ROS_WARN("exploring: send goal");
-    global.moveTo(goal,
-                  std::bind(&MapExplorer::doneCb, this, std::placeholders::_1, std::placeholders::_2),
+    global.moveTo(goal, std::bind(&MapExplorer::doneCb, this, std::placeholders::_1, std::placeholders::_2),
                   [](const path_msgs::NavigateToGoalFeedbackConstPtr& /* fb */) {});
 
     exploring_ = true;
@@ -160,22 +154,25 @@ void MapExplorer::findExplorationPoint()
     //    }
 }
 
-namespace {
-std::size_t index(const cv::Point2i& pt, std::size_t step) {
+namespace
+{
+std::size_t index(const cv::Point2i& pt, std::size_t step)
+{
     return pt.y * step + pt.x;
 }
-std::size_t index(int x, int y, std::size_t step) {
+std::size_t index(int x, int y, std::size_t step)
+{
     return y * step + x;
 }
-}
+}  // namespace
 
-cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i &start)
+cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i& start)
 {
     int rows = search_space.rows;
     int cols = search_space.cols;
     std::size_t M = rows * cols;
     bool visited[M];
-    for(std::size_t i = 0; i < M; ++i) {
+    for (std::size_t i = 0; i < M; ++i) {
         visited[i] = false;
     }
     visited[index(start, cols)] = true;
@@ -183,25 +180,25 @@ cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i &start)
     std::deque<cv::Point2i> Q;
     Q.push_back(start);
 
-    static const int neighbor_x[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-    static const int neighbor_y[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    static const int neighbor_x[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+    static const int neighbor_y[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
-    while(!Q.empty()) {
+    while (!Q.empty()) {
         cv::Point2i current = Q.front();
         Q.pop_front();
 
-        for(std::size_t n = 0; n < 8; ++n) {
+        for (std::size_t n = 0; n < 8; ++n) {
             int nx = current.x + neighbor_x[n];
             int ny = current.y + neighbor_y[n];
 
-            if(nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
-                if(!visited[index(nx, ny, cols)]) {
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                if (!visited[index(nx, ny, cols)]) {
                     visited[index(nx, ny, cols)] = true;
                     const uchar& cell = search_space.at<uchar>(ny, nx);
 
-                    if(cell == UNKNOWN) {
+                    if (cell == UNKNOWN) {
                         Q.push_back(cv::Point2i(nx, ny));
-                    } else if(cell == FREE) {
+                    } else if (cell == FREE) {
                         return cv::Point2i(nx, ny);
                     }
                 }
@@ -212,8 +209,7 @@ cv::Point2i MapExplorer::findNearestFreePoint(const cv::Point2i &start)
     return start;
 }
 
-nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& map_pos,
-                                                            double min_move_distance,
+nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& map_pos, double min_move_distance,
                                                             double min_distance_to_obstacles,
                                                             double max_distance_to_unknown)
 {
@@ -223,22 +219,22 @@ nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& m
     nav_msgs::OccupancyGridPtr ss = boost::make_shared<nav_msgs::OccupancyGrid>();
     ss->header = last_map.header;
     ss->info = last_map.info;
-    ss->data.resize(w*h, 0);
+    ss->data.resize(w * h, 0);
 
     double res = last_map.info.resolution;
 
     int8_t* dataP = &ss->data[0];
-    for(int row = 0; row < h; ++row) {
-        for(int col = 0; col < w; ++col) {
+    for (int row = 0; row < h; ++row) {
+        for (int col = 0; col < w; ++col) {
             float dist_to_obstacles = distance_to_obstacle.at<float>(row, col) * res;
             float dist_to_unknown = distance_to_unknown.at<float>(row, col) * res;
             float dist_to_robot = std::hypot(map_pos.x - col, map_pos.y - row) * res;
 
-            if(dist_to_obstacles < min_distance_to_obstacles) {
+            if (dist_to_obstacles < min_distance_to_obstacles) {
                 *dataP = -1;
             } else {
                 if (dist_to_unknown < max_distance_to_unknown) {
-                    if(dist_to_robot > min_move_distance) {
+                    if (dist_to_robot > min_move_distance) {
                         *dataP = 100;
                     }
                 }
@@ -250,13 +246,13 @@ nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& m
     return ss;
 }
 
-cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double min_distance)
+cv::Point2i MapExplorer::findPOI(const cv::Point2i& start, double min_distance)
 {
     int rows = search_space.rows;
     int cols = search_space.cols;
     std::size_t M = rows * cols;
     bool visited[M];
-    for(std::size_t i = 0; i < M; ++i) {
+    for (std::size_t i = 0; i < M; ++i) {
         visited[i] = false;
     }
     visited[index(start, cols)] = true;
@@ -264,48 +260,51 @@ cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double min_distance)
     std::deque<cv::Point2i> Q;
     Q.push_back(start);
 
-    static const int neighbor_x[] = {-1, 0, 1, -1, 1, -1, 0, 1};
-    static const int neighbor_y[] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    static const int neighbor_x[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+    static const int neighbor_y[] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
     cv::Point2i result = start;
-    struct Point {
+    struct Point
+    {
         cv::Point2i pt;
         double priority;
 
-        bool operator < (const Point& rhs) const
+        bool operator<(const Point& rhs) const
         {
             return priority < rhs.priority;
         }
     };
     std::priority_queue<Point> candidates;
 
-    while(!Q.empty()) {
+    while (!Q.empty()) {
         cv::Point2i current = Q.front();
         Q.pop_front();
 
-        for(std::size_t n = 0; n < 8; ++n) {
+        for (std::size_t n = 0; n < 8; ++n) {
             int nx = current.x + neighbor_x[n];
             int ny = current.y + neighbor_y[n];
 
-            if(nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
-                if(!visited[index(nx, ny, cols)]) {
+            if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                if (!visited[index(nx, ny, cols)]) {
                     visited[index(nx, ny, cols)] = true;
                     const uchar& cell = search_space.at<uchar>(ny, nx);
-                    if(cell == UNKNOWN) {
-                        double distance = hypot(nx-start.x, ny-start.y);
+                    if (cell == UNKNOWN) {
+                        double distance = hypot(nx - start.x, ny - start.y);
                         float dist_to_obstacles = distance_to_obstacle.at<float>(ny, nx);
-                        if(distance > min_distance) {
-                            //                            std::cerr << "found candidate cell " << nx << ", " << ny << " at distance" << distance << " m" << std::endl;
+                        if (distance > min_distance) {
+                            //                            std::cerr << "found candidate cell " << nx << ", " << ny << "
+                            //                            at distance" << distance << " m" << std::endl;
                             cv::Point2i candidate(nx, ny);
-                            std::vector<cv::Point2i>::iterator it = std::find(blacklist_.begin(), blacklist_.end(), candidate);
-                            if(it == blacklist_.end()) {
+                            std::vector<cv::Point2i>::iterator it =
+                                std::find(blacklist_.begin(), blacklist_.end(), candidate);
+                            if (it == blacklist_.end()) {
                                 Point c;
                                 c.pt = candidate;
                                 c.priority = dist_to_obstacles;
                                 candidates.push(c);
                             }
                         }
-                    } else if(cell != OBSTACLE) {
+                    } else if (cell != OBSTACLE) {
                         Q.push_back(cv::Point2i(nx, ny));
                     }
                 }
@@ -313,19 +312,16 @@ cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double min_distance)
         }
     }
 
-
     ROS_INFO_STREAM("got " << candidates.size() << " exploration candidates");
 
-
-    if(!candidates.empty()) {
+    if (!candidates.empty()) {
         result = candidates.top().pt;
         search_space.at<uchar>(result.y, result.x) = 240;
         candidates.pop();
-        while(!candidates.empty()) {
+        while (!candidates.empty()) {
             auto pt = candidates.top().pt;
             candidates.pop();
             search_space.at<uchar>(pt.y, pt.x) = 180;
-
         }
 
         blacklist_.push_back(result);
@@ -336,7 +332,7 @@ cv::Point2i MapExplorer::findPOI(const cv::Point2i &start, double min_distance)
     return result;
 }
 
-void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_pos)
+void MapExplorer::splitMap(const nav_msgs::OccupancyGrid& map, cv::Point2i map_pos)
 {
     last_map = map;
 
@@ -349,22 +345,22 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
     cv::Mat map_obstacle(h, w, CV_8UC1, cv::Scalar::all(255));
     cv::Mat map_unknown(h, w, CV_8UC1, cv::Scalar::all(255));
 
-    for(int row = 0; row < h; ++row) {
-        for(int col = 0; col < w; ++col) {
+    for (int row = 0; row < h; ++row) {
+        for (int col = 0; col < w; ++col) {
             const char& cell = data.at<char>(row, col);
 
             bool free = cell >= 0 && cell <= 50;
             bool occupied = cell > 50;
 
             double distance = std::hypot(row - map_pos.y, col - map_pos.x);
-            if(distance < 10.0) {
+            if (distance < 10.0) {
                 free = true;
                 occupied = false;
             }
 
-            if(free) {
+            if (free) {
                 map_free.at<uchar>(row, col) = 0;
-            } else if(occupied) {
+            } else if (occupied) {
                 map_obstacle.at<uchar>(row, col) = 0;
             } else {
                 map_unknown.at<uchar>(row, col) = 0;
@@ -372,18 +368,15 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
         }
     }
 
-
     int kernel_size = 4;
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
-                                               cv::Size( 2*kernel_size + 1, 2*kernel_size+1 ),
-                                               cv::Point( kernel_size, kernel_size ) );
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * kernel_size + 1, 2 * kernel_size + 1),
+                                               cv::Point(kernel_size, kernel_size));
     int small_kernel_size = 3;
-    cv::Mat small_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE,
-                                                     cv::Size( 2*small_kernel_size + 1, 2*small_kernel_size+1 ),
-                                                     cv::Point( small_kernel_size, small_kernel_size ) );
+    cv::Mat small_kernel =
+        cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * small_kernel_size + 1, 2 * small_kernel_size + 1),
+                                  cv::Point(small_kernel_size, small_kernel_size));
 
     //    cv::dilate(map_free, map_free_safe, kernel);
-
 
     cv::dilate(map_free, map_free, kernel);
     cv::erode(map_obstacle, map_obstacle, kernel);
@@ -397,17 +390,17 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
 
     search_space = cv::Mat(h, w, CV_8UC1, cv::Scalar::all(0));
 
-    for(int row = 0; row < h; ++row) {
-        for(int col = 0; col < w; ++col) {
+    for (int row = 0; row < h; ++row) {
+        for (int col = 0; col < w; ++col) {
             char& e = search_space.at<char>(row, col);
 
             //            bool free = 0 == map_free.at<char>(row, col);
             bool obstacle = 0 == map_obstacle.at<char>(row, col);
             bool unknown = 0 == map_unknown.at<char>(row, col);
 
-            if(obstacle) {
+            if (obstacle) {
                 e = OBSTACLE;
-            } else if(unknown) {
+            } else if (unknown) {
                 e = UNKNOWN;
             } else {
                 const float& dist_to_obst = distance_to_obstacle.at<float>(row, col);

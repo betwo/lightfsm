@@ -12,7 +12,7 @@ class State;
 class Event
 {
 public:
-    Event(State* parent, const std::string &description);
+    Event(State* parent, const std::string& description);
     Event(const Event&) = delete;
     Event(Event&&) = delete;
     virtual ~Event();
@@ -24,8 +24,8 @@ public:
 
     void connect(Action action);
 
-    virtual void getPossibleTransitions(std::vector<const Transition *> &possible_transitions) const;
-    void getAllTransitions(std::vector<const Transition *> &transitions) const;
+    virtual void getPossibleTransitions(std::vector<const Transition*>& possible_transitions) const;
+    void getAllTransitions(std::vector<const Transition*>& transitions) const;
 
     std::string getDescription() const;
 
@@ -42,18 +42,17 @@ protected:
     std::vector<Action> actions_on_transition_;
 };
 
-inline void operator >> (Event& e, Event& f)
+inline void operator>>(Event& e, Event& f)
 {
     e.connect(&f);
 }
-inline void operator << (Event& e, const Action& a)
+inline void operator<<(Event& e, const Action& a)
 {
     e.connect(a);
 }
-inline void operator << (Event& e, const std::function<void()>& a)
+inline void operator<<(Event& e, const std::function<void()>& a)
 {
     e.connect(Action(a));
 }
 
-
-#endif // EVENT_H
+#endif  // EVENT_H

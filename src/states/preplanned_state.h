@@ -28,4 +28,4 @@ private:
     bool started_;
 };
 
-#endif // PREPLANNEDSTATE_H
+#endif  // PREPLANNEDSTATE_H

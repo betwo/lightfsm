@@ -17,8 +17,6 @@ public:
 
     void entryAction();
     void iteration();
-
-
 };
 
-#endif // POSITION_TO_BASE_H
+#endif  // POSITION_TO_BASE_H

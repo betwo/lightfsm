@@ -23,4 +23,4 @@ private:
     bool first_;
 };
 
-#endif // SELECTTASK_H
+#endif  // SELECTTASK_H

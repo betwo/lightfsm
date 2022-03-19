@@ -4,10 +4,8 @@
 /// COMPONENT
 #include "global_state.h"
 
-BackUp::BackUp(State *parent, double distance, double velocity)
-    : State(parent),
-      event_positioned(this, "backed up"),
-      distance_(distance), velocity_(velocity)
+BackUp::BackUp(State* parent, double distance, double velocity)
+  : State(parent), event_positioned(this, "backed up"), distance_(distance), velocity_(velocity)
 {
 }
 
@@ -15,10 +13,10 @@ void BackUp::entryAction()
 {
     start_pose_ = GlobalState::getInstance().pose;
 
-    //if(GlobalState::getInstance().getDesiredDistance() != 0)
+    // if(GlobalState::getInstance().getDesiredDistance() != 0)
     //{
 
-      //  distance_ = GlobalState::getInstance().getDesiredDistance();
+    //  distance_ = GlobalState::getInstance().getDesiredDistance();
     //}
 }
 
@@ -28,7 +26,7 @@ void BackUp::iteration()
     tf::Vector3 now = GlobalState::getInstance().pose.getOrigin();
 
     geometry_msgs::Twist cmd;
-    if((now - start).length() >= distance_) {
+    if ((now - start).length() >= distance_) {
         event_positioned.trigger();
     } else {
         cmd.linear.x = velocity_;

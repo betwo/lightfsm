@@ -9,15 +9,14 @@
 #include <sbc15_msgs/MoveManipulatorAction.h>
 #include <sbc15_msgs/MoveManipulatorHightOffsetAction.h>
 
-class MoveitMotion: public State
+class MoveitMotion : public State
 {
 public:
     TriggeredEvent event_done;
-//    TriggeredEvent event_timeout; // No time out, since dynamixel controller lead currently always to timeout
+    //    TriggeredEvent event_timeout; // No time out, since dynamixel controller lead currently always to timeout
     TriggeredEvent event_failure;
-    TriggeredEvent event_planning_failed ;
+    TriggeredEvent event_planning_failed;
     TriggeredEvent event_servo_control_failed;
-
 
 public:
     MoveitMotion(State* parent, int retries);
@@ -34,17 +33,15 @@ private:
     bool takeGlobalStateGoal_;
     bool withOffset_;
 
-//    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorAction> client_;
-//    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorHightOffsetAction> clientOffset_;
+    //    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorAction> client_;
+    //    actionlib::SimpleActionClient<sbc15_msgs::MoveManipulatorHightOffsetAction> clientOffset_;
     ArmGoal constantGoal_;
     sbc15_msgs::MoveManipulatorGoal goal_;
     sbc15_msgs::MoveManipulatorHightOffsetGoal goalOffset_;
 
-    void doneCb(const actionlib::SimpleClientGoalState& state,
-           const sbc15_msgs::MoveManipulatorResultConstPtr& result);
+    void doneCb(const actionlib::SimpleClientGoalState& state, const sbc15_msgs::MoveManipulatorResultConstPtr& result);
     void doneCbOffset(const actionlib::SimpleClientGoalState& state,
                       const sbc15_msgs::MoveManipulatorHightOffsetResultConstPtr& result);
 };
 
-#endif // MOVEITMOTION_H
-
+#endif  // MOVEITMOTION_H

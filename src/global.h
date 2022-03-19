@@ -5,18 +5,20 @@
 #include "states/global_state.h"
 #include "fsm/state.h"
 
-namespace sbc15_fsm_global {
-namespace action {
+namespace sbc15_fsm_global
+{
+namespace action
+{
 void print(const std::string& str);
 void say(const std::string& str);
-}
+}  // namespace action
 
 void waitForRosTime();
 
-}
+}  // namespace sbc15_fsm_global
 
-
-class Initial : public State {
+class Initial : public State
+{
 public:
     Initial(State* parent);
 };
@@ -39,4 +41,4 @@ protected:
     bool isTerminal() const;
 };
 
-#endif // sbc15_GLOBAL_H
+#endif  // sbc15_GLOBAL_H

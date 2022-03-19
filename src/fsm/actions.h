@@ -25,13 +25,12 @@ public:
 
     std::vector<Action>::const_iterator end() const;
 
-    Actions& operator << (const Action& a);
+    Actions& operator<<(const Action& a);
 
-    Actions& operator << (const std::function<void()>& a);
+    Actions& operator<<(const std::function<void()>& a);
 
 private:
     std::vector<Action> actions_;
 };
-
 
 #endif /* ACTIONS_H */

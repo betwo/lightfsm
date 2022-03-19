@@ -26,7 +26,6 @@ public:
     GoToObject goto_object;
     ApproachObject approach;
     PickupObject pickup_object;
-
 };
 
-#endif // FETCHOBJECT_H
+#endif  // FETCHOBJECT_H

@@ -5,7 +5,7 @@
 #include "event.h"
 
 Transition::Transition(Event* trigger, State* follow_up, Guard guard, Action action)
-    : trigger_(trigger), follow_up_(follow_up), guard_(guard), action_(action)
+  : trigger_(trigger), follow_up_(follow_up), guard_(guard), action_(action)
 {
 }
 

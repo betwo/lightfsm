@@ -8,7 +8,7 @@
 #include "../states/gripper_state.h"
 #include "ros/ros.h"
 
-class PlaceObject: public MetaState
+class PlaceObject : public MetaState
 {
 public:
     TriggeredEvent event_object_placed;
@@ -23,4 +23,4 @@ public:
     PlaceObject(State* parent, int retries);
 };
 
-#endif // PLACE_OBJECT_H
+#endif  // PLACE_OBJECT_H

@@ -8,19 +8,18 @@ namespace Ogre
 {
 class SceneNode;
 class Vector3;
-}
+}  // namespace Ogre
 
 namespace rviz
 {
 class VectorProperty;
 class VisualizationManager;
 class ViewportMouseEvent;
-}
+}  // namespace rviz
 
 namespace sbc15_fsm
 {
-
-class ExplorationControl: public rviz::Tool
+class ExplorationControl : public rviz::Tool
 {
     Q_OBJECT
 
@@ -33,15 +32,15 @@ public:
     virtual void activate();
     virtual void deactivate();
 
-    virtual int processMouseEvent( rviz::ViewportMouseEvent& event );
+    virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
 
-    virtual void load( const rviz::Config& config );
-    virtual void save( rviz::Config config ) const;
+    virtual void load(const rviz::Config& config);
+    virtual void save(rviz::Config config) const;
 
     void destroyFlag();
 
 private:
-    void makeFlag( const Ogre::Vector3& position );
+    void makeFlag(const Ogre::Vector3& position);
 
     Ogre::SceneNode* flag_node_;
     Ogre::SceneNode* moving_flag_node_;
@@ -52,5 +51,5 @@ private:
     ros::Publisher search_dir_pub_;
 };
 
-}
-#endif // EXPLORATIONCONTROL_H
+}  // namespace sbc15_fsm
+#endif  // EXPLORATIONCONTROL_H

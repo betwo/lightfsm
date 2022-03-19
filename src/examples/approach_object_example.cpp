@@ -22,23 +22,20 @@ public:
     TriggeredEvent event_object_found;
 
 public:
-    WaitForObject(State* parent)
-        : State(parent), event_object_found(this, "Object found")
+    WaitForObject(State* parent) : State(parent), event_object_found(this, "Object found")
     {
-
     }
 
     void entryAction()
     {
         GlobalState& global = GlobalState::getInstance();
 
-        std::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
-                [this](const sbc15_msgs::ObjectConstPtr& o)
-        {
-            if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
+        std::function<void(const sbc15_msgs::ObjectConstPtr&)> cb = [this](const sbc15_msgs::ObjectConstPtr& o) {
+            if (o->type == sbc15_msgs::Object::OBJECT_CUP) {
                 GlobalState& global = GlobalState::getInstance();
 
-                tf::Transform trafo_to_base_link = global.getTransform("/arm_base_link", o->header.frame_id, o->header.stamp, ros::Duration(0.5));
+                tf::Transform trafo_to_base_link =
+                    global.getTransform("/arm_base_link", o->header.frame_id, o->header.stamp, ros::Duration(0.5));
                 tf::Pose o_pose;
                 tf::poseMsgToTF(o->pose, o_pose);
                 tf::Pose in_base = trafo_to_base_link * o_pose;
@@ -46,12 +43,11 @@ public:
                 tf::Vector3 delta = in_base.getOrigin();
                 double dist = delta.length();
 
-                if(dist > 2.0 || std::abs(delta.y()) > 0.5) {
+                if (dist > 2.0 || std::abs(delta.y()) > 0.5) {
                     return;
                 }
 
-                if(in_base.getOrigin().z() > -0.6 && in_base.getOrigin().z() < 0.2) {
-
+                if (in_base.getOrigin().z() > -0.6 && in_base.getOrigin().z() < 0.2) {
                     global.setCurrentObject(boost::make_shared<sbc15_msgs::Object>(*o));
 
                     event_object_found.trigger();
@@ -80,10 +76,9 @@ private:
     ros::Subscriber sub_objects;
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node",
-              ros::InitOption::NoSigintHandler);
+    ros::init(argc, argv, "sbc15_state_machine_node", ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
     ros::NodeHandle p_nh("~");
 
@@ -117,15 +112,10 @@ int main(int argc, char *argv[])
     approach.event_approached << []() { say("Pick up!"); };
     pickup_object.event_object_pickedup << []() { say("Great success!"); };
 
-
     StateMachine state_machine(&wait);
     ROS_INFO("start");
 
-    state_machine.run([&](State* current_state) {
-        tick(current_state);
-    });
+    state_machine.run([&](State* current_state) { tick(current_state); });
 
     return 0;
 }
-
-

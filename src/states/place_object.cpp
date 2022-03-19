@@ -6,15 +6,16 @@
 #include <sbc15_msgs/PreplannedTrajectories.h>
 #include <control_msgs/FollowJointTrajectoryResult.h>
 
-PlaceObject::PlaceObject(State *parent, int retries):
-    MetaState(parent),
-    event_object_placed(this,"object is placed"),
+PlaceObject::PlaceObject(State* parent, int retries)
+  : MetaState(parent)
+  , event_object_placed(this, "object is placed")
+  ,
 
-    place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PRE_POSITION, retries),
-    open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER,0),
-    pre_rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP, retries),
-    close_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE,0),
-    rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP, retries)
+  place_object(this, sbc15_msgs::PreplannedTrajectoriesRequest::PRE_POSITION, retries)
+  , open_gripper(this, sbc15_msgs::GripperServices::Request::OPEN_GRIPPER, 0)
+  , pre_rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_CUP, retries)
+  , close_gripper(this, sbc15_msgs::GripperServices::Request::SEMI_CLOSE, 0)
+  , rest_position(this, sbc15_msgs::PreplannedTrajectoriesRequest::PLACE_ARM_FROM_CUP, retries)
 
 {
     event_entry_meta >> place_object;
@@ -32,4 +33,3 @@ PlaceObject::PlaceObject(State *parent, int retries):
     rest_position.event_done >> event_object_placed;
     rest_position.event_failure >> event_object_placed;
 }
-

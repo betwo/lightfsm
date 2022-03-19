@@ -7,14 +7,17 @@
 #include "../states/global_state.h"
 
 PreplannedState::PreplannedState(State* parent, int type, int retries)
-    : State(parent),
-      event_done(this,"Arm positioned"),
-      event_failure(this, "error happend"),
-      type_(type),
-      retries_(retries),
-      started_(false)
+  : State(parent)
+  , event_done(this, "Arm positioned")
+  , event_failure(this, "error happend")
+  , type_(type)
+  , retries_(retries)
+  , started_(false)
 {
-    planedTrajectoryClient_ = GlobalState::getInstance().nh.serviceClient<sbc15_msgs::PreplannedTrajectories>("preplanned_trajectories");
+    planedTrajectoryClient_ = GlobalState::getInstance().nh.serviceClient<sbc15_msgs::PreplannedTrajectories>("preplann"
+                                                                                                              "ed_"
+                                                                                                              "trajecto"
+                                                                                                              "ries");
 }
 
 void PreplannedState::entryAction()
@@ -25,25 +28,23 @@ void PreplannedState::entryAction()
 
 void PreplannedState::iteration()
 {
-
-    if(!started_ && retries_left_ > 0)
-    {
+    if (!started_ && retries_left_ > 0) {
         started_ = true;
         --retries_left_;
         sbc15_msgs::PreplannedTrajectories msgs;
         msgs.request.trajectory = type_;
-        planedTrajectoryClient_.call(msgs.request,msgs.response);
-//        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
-//        {
-            event_done.trigger();
-//        }
-//        else
-//        {
-//            if(retries_left_ < 0)
-//            {
-//                event_failure.trigger();
-//            }
-//        }
+        planedTrajectoryClient_.call(msgs.request, msgs.response);
+        //        if(msgs.response.result.error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
+        //        {
+        event_done.trigger();
+        //        }
+        //        else
+        //        {
+        //            if(retries_left_ < 0)
+        //            {
+        //                event_failure.trigger();
+        //            }
+        //        }
         started_ = false;
     }
 }

@@ -14,7 +14,7 @@ public:
     TriggeredEvent event_exit_meta;
 
 public:
-    MetaState(State *parent);
+    MetaState(State* parent);
 
     void entryAction();
 
@@ -27,4 +27,4 @@ private:
     std::vector<State*> children_;
 };
 
-#endif // META_STATE_H
+#endif  // META_STATE_H

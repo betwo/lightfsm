@@ -35,7 +35,6 @@ public:
     PreplannedState back_up;
     BackUp drive_backward;
 
-
     GripperState abort;
     PreplannedState abort2;
 
@@ -58,4 +57,4 @@ private:
     bool store_;
 };
 
-#endif // PICKUPOBJECT_H
+#endif  // PICKUPOBJECT_H

@@ -25,10 +25,8 @@ public:
     TriggeredEvent event_object_found;
 
 public:
-    WaitForObject(State* parent)
-        : State(parent), event_object_found(this, "Object found")
+    WaitForObject(State* parent) : State(parent), event_object_found(this, "Object found")
     {
-
     }
     double desiredFrequency() const override
     {
@@ -39,16 +37,15 @@ public:
     {
         auto objects = GlobalState::getInstance().getObjects();
         ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
-        if(!objects.empty()) {
+        if (!objects.empty()) {
             event_object_found.trigger();
         }
     }
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node",
-              ros::InitOption::NoSigintHandler);
+    ros::init(argc, argv, "sbc15_state_machine_node", ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
     ros::NodeHandle p_nh("~");
 
@@ -60,7 +57,7 @@ int main(int argc, char *argv[])
 
     SelectTask select(State::NO_PARENT);
 
-    //BackUp forward(State::NO_PARENT, 1.0, 0.1);
+    // BackUp forward(State::NO_PARENT, 1.0, 0.1);
     Explore explore(State::NO_PARENT);
 
     FetchObject fetch_object(State::NO_PARENT, true);
@@ -70,10 +67,10 @@ int main(int argc, char *argv[])
 
     wait.event_object_found >> select;
 
-    //forward.event_positioned >> explore;
+    // forward.event_positioned >> explore;
 
     select.event_object_selected >> fetch_object;
-    select.event_object_unknown >> explore;//forward;
+    select.event_object_unknown >> explore;  // forward;
     select.event_all_objects_collected >> goal;
 
     fetch_object.event_object_unknown >> select;
@@ -81,7 +78,6 @@ int main(int argc, char *argv[])
     fetch_object.event_object_fetched >> select;
 
     explore.event_object_found >> select;
-
 
     // TALK
     using sbc15_fsm_global::action::say;
@@ -100,7 +96,7 @@ int main(int argc, char *argv[])
         tick(current_state);
 
         ros::Time now = ros::Time::now();
-        if(now > last_pub + state_pub_rate) {
+        if (now > last_pub + state_pub_rate) {
             last_pub = now;
             std_msgs::String msg;
             msg.data = state_machine.generateGraphDescription();
@@ -110,5 +106,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-

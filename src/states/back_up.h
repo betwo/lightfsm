@@ -25,5 +25,4 @@ private:
     tf::Pose start_pose_;
 };
 
-
-#endif // BACK_UP_H
+#endif  // BACK_UP_H

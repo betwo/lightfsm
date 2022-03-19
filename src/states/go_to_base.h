@@ -20,4 +20,4 @@ public:
     void iteration();
 };
 
-#endif // GO_TO_BASE_H
+#endif  // GO_TO_BASE_H

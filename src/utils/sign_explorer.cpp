@@ -12,12 +12,13 @@ SignExplorer::SignExplorer()
     GlobalState& global = GlobalState::getInstance();
 
     std::string map_service = "/dynamic_map";
-    global.nh.param("map_service",map_service, map_service);
-    map_service_client = global.nh.serviceClient<nav_msgs::GetMap> (map_service);
+    global.nh.param("map_service", map_service, map_service);
+    map_service_client = global.nh.serviceClient<nav_msgs::GetMap>(map_service);
     map_service_client.waitForExistence();
 
     lookat_pt_cmd_publisher = global.nh.advertise<std_msgs::String>("/look_at/cmd", 10, true);
-    sub_sign_ = global.nh.subscribe<sick_msgs::Sign>("/signs", 10, std::bind(&SignExplorer::signCallback, this, std::placeholders::_1));
+    sub_sign_ = global.nh.subscribe<sick_msgs::Sign>(
+        "/signs", 10, std::bind(&SignExplorer::signCallback, this, std::placeholders::_1));
 
     angle_offset_ = 0.0;
 }
@@ -56,21 +57,20 @@ void SignExplorer::stopExploring()
     lookat_pt_cmd_publisher.publish(reset);
 }
 
-
 void SignExplorer::findExplorationPoint()
 {
     GlobalState& global = GlobalState::getInstance();
     ros::Rate rate(2);
 
     nav_msgs::GetMap map_service;
-    while(!map_service_client.call(map_service)) {
+    while (!map_service_client.call(map_service)) {
         ROS_ERROR_STREAM("couldn't get map");
         ros::spinOnce();
         rate.sleep();
     }
     //    const nav_msgs::OccupancyGrid& map = map_service.response.map;
 
-    while(!global.map_classification_.valid) {
+    while (!global.map_classification_.valid) {
         ROS_ERROR("waiting for valid map classification");
         ros::spinOnce();
         rate.sleep();
@@ -86,7 +86,7 @@ void SignExplorer::findExplorationPoint()
     double view = std::atan2(diff.y(), diff.x());
     double angle = view + M_PI / 2.0 + angle_offset_;
 
-    double r = (global.map_classification_.inner_radius + global.map_classification_.outer_radius ) / 2.0;
+    double r = (global.map_classification_.inner_radius + global.map_classification_.outer_radius) / 2.0;
     tf::Vector3 circle_point = center + tf::Vector3(std::cos(angle) * r, std::sin(angle) * r, 0);
     tf::Quaternion orientation = tf::createQuaternionFromYaw(angle);
 
@@ -97,7 +97,7 @@ void SignExplorer::findExplorationPoint()
 void SignExplorer::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
                           const path_msgs::NavigateToGoalResultConstPtr& result)
 {
-    if(result->status == path_msgs::NavigateToGoalResult::STATUS_SUCCESS) {
+    if (result->status == path_msgs::NavigateToGoalResult::STATUS_SUCCESS) {
         angle_offset_ = 0.0;
     } else {
         angle_offset_ += M_PI / 8.0;
@@ -105,8 +105,6 @@ void SignExplorer::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
     findExplorationPoint();
 }
 
-
-void SignExplorer::signCallback(const sick_msgs::SignConstPtr &sign)
+void SignExplorer::signCallback(const sick_msgs::SignConstPtr& sign)
 {
-
 }

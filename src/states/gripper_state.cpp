@@ -6,18 +6,14 @@
 #include <sbc15_msgs/Object.h>
 #include "../states/global_state.h"
 
-GripperState::GripperState(State* parent, int type,double effort)
-    : State(parent),
-      event_done(this,"Gripper positioned"),
-      type_(type),
-      effort_(effort)
+GripperState::GripperState(State* parent, int type, double effort)
+  : State(parent), event_done(this, "Gripper positioned"), type_(type), effort_(effort)
 {
     gripper_client_ = GlobalState::getInstance().nh.serviceClient<sbc15_msgs::GripperServices>("/gripper_services");
 }
 
 void GripperState::entryAction()
 {
-
 }
 
 void GripperState::iteration()
@@ -25,7 +21,7 @@ void GripperState::iteration()
     sbc15_msgs::GripperServices msgs;
     msgs.request.action = type_;
     msgs.request.effort = effort_;
-    gripper_client_.call(msgs.request,msgs.response);
+    gripper_client_.call(msgs.request, msgs.response);
 
     event_done.trigger();
 }

@@ -18,16 +18,16 @@ void tick(State* current_state)
     GlobalState::getInstance().update(current_state);
 }
 
-struct WaitForGo: public State
+struct WaitForGo : public State
 {
 public:
     TriggeredEvent event_go;
 
 public:
-    WaitForGo(State* parent)
-        : State(parent), event_go(this, "Go Signal")
+    WaitForGo(State* parent) : State(parent), event_go(this, "Go Signal")
     {
-        sub = GlobalState::getInstance().nh.subscribe<std_msgs::Bool>("/go", 1, std::bind(&WaitForGo::go, this, std::placeholders::_1));
+        sub = GlobalState::getInstance().nh.subscribe<std_msgs::Bool>(
+            "/go", 1, std::bind(&WaitForGo::go, this, std::placeholders::_1));
     }
 
     void go(const std_msgs::BoolConstPtr&)
@@ -37,17 +37,15 @@ public:
 
     void iteration()
     {
-
     }
 
 private:
     ros::Subscriber sub;
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node",
-              ros::InitOption::NoSigintHandler);
+    ros::init(argc, argv, "sbc15_state_machine_node", ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
     ros::NodeHandle p_nh("~");
 
@@ -61,8 +59,8 @@ int main(int argc, char *argv[])
 
     // ACTIONS
     wait.event_done >> explore;
-    //explore.event_object_found >> explore;
- 
+    // explore.event_object_found >> explore;
+
     goal.event_done >> goal;
 
     StateMachine state_machine(&wait);
@@ -71,4 +69,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

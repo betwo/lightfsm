@@ -10,12 +10,11 @@ State* State::NO_PARENT = NULL;
 
 std::vector<State*> State::g_states;
 
-State::State(State* parent)
-    : event_default(this, "default"), rate_(1), parent_(parent), uuid_(nextId())
+State::State(State* parent) : event_default(this, "default"), rate_(1), parent_(parent), uuid_(nextId())
 {
     g_states.push_back(this);
 
-    if(parent != NO_PARENT) {
+    if (parent != NO_PARENT) {
         parent->registerChildState(this);
     }
 }
@@ -26,7 +25,7 @@ State::~State()
     g_states.erase(pos);
 }
 
-void State::registerChildState(State */*child*/)
+void State::registerChildState(State* /*child*/)
 {
     // do nothing
 }
@@ -48,7 +47,6 @@ std::string State::getName() const
     std::string full_name(abi::__cxa_demangle(typeid(*this).name(), 0, 0, &status));
 
     return full_name;
-
 }
 
 bool State::isTerminal() const
@@ -65,7 +63,7 @@ void State::performEntryAction()
 {
     rate_ = ros::Rate(desiredFrequency());
 
-    for(std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {
+    for (std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {
         const Action& action = *a;
         action.perform();
     }
@@ -77,26 +75,23 @@ void State::performExitAction()
 {
     exitAction();
 
-    for(std::vector<Action>::const_iterator a = action_exit.begin(); a != action_exit.end(); ++a) {
+    for (std::vector<Action>::const_iterator a = action_exit.begin(); a != action_exit.end(); ++a) {
         const Action& action = *a;
         action.perform();
     }
 }
 
-
 void State::entryAction()
 {
-//    rate_ = ros::Rate(desiredFrequency());
+    //    rate_ = ros::Rate(desiredFrequency());
 }
 
 void State::exitAction()
 {
-
 }
 
 void State::iteration()
 {
-
 }
 
 double State::desiredFrequency() const
@@ -110,18 +105,17 @@ void State::tick(std::vector<const Transition*>& possible_transitions)
     iteration();
 
     // check events
-    for(std::vector<Event*>::const_iterator e = events_.begin(); e != events_.end(); ++e) {
+    for (std::vector<Event*>::const_iterator e = events_.begin(); e != events_.end(); ++e) {
         const Event* event = *e;
 
         event->getPossibleTransitions(possible_transitions);
     }
 }
 
-void State::registerEvent(Event *event)
+void State::registerEvent(Event* event)
 {
     events_.push_back(event);
 }
-
 
 State* State::getParent() const
 {

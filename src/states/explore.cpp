@@ -4,10 +4,7 @@
 /// COMPONENT
 #include "../states/global_state.h"
 
-
-Explore::Explore(State* parent)
-    : State(parent),
-      event_object_found(this, "A cup has been found")
+Explore::Explore(State* parent) : State(parent), event_object_found(this, "A cup has been found")
 {
 }
 
@@ -18,7 +15,7 @@ void Explore::entryAction()
 
 void Explore::iteration()
 {
-    if(!explorer_.isExploring()) {
+    if (!explorer_.isExploring()) {
         ROS_INFO("start exploring");
         explorer_.startExploring();
     }
@@ -26,9 +23,8 @@ void Explore::iteration()
     auto objects = GlobalState::getInstance().getObjects();
     ROS_INFO_STREAM_THROTTLE(1, "there are " << objects.size() << " objects mapped");
 
-
-    for(const sbc15_msgs::Object& o : objects) {
-       if(!GlobalState::getInstance().isObjectCollected(o.type)) {
+    for (const sbc15_msgs::Object& o : objects) {
+        if (!GlobalState::getInstance().isObjectCollected(o.type)) {
             event_object_found.trigger();
             return;
         }

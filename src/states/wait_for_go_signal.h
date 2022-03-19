@@ -16,7 +16,7 @@ public:
     TriggeredEvent event_done;
 
 public:
-    WaitForGoSignal(State *parent);
+    WaitForGoSignal(State* parent);
 
 protected:
     void entryAction();
@@ -25,12 +25,12 @@ protected:
     double desiredFrequency() const;
 
 private:
-    void cmdReceived(const std_msgs::StringConstPtr &cmd);
-    void joystickReceived(const sensor_msgs::Joy::ConstPtr &joy);
+    void cmdReceived(const std_msgs::StringConstPtr& cmd);
+    void joystickReceived(const sensor_msgs::Joy::ConstPtr& joy);
 
 private:
     ros::Subscriber sub_joy_;
     ros::Subscriber sub_cmd_;
 };
 
-#endif // WAIT_FOR_GO_SIGNAL_H
+#endif  // WAIT_FOR_GO_SIGNAL_H

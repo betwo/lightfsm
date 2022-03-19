@@ -26,7 +26,7 @@ public:
     void iteration();
 
 private:
-    void position(const sbc15_msgs::ObjectConstPtr &object_odom);
+    void position(const sbc15_msgs::ObjectConstPtr& object_odom);
     void driveToPose(const tf::Pose& object_base_link);
 
 private:
@@ -39,7 +39,7 @@ private:
     tf::Pose start_pose_odom_;
 
     int type;
-    std::deque< sbc15_msgs::ObjectConstPtr > objects_;
+    std::deque<sbc15_msgs::ObjectConstPtr> objects_;
 
     ros::Duration observe_time_;
     ros::Duration keep_time_;
@@ -50,4 +50,4 @@ private:
     std::map<std::string, tf::Transform> frame_to_base_link;
 };
 
-#endif // APPROACH_OBJECT_H
+#endif  // APPROACH_OBJECT_H

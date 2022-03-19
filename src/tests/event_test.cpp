@@ -9,29 +9,31 @@
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 
-
-class EventTest : public ::testing::Test {
+class EventTest : public ::testing::Test
+{
 protected:
-    EventTest()
-        : default_value(23)
+    EventTest() : default_value(23)
     {
         ros::Time::init();
     }
 
-    virtual ~EventTest() {
+    virtual ~EventTest()
+    {
         // You can do clean-up work that doesn't throw exceptions here.
     }
 
     // If the constructor and destructor are not enough for setting up
     // and cleaning up each test, you can define the following methods:
 
-    virtual void SetUp() {
+    virtual void SetUp()
+    {
         // Code here will be called immediately after the constructor (right
         // before each test).
         value = default_value;
     }
 
-    virtual void TearDown() {
+    virtual void TearDown()
+    {
         // Code here will be called immediately after each test (right
         // before the destructor).
     }
@@ -39,14 +41,16 @@ protected:
     int default_value;
 };
 
-namespace {
+namespace
+{
 void set(int* dst, int val)
 {
     *dst = val;
 }
-}
+}  // namespace
 
-TEST_F(EventTest, EventCanBeConnected) {
+TEST_F(EventTest, EventCanBeConnected)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -63,7 +67,8 @@ TEST_F(EventTest, EventCanBeConnected) {
     ASSERT_EQ(42, value);
 }
 
-TEST_F(EventTest, TriggeredEventIsFollowedWhenTriggered) {
+TEST_F(EventTest, TriggeredEventIsFollowedWhenTriggered)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -81,7 +86,8 @@ TEST_F(EventTest, TriggeredEventIsFollowedWhenTriggered) {
     ASSERT_EQ(42, value);
 }
 
-TEST_F(EventTest, TriggeredEventIsNotFollowedWhenNotTriggered) {
+TEST_F(EventTest, TriggeredEventIsNotFollowedWhenNotTriggered)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -93,13 +99,14 @@ TEST_F(EventTest, TriggeredEventIsNotFollowedWhenNotTriggered) {
 
     StateMachine state_machine(&init);
 
-    //not calling e.trigger();
+    // not calling e.trigger();
     state_machine.step();
 
     ASSERT_EQ(default_value, value);
 }
 
-TEST_F(EventTest, EventConnectionIsFollowed) {
+TEST_F(EventTest, EventConnectionIsFollowed)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
     init.event_default >> goal;
@@ -113,7 +120,8 @@ TEST_F(EventTest, EventConnectionIsFollowed) {
     ASSERT_EQ(42, value);
 }
 
-TEST_F(EventTest, EventForwardingWorks) {
+TEST_F(EventTest, EventForwardingWorks)
+{
     Initial init(State::NO_PARENT);
     Initial intermediate(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
@@ -128,8 +136,8 @@ TEST_F(EventTest, EventForwardingWorks) {
     ASSERT_EQ(42, value);
 }
 
-
-TEST_F(EventTest, EventConnectionWithDefaultGuardIsFollowed) {
+TEST_F(EventTest, EventConnectionWithDefaultGuardIsFollowed)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -143,8 +151,8 @@ TEST_F(EventTest, EventConnectionWithDefaultGuardIsFollowed) {
     ASSERT_EQ(42, value);
 }
 
-
-TEST_F(EventTest, EventConnectionWithoutGuardIsFollowed) {
+TEST_F(EventTest, EventConnectionWithoutGuardIsFollowed)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -157,8 +165,8 @@ TEST_F(EventTest, EventConnectionWithoutGuardIsFollowed) {
     ASSERT_EQ(42, value);
 }
 
-
-TEST_F(EventTest, EventConnectionWithUnsatisfiedGuardIsNotFollowed) {
+TEST_F(EventTest, EventConnectionWithUnsatisfiedGuardIsNotFollowed)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -173,8 +181,8 @@ TEST_F(EventTest, EventConnectionWithUnsatisfiedGuardIsNotFollowed) {
     ASSERT_EQ(default_value, value);
 }
 
-
-TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed) {
+TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed)
+{
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
@@ -188,4 +196,3 @@ TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed) {
 
     ASSERT_EQ(42, value);
 }
-

@@ -25,4 +25,4 @@ private:
     Action action_;
 };
 
-#endif // TRANSITION_H
+#endif  // TRANSITION_H

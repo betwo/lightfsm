@@ -11,8 +11,6 @@
 #include "moveit_motion.h"
 #include "recorded_trajectory.h"
 
-
-
 /// PROJECT
 #include <sbc15_msgs/Object.h>
 class PlaceCup : public MetaState
@@ -28,7 +26,6 @@ public:
     MoveitMotion goToCrane;
     PreplannedState goToRest;
 
-
 public:
     TriggeredEvent event_cup_placed;
     TriggeredEvent event_failure;
@@ -36,9 +33,7 @@ public:
 public:
     PlaceCup(State* parent);
 
-//    void entryAction();
-
-
+    //    void entryAction();
 };
 
-#endif // PLACE_CUP_H
+#endif  // PLACE_CUP_H

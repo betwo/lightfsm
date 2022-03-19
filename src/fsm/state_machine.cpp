@@ -13,19 +13,20 @@
 #include <std_msgs/String.h>
 
 StateMachine::StateMachine(State* initial_state)
-    : start_state_(initial_state), state_(initial_state),
-      reset_(false), reset_state_(nullptr)
+  : start_state_(initial_state), state_(initial_state), reset_(false), reset_state_(nullptr)
 {
     check();
 
     state_->performEntryAction();
 }
 
-namespace {
-void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k) {
+namespace
+{
+void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k)
+{
     k = true;
 }
-}
+}  // namespace
 
 void StateMachine::reset()
 {
@@ -33,7 +34,7 @@ void StateMachine::reset()
     reset_state_ = start_state_;
 }
 
-void StateMachine::gotoState(State *state)
+void StateMachine::gotoState(State* state)
 {
     reset_ = true;
     reset_state_ = state;
@@ -48,20 +49,19 @@ void StateMachine::run(std::function<void(State*)> callback)
     ros::NodeHandle pnh("~");
     ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
 
-
-    while(ros::ok()) {
+    while (ros::ok()) {
         callback(state_);
         bool terminal = !step();
 
-        if(terminal) {
+        if (terminal) {
             return;
         }
 
-        if(kill) {
+        if (kill) {
             return;
         }
 
-        if(reset_) {
+        if (reset_) {
             sbc15_fsm_global::action::say("resetting");
 
             state_ = reset_state_;
@@ -84,13 +84,13 @@ bool StateMachine::step()
     state_->tick(possible_transitions);
 
     // can we perform a transition?
-    if(!possible_transitions.empty()) {
-        if(possible_transitions.size() > 1) {
+    if (!possible_transitions.empty()) {
+        if (possible_transitions.size() > 1) {
             std::cerr << possible_transitions.size() << " possible transitions, using the first one!" << std::endl;
         }
         perform(*possible_transitions.front());
 
-    } else if(state_->isTerminal()) {
+    } else if (state_->isTerminal()) {
         state_->performExitAction();
         return false;
     }
@@ -101,19 +101,19 @@ bool StateMachine::step()
 template <class Stream>
 Stream& StateMachine::printState(Stream& stream, const State* s, const std::string& prefix) const
 {
-    if(const MetaState* ms = dynamic_cast<const MetaState*>(s)) {
+    if (const MetaState* ms = dynamic_cast<const MetaState*>(s)) {
         //        stream << prefix << s->getName() << "_" << s->getUniqueId() << " [shape=record];\n";
         stream << "subgraph cluster_" << s->getUniqueId() << " {\n"
                << "node [style=filled, fontsize=10];\n"
                << "\"" << s->getName() << "_" << s->getUniqueId();
-        if(s == state_) {
+        if (s == state_) {
             stream << "\" [color=\"blue\",fontcolor=\"white\"];\n";
         } else {
             stream << "\" [color=\"white\",fontcolor=\"white\"];\n";
         }
         stream << "label = \"" << s->getName() << "\";\n";
 
-        for(const State* nested : ms->getChildren()) {
+        for (const State* nested : ms->getChildren()) {
             printState(stream, nested, prefix);
         }
 
@@ -124,12 +124,12 @@ Stream& StateMachine::printState(Stream& stream, const State* s, const std::stri
     } else {
         stream << prefix << s->getName() << "_" << s->getUniqueId();
         stream << "[";
-        if(s->getParent() == State::NO_PARENT) {
+        if (s->getParent() == State::NO_PARENT) {
             stream << "fontsize=24";
         } else {
             stream << "fontsize=16";
         }
-        if(s == state_) {
+        if (s == state_) {
             stream << ";color=blue";
             stream << ";fontcolor=white";
             stream << ";style=filled";
@@ -145,14 +145,13 @@ Stream& StateMachine::printState(Stream& stream, const State* s, const std::stri
 template <class Stream>
 Stream& StateMachine::printConnections(Stream& stream, const State* s, const std::string& prefix) const
 {
-    for(const Event* e: s->getEvents()) {
+    for (const Event* e : s->getEvents()) {
         std::vector<const Transition*> transitions;
         e->getAllTransitions(transitions);
-        for(const Transition* t : transitions) {
+        for (const Transition* t : transitions) {
             const State* target = t->getTarget();
-            stream << prefix << s->getName() << "_" << s->getUniqueId() << " -> "
-                   << target->getName() << "_" << target->getUniqueId()
-                   << "[label=\"" << t->getEvent()->getDescription() << "\"]"
+            stream << prefix << s->getName() << "_" << s->getUniqueId() << " -> " << target->getName() << "_"
+                   << target->getUniqueId() << "[label=\"" << t->getEvent()->getDescription() << "\"]"
                    << ";\n";
         }
     }
@@ -171,15 +170,15 @@ std::string StateMachine::generateGraphDescription() const
 
     graph << "concentrate=true;\n";
 
-    for(const State* s : State::g_states) {
-        if(s->getParent() == State::NO_PARENT) {
+    for (const State* s : State::g_states) {
+        if (s->getParent() == State::NO_PARENT) {
             printState(graph, s, "  ");
         }
     }
 
     graph << "\n";
 
-    for(const State* s : State::g_states) {
+    for (const State* s : State::g_states) {
         printConnections(graph, s, "  ");
     }
 

@@ -35,4 +35,4 @@ private:
     double offset_;
 };
 
-#endif // GOTOOBJECT_H
+#endif  // GOTOOBJECT_H

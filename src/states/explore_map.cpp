@@ -4,9 +4,7 @@
 /// COMPONENT
 #include "global_state.h"
 
-ExploreMap::ExploreMap(State *parent)
-    : State(parent),
-      event_step(this, "one exploration step done")
+ExploreMap::ExploreMap(State* parent) : State(parent), event_step(this, "one exploration step done")
 {
 }
 
@@ -17,7 +15,7 @@ void ExploreMap::entryAction()
 
 void ExploreMap::iteration()
 {
-    if(!explorer_.isExploring()) {
+    if (!explorer_.isExploring()) {
         event_step.trigger();
     }
 }

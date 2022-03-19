@@ -31,15 +31,15 @@ public:
     void entryAction();
     void iteration();
 
-
-    void moveTo(const tf::Pose& pose, TriggeredEvent &event);
-    void moveTo(const tf::Pose& pose, TriggeredEvent &event, std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
-    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent &event);
-    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent &event, std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
+    void moveTo(const tf::Pose& pose, TriggeredEvent& event);
+    void moveTo(const tf::Pose& pose, TriggeredEvent& event,
+                std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
+    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent& event);
+    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent& event,
+                std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
 
 private:
-    void doneCb(const actionlib::SimpleClientGoalState& state,
-                const path_msgs::NavigateToGoalResultConstPtr& result);
+    void doneCb(const actionlib::SimpleClientGoalState& state, const path_msgs::NavigateToGoalResultConstPtr& result);
 
     int retries_;
     int retries_left_;
@@ -47,6 +47,4 @@ private:
     geometry_msgs::PoseStamped goal_;
 };
 
-
-
-#endif // FOLLOW_PATH_H
+#endif  // FOLLOW_PATH_H

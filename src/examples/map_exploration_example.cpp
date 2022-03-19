@@ -16,10 +16,9 @@ void tick(State* current_state)
     GlobalState::getInstance().update(current_state);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    ros::init(argc, argv, "sbc15_state_machine_node",
-              ros::InitOption::NoSigintHandler);
+    ros::init(argc, argv, "sbc15_state_machine_node", ros::InitOption::NoSigintHandler);
     ros::NodeHandle nh;
 
     sbc15_fsm_global::waitForRosTime();
@@ -30,9 +29,9 @@ int main(int argc, char *argv[])
 
     // ACTIONS
     using sbc15_fsm_global::action::say;
-    explore.action_entry << [](){ say("Testing Map Exploration."); };
+    explore.action_entry << []() { say("Testing Map Exploration."); };
     explore.event_object_found >> goal;
-    explore.event_object_found << [](){ say("The blue cup has been found."); };
+    explore.event_object_found << []() { say("The blue cup has been found."); };
 
     goal.event_done >> goal;
 
@@ -42,4 +41,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

@@ -25,4 +25,4 @@ private:
     MapExplorer explorer_;
 };
 
-#endif // EXPLORE_MAP_H
+#endif  // EXPLORE_MAP_H

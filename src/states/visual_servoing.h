@@ -8,7 +8,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <sbc15_msgs/visual_servoingAction.h>
 
-class VisualServoing: public State
+class VisualServoing : public State
 {
 public:
     TriggeredEvent event_done;
@@ -17,6 +17,7 @@ public:
     TriggeredEvent event_out_of_range;
     TriggeredEvent event_servo_control_failed;
     TriggeredEvent event_no_object;
+
 public:
     VisualServoing(State* parent, int retries);
 
@@ -31,10 +32,7 @@ private:
     sbc15_msgs::visual_servoingGoal goal_;
     actionlib::SimpleActionClient<sbc15_msgs::visual_servoingAction> client_;
 
-    void doneCb(const actionlib::SimpleClientGoalState& state,
-           const sbc15_msgs::visual_servoingResultConstPtr& result);
-
-
+    void doneCb(const actionlib::SimpleClientGoalState& state, const sbc15_msgs::visual_servoingResultConstPtr& result);
 };
 
-#endif // VISUAL_SERVOING_H
+#endif  // VISUAL_SERVOING_H

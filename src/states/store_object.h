@@ -9,7 +9,7 @@
 #include "../states/recorded_trajectory.h"
 #include "ros/ros.h"
 
-class StoreObject: public MetaState
+class StoreObject : public MetaState
 {
 public:
     TriggeredEvent object_stored;
@@ -18,10 +18,9 @@ public:
     TriggeredEvent event_cup;
     TriggeredEvent event_battery;
 
-
     RecordedTrajectory place_cup1;
     GripperState open_gripper_cup;
-//    RecordedTrajectory place_cup2;
+    //    RecordedTrajectory place_cup2;
     RecordedTrajectory rest_position_cup;
 
     RecordedTrajectory place_battery1;
@@ -38,4 +37,4 @@ public:
     void entryAction();
 };
 
-#endif // STORE_OBJECT_H
+#endif  // STORE_OBJECT_H

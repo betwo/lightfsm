@@ -6,10 +6,7 @@
 /// SYSTEM
 #include <ros/console.h>
 
-Wait::Wait(State* parent, double duration)
-    : State(parent),
-      event_done(this, "done waiting"),
-      duration_(duration)
+Wait::Wait(State* parent, double duration) : State(parent), event_done(this, "done waiting"), duration_(duration)
 {
 }
 
@@ -21,10 +18,10 @@ void Wait::entryAction()
 
 void Wait::iteration()
 {
-//    GlobalState& global = GlobalState::getInstance();
+    //    GlobalState& global = GlobalState::getInstance();
 
     ros::Time now = ros::Time::now();
-    if(now >= continue_at_) {
+    if (now >= continue_at_) {
         event_done.trigger();
     }
 }

@@ -11,7 +11,7 @@ public:
     TriggeredEvent event_done;
 
 public:
-    Wait(State *parent, double duration);
+    Wait(State* parent, double duration);
 
 protected:
     void entryAction();
@@ -24,4 +24,4 @@ private:
     ros::Time continue_at_;
 };
 
-#endif // WAIT_H
+#endif  // WAIT_H
