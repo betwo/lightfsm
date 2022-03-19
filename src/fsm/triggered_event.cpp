@@ -3,6 +3,7 @@
 
 /// PROJECT
 #include "state.h"
+#include <iostream>
 
 TriggeredEvent::TriggeredEvent(State* parent, const std::string& description)
   : Event(parent, description), triggered_(false)

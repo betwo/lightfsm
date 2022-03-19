@@ -2,7 +2,6 @@
 #include "state.h"
 
 /// SYSTEM
-#include <ros/ros.h>
 #include <typeinfo>
 #include <cxxabi.h>
 
@@ -10,7 +9,7 @@ State* State::NO_PARENT = NULL;
 
 std::vector<State*> State::g_states;
 
-State::State(State* parent) : event_default(this, "default"), rate_(1), parent_(parent), uuid_(nextId())
+State::State(State* parent) : event_default(this, "default"), parent_(parent), uuid_(nextId())
 {
     g_states.push_back(this);
 
@@ -54,15 +53,8 @@ bool State::isTerminal() const
     return false;
 }
 
-ros::Rate& State::getRate()
-{
-    return rate_;
-}
-
 void State::performEntryAction()
 {
-    rate_ = ros::Rate(desiredFrequency());
-
     for (std::vector<Action>::const_iterator a = action_entry.begin(); a != action_entry.end(); ++a) {
         const Action& action = *a;
         action.perform();
@@ -83,7 +75,6 @@ void State::performExitAction()
 
 void State::entryAction()
 {
-    //    rate_ = ros::Rate(desiredFrequency());
 }
 
 void State::exitAction()
@@ -96,7 +87,7 @@ void State::iteration()
 
 double State::desiredFrequency() const
 {
-    return 10.0;
+    return 1.0;
 }
 
 void State::tick(std::vector<const Transition*>& possible_transitions)

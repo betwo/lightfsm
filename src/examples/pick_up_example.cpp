@@ -1,5 +1,6 @@
 /// COMPONENT
 #include "../fsm/state_machine.h"
+#include "../fsm_ros/state_machine_ros_executor.h"
 #include "../fsm/state.h"
 #include "../fsm/meta_state.h"
 #include "../fsm/event.h"
@@ -96,8 +97,10 @@ int main(int argc, char* argv[])
 
     ros::Time last_pub = ros::Time(0);
     ros::Duration state_pub_rate(1.0);
+    
+    StateMachineRosExecutor executor(state_machine);
 
-    state_machine.run([&](State* current_state) {
+    executor.run([&](State* current_state) {
         static State* last_state = nullptr;
 
         tick(current_state);

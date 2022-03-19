@@ -15,3 +15,5 @@ sbc_example(pick_up_cup)
 sbc_example(place_cup)
 sbc_example(approach_object)
 sbc_example(pick_up)
+
+sbc_example(simple_fsm)

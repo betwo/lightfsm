@@ -1,5 +1,6 @@
 /// COMPONENT
 #include "../fsm/state_machine.h"
+#include "../fsm_ros/state_machine_ros_executor.h"
 #include "../fsm/state.h"
 #include "../fsm/meta_state.h"
 #include "../fsm/event.h"
@@ -37,7 +38,9 @@ int main(int argc, char* argv[])
 
     StateMachine state_machine(&explore);
 
-    state_machine.run(std::bind(&tick, std::placeholders::_1));
+    StateMachineRosExecutor executor(state_machine);
+
+    executor.run(std::bind(&tick, std::placeholders::_1));
 
     return 0;
 }

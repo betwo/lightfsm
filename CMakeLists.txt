@@ -34,16 +34,25 @@ link_directories(${catkin_LIBRARY_DIRS})
 catkin_package(
 )
 
-add_library(cpp_fsm
-  src/fsm/state_machine.cpp
-  src/fsm/state.cpp
-  src/fsm/meta_state.cpp
-  src/fsm/transition.cpp
-  src/fsm/event.cpp
-  src/fsm/triggered_event.cpp
+add_library(lightfsm
   src/fsm/action.cpp
   src/fsm/actions.cpp
+  src/fsm/event.cpp
   src/fsm/guard.cpp
+  src/fsm/meta_state.cpp
+  src/fsm/state_machine_basic_executor.cpp
+  src/fsm/state_machine_executor.cpp
+  src/fsm/state_machine.cpp
+  src/fsm/state.cpp
+  src/fsm/transition.cpp
+  src/fsm/triggered_event.cpp
+)
+
+add_library(lightfsm_ros
+  src/fsm_ros/state_machine_ros_executor.cpp
+)
+target_link_libraries(lightfsm_ros
+  lightfsm
 )
 
 add_library(sbc15_state_machine
@@ -85,7 +94,7 @@ add_dependencies(sbc15_state_machine
     ${catkin_EXPORTED_TARGETS}
 )
 target_link_libraries(sbc15_state_machine
-  cpp_fsm
+  lightfsm_ros
   ${OpenCV_LIBS} ${catkin_LIBRARIES}
 )
 add_dependencies(sbc15_state_machine ${catkin_EXPORTED_TARGETS})

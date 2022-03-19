@@ -159,10 +159,14 @@ TEST_F(ActionTest, ActionsAreCalledInCorrectOrder)
     int no = 0;
     bool ok = true;
 
-    init.event_default.connect(&goal, Action(std::bind(&order, &no, 2, &ok)));
 
-    init.action_exit << [&]() { order(&no, 0, &ok); };
-    init.event_default << [&]() { order(&no, 1, &ok); };
+    // default event
+    init.event_default << [&]() { order(&no, 0, &ok); };
+    // exit action
+    init.action_exit << [&]() { order(&no, 1, &ok); };
+    // transition action
+    init.event_default.connect(&goal, Action(std::bind(&order, &no, 2, &ok)));
+    // entry action
     goal.action_entry << [&]() { order(&no, 3, &ok); };
 
     StateMachine state_machine(&init);

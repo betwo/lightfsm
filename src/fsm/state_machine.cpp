@@ -4,98 +4,62 @@
 /// COMPONENT
 #include "transition.h"
 #include "meta_state.h"
-#include "../global.h"
 
 /// SYSTEM
-#include <ros/ros.h>
-#include <std_msgs/Bool.h>
 #include <fstream>
-#include <std_msgs/String.h>
+#include <iostream>
+#include <sstream>
 
 StateMachine::StateMachine(State* initial_state)
-  : start_state_(initial_state), state_(initial_state), reset_(false), reset_state_(nullptr)
+  : start_state_(initial_state), state_(initial_state), state_change_pending_(false), requested_state_(nullptr)
 {
     check();
-
-    state_->performEntryAction();
 }
-
-namespace
-{
-void kill_sub(const std_msgs::BoolConstPtr& /*kill*/, bool& k)
-{
-    k = true;
-}
-}  // namespace
 
 void StateMachine::reset()
 {
-    reset_ = true;
-    reset_state_ = start_state_;
+    state_change_pending_ = true;
+    requested_state_ = start_state_;
 }
 
 void StateMachine::gotoState(State* state)
 {
-    reset_ = true;
-    reset_state_ = state;
+    state_change_pending_ = true;
+    requested_state_ = state;
 }
 
-void StateMachine::run(std::function<void(State*)> callback)
+State* StateMachine::getState()
 {
-    ROS_INFO_STREAM("starting with state " << state_->getName());
-
-    bool kill = false;
-
-    ros::NodeHandle pnh("~");
-    ros::Subscriber sub = pnh.subscribe<std_msgs::Bool>("kill", 1, boost::bind(&kill_sub, _1, kill));
-
-    while (ros::ok()) {
-        callback(state_);
-        bool terminal = !step();
-
-        if (terminal) {
-            return;
-        }
-
-        if (kill) {
-            return;
-        }
-
-        if (reset_) {
-            sbc15_fsm_global::action::say("resetting");
-
-            state_ = reset_state_;
-            state_->performEntryAction();
-
-            ROS_WARN_STREAM("resetting state machine, going to state " << state_->getName());
-            reset_ = false;
-        }
-
-        // handle ros stuff
-        ros::spinOnce();
-        state_->getRate().sleep();
-    }
+    return state_;
 }
 
 bool StateMachine::step()
 {
+    if (state_change_pending_) {
+        state_ = requested_state_;
+        state_change_pending_ = false;
+
+        state_->performEntryAction();
+    }
+
     std::vector<const Transition*> possible_transitions;
 
     state_->tick(possible_transitions);
 
-    // can we perform a transition?
     if (!possible_transitions.empty()) {
+        // we can perform a transition
         if (possible_transitions.size() > 1) {
             std::cerr << possible_transitions.size() << " possible transitions, using the first one!" << std::endl;
         }
         perform(*possible_transitions.front());
-
-    } else if (state_->isTerminal()) {
-        state_->performExitAction();
-        return false;
     }
 
     return true;
+}
+
+void StateMachine::shutdown()
+{
+    state_->performExitAction();
 }
 
 template <class Stream>
@@ -205,10 +169,10 @@ void StateMachine::perform(const Transition& transition)
 {
     State* next_state = transition.getTarget();
 
-    ROS_INFO_STREAM("switching from state " << state_->getName() << " to " << next_state->getName());
+    std::cout << "// switching from state " << state_->getName() << " to " << next_state->getName() << '\n';
 
-    state_->performExitAction();
     transition.getEvent()->performTransitionActions();
+    state_->performExitAction();
     transition.performAction();
     state_ = next_state;
     state_->performEntryAction();

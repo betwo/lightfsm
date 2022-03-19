@@ -8,7 +8,6 @@
 
 /// SYSTEM
 #include <vector>
-#include <ros/rate.h>
 
 class Event;
 class Transition;
@@ -37,7 +36,7 @@ public:
     void tick(std::vector<const Transition*>& possible_transitions);
 
     virtual bool isTerminal() const;
-    ros::Rate& getRate();
+    virtual double desiredFrequency() const;
 
     void performEntryAction();
     void performExitAction();
@@ -53,7 +52,6 @@ protected:
     virtual void entryAction();
     virtual void exitAction();
     virtual void iteration();
-    virtual double desiredFrequency() const;
 
     virtual void registerChildState(State* child);
 
@@ -64,7 +62,6 @@ private:
     static int nextId();
 
 private:
-    ros::Rate rate_;
     State* parent_;
 
     int uuid_;

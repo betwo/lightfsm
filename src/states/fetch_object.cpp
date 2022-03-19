@@ -6,14 +6,10 @@
 
 FetchObject::FetchObject(State* parent, bool store)
   : MetaState(parent)
-  ,
-
-  event_object_unknown(this, "The object is not known")
+  , event_object_unknown(this, "The object is not known")
   , event_object_fetched(this, "The object has been fetched")
   , event_failure(this, "An error happened")
-  ,
-
-  goto_object(this, 1.2 /*m*/)
+  , goto_object(this, 1.2 /*m*/)
   , approach(this, 0.55, 0.1)
   , pickup_object(this, store)
 {

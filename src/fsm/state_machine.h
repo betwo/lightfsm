@@ -9,8 +9,10 @@ class StateMachine
 public:
     StateMachine(State* initial_state);
 
-    void run(std::function<void(State*)> callback);
+    State* getState();
+
     bool step();
+    void shutdown();
 
     std::string generateGraphDescription() const;
 
@@ -32,8 +34,8 @@ private:
     State* start_state_;
     State* state_;
 
-    bool reset_;
-    State* reset_state_;
+    bool state_change_pending_;
+    State* requested_state_;
 };
 
 #endif  // STATE_MACHINE_H

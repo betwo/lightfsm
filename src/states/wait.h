@@ -5,6 +5,9 @@
 #include "../fsm/state.h"
 #include "../fsm/triggered_event.h"
 
+/// SYSTEM
+#include <ros/time.h>
+
 class Wait : public State
 {
 public:
