@@ -31,7 +31,7 @@ void FollowPath::doneCb(const actionlib::SimpleClientGoalState& /*state*/,
         event_positioned.trigger();
     } else {
         if(retries_left_ > 0) {
-            GlobalState::getInstance().moveTo(goal_, boost::bind(&FollowPath::doneCb, this, _1, _2));
+            GlobalState::getInstance().moveTo(goal_, std::bind(&FollowPath::doneCb, this, std::placeholders::_1, std::placeholders::_2));
             --retries_left_;
         } else {
             std::cout << "path not finished" << std::endl;
@@ -47,7 +47,7 @@ void FollowPath::moveTo(const tf::Pose &target, TriggeredEvent &event)
     moveTo(msg, event);
 }
 
-void FollowPath::moveTo(const tf::Pose &target, TriggeredEvent &event, boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> cb)
+void FollowPath::moveTo(const tf::Pose &target, TriggeredEvent &event, std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> cb)
 {
     geometry_msgs::PoseStamped msg;
     tf::poseTFToMsg(target, msg.pose);
@@ -55,16 +55,16 @@ void FollowPath::moveTo(const tf::Pose &target, TriggeredEvent &event, boost::fu
 }
 
 void FollowPath::moveTo(const geometry_msgs::PoseStamped &target_msg, TriggeredEvent& event,
-                        boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> cb)
+                        std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)> cb)
 {
     goal_ = target_msg;
-    GlobalState::getInstance().moveTo(goal_, boost::bind(&FollowPath::doneCb, this, _1, _2), cb);
+    GlobalState::getInstance().moveTo(goal_, std::bind(&FollowPath::doneCb, this, std::placeholders::_1, std::placeholders::_2), cb);
     event.trigger();
 }
 
 void FollowPath::moveTo(const geometry_msgs::PoseStamped &target_msg, TriggeredEvent& event)
 {
     goal_ = target_msg;
-    GlobalState::getInstance().moveTo(goal_, boost::bind(&FollowPath::doneCb, this, _1, _2));
+    GlobalState::getInstance().moveTo(goal_, std::bind(&FollowPath::doneCb, this, std::placeholders::_1, std::placeholders::_2));
     event.trigger();
 }

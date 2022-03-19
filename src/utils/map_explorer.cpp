@@ -26,7 +26,7 @@ MapExplorer::MapExplorer()
     map_pub_ = global.private_nh.advertise<nav_msgs::OccupancyGrid>("map", 1);
 
     search_dir_sub_ = global.private_nh.subscribe<geometry_msgs::Point>("/exploration_direction", 1,
-                                                                        boost::bind(&MapExplorer::searchDirectionCallback, this, _1));
+                                                                        std::bind(&MapExplorer::searchDirectionCallback, this, std::placeholders::_1));
 }
 
 void MapExplorer::startExploring()
@@ -135,7 +135,7 @@ void MapExplorer::findExplorationPoint()
 
     ROS_WARN("exploring: send goal");
     global.moveTo(goal,
-                  boost::bind(&MapExplorer::doneCb, this, _1, _2),
+                  std::bind(&MapExplorer::doneCb, this, std::placeholders::_1, std::placeholders::_2),
                   [](const path_msgs::NavigateToGoalFeedbackConstPtr& /* fb */) {});
 
     exploring_ = true;

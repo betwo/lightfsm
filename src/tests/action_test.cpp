@@ -45,7 +45,7 @@ void set(int* dst, int val)
 
 TEST_F(ActionTest, ActionIsPerformed) {
     Initial init(State::NO_PARENT);
-    Action a(boost::bind(&set, &value, 42));
+    Action a([this]{ set(&value, 42); });
     init.action_entry << a;
 
     StateMachine state_machine(&init);
@@ -57,7 +57,7 @@ TEST_F(ActionTest, ActionIsPerformed) {
 
 TEST_F(ActionTest, ActionCanBeDirectlyBoundPerformed) {
     Initial init(State::NO_PARENT);
-    init.action_entry << boost::bind(&set, &value, 42);
+    init.action_entry << [this](){ set(&value, 42); };
 
     StateMachine state_machine(&init);
 
@@ -69,7 +69,7 @@ TEST_F(ActionTest, ActionCanBeDirectlyBoundPerformed) {
 
 TEST_F(ActionTest, ActionCanBeCopied) {
     Initial init(State::NO_PARENT);
-    Action a(boost::bind(&set, &value, 42));
+    Action a([this](){set(&value, 42);});
     Action a_copy = a;
     init.action_entry << a_copy;
 
@@ -82,7 +82,7 @@ TEST_F(ActionTest, ActionCanBeCopied) {
 
 TEST_F(ActionTest, ActionCanBeAssigned) {
     Initial init(State::NO_PARENT);
-    Action a(boost::bind(&set, &value, 42));
+    Action a([this](){set(&value, 42);});
     Action a_copy;
     a_copy = a;
     init.action_entry << a_copy;
@@ -109,10 +109,10 @@ TEST_F(ActionTest, ActionCanBeAssignedToAnEvent) {
     Initial init(State::NO_PARENT);
     Initial goal(State::NO_PARENT);
     int goal_value = 23;
-    init.event_default << boost::bind(&set, &value, 42);
+    init.event_default << [this](){ set(&value, 42); };
 
     init.event_default >> goal;
-    goal.action_entry << boost::bind(&set, &goal_value, 42);
+    goal.action_entry << [&](){ set(&goal_value, 42); };
 
     StateMachine state_machine(&init);
 
@@ -125,7 +125,7 @@ TEST_F(ActionTest, ActionCanBeAssignedToAnEvent) {
 
 TEST_F(ActionTest, ActionAssignedToAnEventIsOnlyExecutedWhenEventIsTriggered) {
     Initial init(State::NO_PARENT);
-    init.event_default << boost::bind(&set, &value, 42);
+    init.event_default << [this](){ set(&value, 42); };
 
     StateMachine state_machine(&init);
 
@@ -152,11 +152,11 @@ TEST_F(ActionTest, ActionsAreCalledInCorrectOrder) {
     int no = 0;
     bool ok = true;
 
-    init.event_default.connect(&goal, Action(boost::bind(&order, &no, 2, &ok)));
+    init.event_default.connect(&goal, Action(std::bind(&order, &no, 2, &ok)));
 
-    init.action_exit << boost::bind(&order, &no, 0, &ok);
-    init.event_default << boost::bind(&order, &no, 1, &ok);
-    goal.action_entry << boost::bind(&order, &no, 3, &ok);
+    init.action_exit << [&](){ order(&no, 0, &ok); };
+    init.event_default << [&](){ order(&no, 1, &ok); };
+    goal.action_entry << [&](){ order(&no, 3, &ok); };
 
     StateMachine state_machine(&init);
 

@@ -2,12 +2,12 @@
 #define GUARD_H
 
 /// SYSTEM
-#include <boost/function.hpp>
+#include <functional>
 
 class Guard
 {
 public:
-    typedef boost::function<bool()> Condition;
+    typedef std::function<bool()> Condition;
 
 public:
     Guard();

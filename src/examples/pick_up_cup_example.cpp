@@ -84,9 +84,10 @@ int main(int argc, char *argv[])
 
 
     // TALK
-    explore.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Exploring the environment.");
-    fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
-    fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
+    using sbc15_fsm_global::action::say;
+    explore.action_entry << []() { say("Exploring the environment."); };
+    fetch_object.goto_object.action_entry << []() { say("Going to the object"); };
+    fetch_object.pickup_object.action_entry << []() { say("Collecting the object"); };
 
     ros::Publisher state_pub = nh.advertise<std_msgs::String>("fsm_state", 1);
 

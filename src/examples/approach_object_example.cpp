@@ -32,7 +32,7 @@ public:
     {
         GlobalState& global = GlobalState::getInstance();
 
-        boost::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
+        std::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
                 [this](const sbc15_msgs::ObjectConstPtr& o)
         {
             if(o->type == sbc15_msgs::Object::OBJECT_CUP) {
@@ -110,11 +110,12 @@ int main(int argc, char *argv[])
     pickup_object.event_object_pickedup >> goal;
 
     // TALK
-    wait.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Testing object approach.");
-    approach.event_failure << boost::bind(&sbc15_fsm_global::action::say, "Fail.");
-    approach.event_orientation_mismatch << boost::bind(&sbc15_fsm_global::action::say, "Orientation mismatch.");
-    approach.event_approached << boost::bind(&sbc15_fsm_global::action::say, "Pick up!");
-    pickup_object.event_object_pickedup << boost::bind(&sbc15_fsm_global::action::say, "Great success!");
+    using sbc15_fsm_global::action::say;
+    wait.action_entry << []() { say("Testing object approach."); };
+    approach.event_failure << []() { say("Fail."); };
+    approach.event_orientation_mismatch << []() { say("Orientation mismatch."); };
+    approach.event_approached << []() { say("Pick up!"); };
+    pickup_object.event_object_pickedup << []() { say("Great success!"); };
 
 
     StateMachine state_machine(&wait);

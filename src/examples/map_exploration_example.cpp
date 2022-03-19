@@ -29,15 +29,16 @@ int main(int argc, char *argv[])
     Wait goal(State::NO_PARENT, 10.0);
 
     // ACTIONS
-    explore.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing Map Exploration.")));
+    using sbc15_fsm_global::action::say;
+    explore.action_entry << [](){ say("Testing Map Exploration."); };
     explore.event_object_found >> goal;
-    explore.event_object_found << boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been found.");
+    explore.event_object_found << [](){ say("The blue cup has been found."); };
 
     goal.event_done >> goal;
 
     StateMachine state_machine(&explore);
 
-    state_machine.run(boost::bind(&tick, _1));
+    state_machine.run(std::bind(&tick, std::placeholders::_1));
 
     return 0;
 }

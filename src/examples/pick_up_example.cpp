@@ -29,7 +29,7 @@ public:
         : State(parent), event_object_found(this, "Object found"),
           obj_(new sbc15_msgs::Object)
     {
-        subObject_ = GlobalState::getInstance().nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,boost::bind(&WaitForObject::objectCb,this,_1));
+        subObject_ = GlobalState::getInstance().nh.subscribe<sbc15_msgs::Object>("/leia/pickup_object",1,std::bind(&WaitForObject::objectCb,this,std::placeholders::_1));
     }
 
     double desiredFrequency() const override

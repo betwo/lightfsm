@@ -43,6 +43,9 @@ PlaceCup::PlaceCup(State* parent):
     sbc15_msgs::ObjectPtr obj(new sbc15_msgs::Object);
     obj->type = sbc15_msgs::Object::OBJECT_CUP;
     GlobalState::getInstance().setCurrentObject(obj);
+
+    using sbc15_fsm_global::action::say;
+
     // Success
     event_entry_meta >> goToBase;
 
@@ -50,7 +53,7 @@ PlaceCup::PlaceCup(State* parent):
     goToCup.event_done >> closeGripper;
     closeGripper.event_done >>takeCup;
     takeCup.event_done >> placeCup;
-    placeCup.event_done << boost::bind(&sbc15_fsm_global::action::say, "Cup is placed.");
+    placeCup.event_done << [](){ say("Cup is placed."); };
     placeCup.event_done >> openGri;
     openGri.event_done >> goToCrane;
     goToCrane.event_done >> goToRest;

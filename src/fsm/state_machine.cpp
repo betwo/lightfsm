@@ -39,7 +39,7 @@ void StateMachine::gotoState(State *state)
     reset_state_ = state;
 }
 
-void StateMachine::run(boost::function<void(State*)> callback)
+void StateMachine::run(std::function<void(State*)> callback)
 {
     ROS_INFO_STREAM("starting with state " << state_->getName());
 

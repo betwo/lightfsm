@@ -27,7 +27,7 @@ void ApproachObject::entryAction()
 {
     GlobalState& global = GlobalState::getInstance();
 
-    boost::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
+    std::function<void(const sbc15_msgs::ObjectConstPtr&)> cb =
             [this](const sbc15_msgs::ObjectConstPtr& o)
     {
         if(o->type == type) {

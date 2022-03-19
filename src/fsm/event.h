@@ -6,14 +6,15 @@
 
 /// SYSTEM
 #include <vector>
-#include <boost/noncopyable.hpp>
 
 class State;
 
-class Event : private boost::noncopyable
+class Event
 {
 public:
     Event(State* parent, const std::string &description);
+    Event(const Event&) = delete;
+    Event(Event&&) = delete;
     virtual ~Event();
 
     void connect(State* state, Guard guard = Guard(), Action action = Action());
@@ -49,7 +50,7 @@ inline void operator << (Event& e, const Action& a)
 {
     e.connect(a);
 }
-inline void operator << (Event& e, const boost::function<void()>& a)
+inline void operator << (Event& e, const std::function<void()>& a)
 {
     e.connect(Action(a));
 }

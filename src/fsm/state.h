@@ -3,6 +3,7 @@
 
 /// COMPONENT
 #include "action.h"
+#include "actions.h"
 #include "event.h"
 
 /// SYSTEM
@@ -15,7 +16,6 @@ class Transition;
 class State
 {
 public:
-    typedef std::vector<Action> Actions;
     static State* NO_PARENT;
 
 private:

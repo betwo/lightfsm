@@ -97,15 +97,15 @@ void MoveitMotion::iteration()
         {
             started_ = true;
             --retries_left_;
-//            client_.sendGoal(goal_,boost::bind(&MoveitMotion::doneCb, this, _1, _2));
-            GlobalState::getInstance().moveArmTo(goal_,boost::bind(&MoveitMotion::doneCb, this, _1, _2));
+//            client_.sendGoal(goal_,std::bind(&MoveitMotion::doneCb, this, std::placeholders::_1, std::placeholders::_2));
+            GlobalState::getInstance().moveArmTo(goal_,std::bind(&MoveitMotion::doneCb, this, std::placeholders::_1, std::placeholders::_2));
         }
         if(withOffset_ && GlobalState::getInstance().getCurrentArmGoal().valid)
         {
             started_ = true;
             --retries_left_;
-//            clientOffset_.sendGoal(goalOffset_,boost::bind(&MoveitMotion::doneCbOffset, this, _1, _2));
-            GlobalState::getInstance().moveArmTo(goalOffset_,boost::bind(&MoveitMotion::doneCbOffset, this, _1, _2));
+//            clientOffset_.sendGoal(goalOffset_,std::bind(&MoveitMotion::doneCbOffset, this, std::placeholders::_1, std::placeholders::_2));
+            GlobalState::getInstance().moveArmTo(goalOffset_,std::bind(&MoveitMotion::doneCbOffset, this, std::placeholders::_1, std::placeholders::_2));
         }
     }
 

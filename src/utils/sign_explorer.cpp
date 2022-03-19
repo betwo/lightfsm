@@ -17,7 +17,7 @@ SignExplorer::SignExplorer()
     map_service_client.waitForExistence();
 
     lookat_pt_cmd_publisher = global.nh.advertise<std_msgs::String>("/look_at/cmd", 10, true);
-    sub_sign_ = global.nh.subscribe<sick_msgs::Sign>("/signs", 10, boost::bind(&SignExplorer::signCallback, this, _1));
+    sub_sign_ = global.nh.subscribe<sick_msgs::Sign>("/signs", 10, std::bind(&SignExplorer::signCallback, this, std::placeholders::_1));
 
     angle_offset_ = 0.0;
 }
@@ -91,7 +91,7 @@ void SignExplorer::findExplorationPoint()
     tf::Quaternion orientation = tf::createQuaternionFromYaw(angle);
 
     tf::Pose target(orientation, circle_point);
-    global.moveTo(target, 1.0, boost::bind(&SignExplorer::doneCb, this, _1, _2));
+    global.moveTo(target, 1.0, std::bind(&SignExplorer::doneCb, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void SignExplorer::doneCb(const actionlib::SimpleClientGoalState& /*state*/,

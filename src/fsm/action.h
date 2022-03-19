@@ -2,13 +2,13 @@
 #define ACTION_H
 
 /// SYSTEM
-#include <boost/function.hpp>
+#include <functional>
 #include <vector>
 
 class Action
 {
 public:
-    typedef boost::function<void()> Callable;
+    typedef std::function<void()> Callable;
 
 public:
     Action(Callable call);
@@ -21,15 +21,5 @@ private:
 };
 
 
-
-
-inline void operator << (std::vector<Action>& v, const Action& a)
-{
-    v.push_back(a);
-}
-inline void operator << (std::vector<Action>& v, const boost::function<void()>& a)
-{
-    v.push_back(Action(a));
-}
 
 #endif // ACTION_H

@@ -9,7 +9,7 @@ class StateMachine
 public:
     StateMachine(State* initial_state);
 
-    void run(boost::function<void(State *)> callback);
+    void run(std::function<void(State *)> callback);
     bool step();
 
     std::string generateGraphDescription() const;

@@ -25,7 +25,7 @@ void RecordedTrajectory::iteration()
     if(!started_)
     {
         started_ = true;
-        GlobalState::getInstance().playRecordedTrajectory(goal_,boost::bind(&RecordedTrajectory::doneCb, this, _1, _2));
+        GlobalState::getInstance().playRecordedTrajectory(goal_,std::bind(&RecordedTrajectory::doneCb, this, std::placeholders::_1, std::placeholders::_2));
     }
 }
 

@@ -27,12 +27,13 @@ int main(int argc, char *argv[])
     PlaceCup placeCup(State::NO_PARENT);
 
     // ACTIONS
-    placeCup.action_entry.push_back(Action(boost::bind(&sbc15_fsm_global::action::say, "Testing placement of the cup.")));
-    placeCup.event_cup_placed<< boost::bind(&sbc15_fsm_global::action::say, "The blue cup has been placed.");
+    using sbc15_fsm_global::action::say;
+    placeCup.action_entry << [](){ say("Testing placement of the cup."); };
+    placeCup.event_cup_placed << []() { say("The blue cup has been placed."); };
 
     StateMachine state_machine(&placeCup);
 
-    state_machine.run(boost::bind(&tick, _1));
+    state_machine.run(std::bind(&tick, std::placeholders::_1));
 
     return 0;
 }

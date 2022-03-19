@@ -34,64 +34,60 @@ link_directories(${catkin_LIBRARY_DIRS})
 catkin_package(
 )
 
-set(FSM
-    src/fsm/state_machine.cpp
-    src/fsm/state.cpp
-    src/fsm/meta_state.cpp
-    src/fsm/transition.cpp
-    src/fsm/event.cpp
-    src/fsm/triggered_event.cpp
-    src/fsm/action.cpp
-    src/fsm/guard.cpp
+add_library(cpp_fsm
+  src/fsm/state_machine.cpp
+  src/fsm/state.cpp
+  src/fsm/meta_state.cpp
+  src/fsm/transition.cpp
+  src/fsm/event.cpp
+  src/fsm/triggered_event.cpp
+  src/fsm/action.cpp
+  src/fsm/actions.cpp
+  src/fsm/guard.cpp
 )
-set(STATES
-    src/states/global_state.cpp
-    src/states/wait.cpp
-    src/states/back_up.cpp
-    src/states/explore_map.cpp
-    src/states/wait_for_go_signal.cpp
-    src/states/follow_path.cpp
-
-    src/states/select_task.cpp
-    src/states/explore.cpp
-    src/states/fetch_object.cpp
-    src/states/goto_object.cpp
-
-    src/states/pickup_object.cpp
-    src/states/place_cup.cpp
-    src/states/store_object.cpp
-    src/states/place_object.cpp
-
-    src/states/visual_servoing.cpp
-    src/states/gripper_state.cpp
-    src/states/preplanned_state.cpp
-    src/states/recorded_trajectory.cpp
-    src/states/rest_to_pre_position.cpp
-    src/states/moveit_motion.cpp
-
-    src/states/position_to_base.cpp
-
-    src/states/approach_object.cpp
-    src/states/go_to_base.cpp
-    src/states/deliver_object.cpp
-
-)
-set(UTILS
-    src/utils/map_explorer.cpp
-
-    src/global.cpp
-)
-
 
 add_library(sbc15_state_machine
-    ${FSM}
-    ${STATES}
-    ${UTILS}
+  src/states/global_state.cpp
+  src/states/wait.cpp
+  src/states/back_up.cpp
+  src/states/explore_map.cpp
+  src/states/wait_for_go_signal.cpp
+  src/states/follow_path.cpp
+
+  src/states/select_task.cpp
+  src/states/explore.cpp
+  src/states/fetch_object.cpp
+  src/states/goto_object.cpp
+
+  src/states/pickup_object.cpp
+  src/states/place_cup.cpp
+  src/states/store_object.cpp
+  src/states/place_object.cpp
+
+  src/states/visual_servoing.cpp
+  src/states/gripper_state.cpp
+  src/states/preplanned_state.cpp
+  src/states/recorded_trajectory.cpp
+  src/states/rest_to_pre_position.cpp
+  src/states/moveit_motion.cpp
+
+  src/states/position_to_base.cpp
+
+  src/states/approach_object.cpp
+  src/states/go_to_base.cpp
+  src/states/deliver_object.cpp
+
+  src/utils/map_explorer.cpp
+
+  src/global.cpp
 )
 add_dependencies(sbc15_state_machine
     ${catkin_EXPORTED_TARGETS}
 )
-target_link_libraries(sbc15_state_machine ${OpenCV_LIBS} ${catkin_LIBRARIES})
+target_link_libraries(sbc15_state_machine
+  cpp_fsm
+  ${OpenCV_LIBS} ${catkin_LIBRARIES}
+)
 add_dependencies(sbc15_state_machine ${catkin_EXPORTED_TARGETS})
 
 add_executable(sbc15_state_machine_node
@@ -106,11 +102,6 @@ add_subdirectory(src/tests)
 
 
 # RVIZ
-
-# qt5_wrap_cpp(MOC_FILES
-#   src/rviz/exploration_control.h
-# )
-
 set(SOURCE_FILES
   src/rviz/exploration_control.cpp
 )

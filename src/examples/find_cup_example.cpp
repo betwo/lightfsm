@@ -27,7 +27,7 @@ public:
     WaitForGo(State* parent)
         : State(parent), event_go(this, "Go Signal")
     {
-        sub = GlobalState::getInstance().nh.subscribe<std_msgs::Bool>("/go", 1, boost::bind(&WaitForGo::go, this, _1));
+        sub = GlobalState::getInstance().nh.subscribe<std_msgs::Bool>("/go", 1, std::bind(&WaitForGo::go, this, std::placeholders::_1));
     }
 
     void go(const std_msgs::BoolConstPtr&)
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     StateMachine state_machine(&wait);
 
-    state_machine.run(boost::bind(&tick, _1));
+    state_machine.run([](State* state) { tick(state); });
 
     return 0;
 }

@@ -54,7 +54,7 @@ TEST_F(EventTest, EventCanBeConnected) {
 
     e >> goal;
 
-    goal.action_entry << Action(boost::bind(&set, &value, 42));
+    goal.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -71,7 +71,7 @@ TEST_F(EventTest, TriggeredEventIsFollowedWhenTriggered) {
 
     e >> goal;
 
-    goal.action_entry << Action(boost::bind(&set, &value, 42));
+    goal.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -89,7 +89,7 @@ TEST_F(EventTest, TriggeredEventIsNotFollowedWhenNotTriggered) {
 
     e >> goal;
 
-    goal.action_entry << Action(boost::bind(&set, &value, 42));
+    goal.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -104,7 +104,7 @@ TEST_F(EventTest, EventConnectionIsFollowed) {
     Quit goal(State::NO_PARENT);
     init.event_default >> goal;
 
-    goal.action_entry << Action(boost::bind(&set, &value, 42));
+    goal.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -119,7 +119,7 @@ TEST_F(EventTest, EventForwardingWorks) {
     Quit goal(State::NO_PARENT);
     init.event_default >> intermediate.event_default;
     intermediate.event_default >> goal;
-    goal.action_entry << Action(boost::bind(&set, &value, 42));
+    goal.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -134,7 +134,7 @@ TEST_F(EventTest, EventConnectionWithDefaultGuardIsFollowed) {
     Quit goal(State::NO_PARENT);
 
     Guard guard;
-    init.event_default.connect(&goal, guard, Action(boost::bind(&set, &value, 42)));
+    init.event_default.connect(&goal, guard, Action([&]() { set(&value, 42); }));
 
     StateMachine state_machine(&init);
 
@@ -148,7 +148,7 @@ TEST_F(EventTest, EventConnectionWithoutGuardIsFollowed) {
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    init.event_default.connect(&goal, Action(boost::bind(&set, &value, 42)));
+    init.event_default.connect(&goal, Action([&]() { set(&value, 42); }));
 
     StateMachine state_machine(&init);
 
@@ -162,9 +162,9 @@ TEST_F(EventTest, EventConnectionWithUnsatisfiedGuardIsNotFollowed) {
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    boost::function<bool()> condition = boost::lambda::constant(false);
+    std::function<bool()> condition = boost::lambda::constant(false);
     Guard guard(condition);
-    init.event_default.connect(&goal, guard, Action(boost::bind(&set, &value, 42)));
+    init.event_default.connect(&goal, guard, Action([&]() { set(&value, 42); }));
 
     StateMachine state_machine(&init);
 
@@ -178,9 +178,9 @@ TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed) {
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    boost::function<bool()> condition = boost::lambda::constant(true);
+    std::function<bool()> condition = boost::lambda::constant(true);
     Guard guard(condition);
-    init.event_default.connect(&goal, guard, Action(boost::bind(&set, &value, 42)));
+    init.event_default.connect(&goal, guard, Action([&]() { set(&value, 42); }));
 
     StateMachine state_machine(&init);
 

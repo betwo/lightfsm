@@ -82,10 +82,11 @@ int main(int argc, char *argv[])
     error.event_done >> goal;
 
     // TALKING
-    init.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Waiting for go signal!");
-    init.action_exit << boost::bind(&sbc15_fsm_global::action::say, "It's show time!");
-    fetch_object.goto_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Going to the object");
-    fetch_object.pickup_object.action_entry << boost::bind(&sbc15_fsm_global::action::say, "Collecting the object");
+    using sbc15_fsm_global::action::say;
+    init.action_entry << []() { say("Waiting for go signal!"); };
+    init.action_exit << []() { say("It's show time!"); };
+    fetch_object.goto_object.action_entry << []() { say("Going to the object"); };
+    fetch_object.pickup_object.action_entry << []() { say("Collecting the object"); };
 
     ROS_INFO("starting state machine");
     StateMachine state_machine(&init);
@@ -96,7 +97,7 @@ int main(int argc, char *argv[])
     ros::Duration state_pub_rate(1.0);
 
 
-    boost::function<void(const std_msgs::StringConstPtr&)> cb =
+    std::function<void(const std_msgs::StringConstPtr&)> cb =
             [&](const std_msgs::StringConstPtr& cmd){
         if(cmd->data == "fsm/reset") {
             sbc15_fsm_global::action::say("reset requested");

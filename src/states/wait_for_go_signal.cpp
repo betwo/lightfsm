@@ -11,8 +11,8 @@ WaitForGoSignal::WaitForGoSignal(State* parent)
     : State(parent),
       event_done(this, "done waiting")
 {
-    sub_joy_ = GlobalState::getInstance().private_nh.subscribe<sensor_msgs::Joy>("/joy", 10, boost::bind(&WaitForGoSignal::joystickReceived, this, _1));
-    sub_cmd_ = GlobalState::getInstance().private_nh.subscribe<std_msgs::String>("/command", 1, boost::bind(&WaitForGoSignal::cmdReceived, this, _1));
+    sub_joy_ = GlobalState::getInstance().private_nh.subscribe<sensor_msgs::Joy>("/joy", 10, std::bind(&WaitForGoSignal::joystickReceived, this, std::placeholders::_1));
+    sub_cmd_ = GlobalState::getInstance().private_nh.subscribe<std_msgs::String>("/command", 1, std::bind(&WaitForGoSignal::cmdReceived, this, std::placeholders::_1));
 }
 
 void WaitForGoSignal::entryAction()

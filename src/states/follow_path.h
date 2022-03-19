@@ -33,9 +33,9 @@ public:
 
 
     void moveTo(const tf::Pose& pose, TriggeredEvent &event);
-    void moveTo(const tf::Pose& pose, TriggeredEvent &event, boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
+    void moveTo(const tf::Pose& pose, TriggeredEvent &event, std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
     void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent &event);
-    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent &event, boost::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
+    void moveTo(const geometry_msgs::PoseStamped& pose, TriggeredEvent &event, std::function<void(const path_msgs::NavigateToGoalFeedbackConstPtr&)>);
 
 private:
     void doneCb(const actionlib::SimpleClientGoalState& state,

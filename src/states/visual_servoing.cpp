@@ -53,7 +53,7 @@ void VisualServoing::iteration()
     {
         started_ = true;
         --retries_left_;
-        client_.sendGoal(goal_,boost::bind(&VisualServoing::doneCb, this, _1, _2));
+        client_.sendGoal(goal_,std::bind(&VisualServoing::doneCb, this, std::placeholders::_1, std::placeholders::_2));
     }
 
 }

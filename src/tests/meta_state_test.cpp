@@ -83,13 +83,13 @@ TEST_F(MetaStateTest, EventConnectionIsFollowed) {
     //    meta.goal.event_default >> goal;
     meta.event_exit_meta >> goal;
 
-    meta.action_entry << Action(boost::bind(&set, &meta_entry_called));
-    meta.init.action_entry << Action(boost::bind(&set, &meta_init_called));
-    meta.intermediate.action_entry << Action(boost::bind(&set, &meta_intermediate_called));
-    meta.goal.action_entry << Action(boost::bind(&set, &meta_goal_called));
-    meta.action_exit << Action(boost::bind(&set, &meta_exit_called));
+    meta.action_entry << Action([&](){ set(&meta_entry_called); });
+    meta.init.action_entry << Action([&](){ set(&meta_init_called); });
+    meta.intermediate.action_entry << Action([&](){ set(&meta_intermediate_called); });
+    meta.goal.action_entry << Action([&](){ set(&meta_goal_called); });
+    meta.action_exit << Action([&](){ set(&meta_exit_called); });
 
-    goal.action_entry << Action(boost::bind(&set, &goal_called));
+    goal.action_entry << Action([&](){ set(&goal_called); });
 
     StateMachine state_machine(&init);
 
@@ -149,7 +149,7 @@ TEST_F(MetaStateTest, EventForwardingIsFollowedFromSubState) {
     init.event_default >> meta;
     meta.event_done >> goal;
 
-    goal.action_entry << Action(boost::bind(&set, &goal_called));
+    goal.action_entry << Action(std::bind(&set, &goal_called));
 
     StateMachine state_machine(&init);
 
