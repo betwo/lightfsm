@@ -35,21 +35,25 @@ catkin_package(
 )
 
 add_library(lightfsm
-  src/fsm/action.cpp
-  src/fsm/actions.cpp
-  src/fsm/event.cpp
-  src/fsm/guard.cpp
-  src/fsm/meta_state.cpp
-  src/fsm/state_machine_basic_executor.cpp
-  src/fsm/state_machine_executor.cpp
-  src/fsm/state_machine.cpp
-  src/fsm/state.cpp
-  src/fsm/transition.cpp
-  src/fsm/triggered_event.cpp
+  src/lightfsm/action.cpp
+  src/lightfsm/actions.cpp
+  src/lightfsm/event.cpp
+  src/lightfsm/guard.cpp
+  src/lightfsm/meta_state.cpp
+  src/lightfsm/state_machine_basic_executor.cpp
+  src/lightfsm/state_machine_executor.cpp
+  src/lightfsm/state_machine.cpp
+  src/lightfsm/state.cpp
+  src/lightfsm/transition.cpp
+  src/lightfsm/triggered_event.cpp
+)
+target_include_directories(lightfsm
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
 add_library(lightfsm_ros
-  src/fsm_ros/state_machine_ros_executor.cpp
+  src/lightfsm_ros/state_machine_ros_executor.cpp
 )
 target_link_libraries(lightfsm_ros
   lightfsm

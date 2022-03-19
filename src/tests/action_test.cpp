@@ -1,6 +1,6 @@
-#include "../fsm/action.h"
-#include "../fsm/state.h"
-#include "../fsm/state_machine.h"
+#include "lightfsm/action.h"
+#include "lightfsm/state.h"
+#include "lightfsm/state_machine.h"
 #include "../global.h"
 
 #include "gtest/gtest.h"
@@ -146,6 +146,7 @@ namespace
 {
 void order(int* no, int expected, bool* ok)
 {
+    std::cout << *no << " / " << expected << std::endl;
     *ok &= (expected == *no);
     ++(*no);
 }

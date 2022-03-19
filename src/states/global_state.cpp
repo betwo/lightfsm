@@ -3,7 +3,7 @@
 
 /// PROJECT
 #include <sbc15_msgs/GetObjects.h>
-#include "../fsm/state.h"
+#include "lightfsm/state.h"
 
 /// SYSTEM
 #include <geometry_msgs/PointStamped.h>

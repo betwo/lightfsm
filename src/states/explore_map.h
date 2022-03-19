@@ -2,8 +2,8 @@
 #define EXPLORE_MAP_H
 
 /// COMPONENT
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 #include "../utils/map_explorer.h"
 
 /// SYSTEM

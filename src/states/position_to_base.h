@@ -1,8 +1,8 @@
 #ifndef POSITION_TO_BASE_H
 #define POSITION_TO_BASE_H
 /// COMPONENT
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 #include "ros/ros.h"
 
 class PositionToBase : public State

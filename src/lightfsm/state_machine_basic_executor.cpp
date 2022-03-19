@@ -1,9 +1,9 @@
 /// HEADER
-#include "state_machine_basic_executor.h"
+#include "lightfsm/state_machine_basic_executor.h"
 
 /// COMPONENT
-#include "transition.h"
-#include "meta_state.h"
+#include "lightfsm/transition.h"
+#include "lightfsm/meta_state.h"
 
 /// SYSTEM
 #include <signal.h>

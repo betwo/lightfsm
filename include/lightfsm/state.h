@@ -2,9 +2,9 @@
 #define STATE_H
 
 /// COMPONENT
-#include "action.h"
-#include "actions.h"
-#include "event.h"
+#include "lightfsm/action.h"
+#include "lightfsm/actions.h"
+#include "lightfsm/event.h"
 
 /// SYSTEM
 #include <vector>

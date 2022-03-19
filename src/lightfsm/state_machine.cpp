@@ -1,9 +1,9 @@
 /// HEADER
-#include "state_machine.h"
+#include "lightfsm/state_machine.h"
 
 /// COMPONENT
-#include "transition.h"
-#include "meta_state.h"
+#include "lightfsm/transition.h"
+#include "lightfsm/meta_state.h"
 
 /// SYSTEM
 #include <fstream>
@@ -11,7 +11,7 @@
 #include <sstream>
 
 StateMachine::StateMachine(State* initial_state)
-  : start_state_(initial_state), state_(initial_state), state_change_pending_(false), requested_state_(nullptr)
+  : start_state_(initial_state), state_(nullptr), state_change_pending_(true), requested_state_(initial_state)
 {
     check();
 }

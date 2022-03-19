@@ -2,8 +2,8 @@
 #define FETCHOBJECT_H
 
 /// COMPONENT
-#include "../fsm/meta_state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/triggered_event.h"
 #include "goto_object.h"
 #include "pickup_object.h"
 #include "approach_object.h"

@@ -1,9 +1,9 @@
 /// HEADER
-#include "state_machine_ros_executor.h"
+#include "lightfsm_ros/state_machine_ros_executor.h"
 
 /// COMPONENT
-#include "../fsm/transition.h"
-#include "../fsm/meta_state.h"
+#include "lightfsm/transition.h"
+#include "lightfsm/meta_state.h"
 
 /// SYSTEM
 #include <ros/ros.h>

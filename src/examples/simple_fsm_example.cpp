@@ -1,13 +1,13 @@
 /// COMPONENT
-#include "../fsm/state_machine.h"
-#include "../fsm/state_machine_basic_executor.h"
-#include "../fsm/state.h"
-#include "../fsm/meta_state.h"
-#include "../fsm/event.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state_machine.h"
+#include "lightfsm/state_machine_basic_executor.h"
+#include "lightfsm/state.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/event.h"
+#include "lightfsm/triggered_event.h"
 #include "../global.h"
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 
 #include <chrono>
 

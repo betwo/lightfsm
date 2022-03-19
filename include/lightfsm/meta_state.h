@@ -2,8 +2,8 @@
 #define META_STATE_H
 
 /// COMPONENT
-#include "state.h"
-#include "triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 
 class MetaState : public State
 {

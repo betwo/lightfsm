@@ -2,8 +2,8 @@
 #define PICKUPOBJECT_H
 
 /// COMPONENT
-#include "../fsm/meta_state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/triggered_event.h"
 #include "follow_path.h"
 #include "rest_to_pre_position.h"
 #include "visual_servoing.h"

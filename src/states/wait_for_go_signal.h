@@ -2,8 +2,8 @@
 #define WAIT_FOR_GO_SIGNAL_H
 
 /// COMPONENT
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 
 /// SYSTEM
 #include <sensor_msgs/Joy.h>

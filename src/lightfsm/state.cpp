@@ -1,5 +1,5 @@
 /// HEADER
-#include "state.h"
+#include "lightfsm/state.h"
 
 /// SYSTEM
 #include <typeinfo>

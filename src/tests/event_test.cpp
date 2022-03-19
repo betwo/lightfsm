@@ -1,7 +1,7 @@
-#include "../fsm/event.h"
-#include "../fsm/triggered_event.h"
-#include "../fsm/state.h"
-#include "../fsm/state_machine.h"
+#include "lightfsm/event.h"
+#include "lightfsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/state_machine.h"
 #include "../global.h"
 
 #include "gtest/gtest.h"

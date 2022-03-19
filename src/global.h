@@ -3,7 +3,7 @@
 
 /// COMPONENT
 #include "states/global_state.h"
-#include "fsm/state.h"
+#include "lightfsm/state.h"
 
 namespace sbc15_fsm_global
 {

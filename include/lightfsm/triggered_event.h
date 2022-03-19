@@ -2,7 +2,7 @@
 #define TRIGGERED_EVENT_H
 
 /// COMPONENT
-#include "event.h"
+#include "lightfsm/event.h"
 
 class TriggeredEvent : public Event
 {

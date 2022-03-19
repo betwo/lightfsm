@@ -2,7 +2,7 @@
 #define EVENT_H
 
 /// COMPONENT
-#include "transition.h"
+#include "lightfsm/transition.h"
 
 /// SYSTEM
 #include <vector>

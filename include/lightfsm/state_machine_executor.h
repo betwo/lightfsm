@@ -2,7 +2,7 @@
 #define STATE_MACHINE_EXECUTOR_H
 
 /// COMPONENT
-#include "state_machine.h"
+#include "lightfsm/state_machine.h"
 
 class StateMachineExecutor
 {

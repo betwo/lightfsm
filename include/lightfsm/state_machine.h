@@ -2,7 +2,7 @@
 #define STATE_MACHINE_H
 
 /// COMPONENT
-#include "state.h"
+#include "lightfsm/state.h"
 
 class StateMachine
 {

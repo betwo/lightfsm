@@ -1,11 +1,11 @@
 /// COMPONENT
-#include "../fsm/state_machine.h"
-#include "../fsm_ros/state_machine_ros_executor.h"
-#include "../fsm_ros/state_machine_ros_executor.h"
-#include "../fsm/state.h"
-#include "../fsm/meta_state.h"
-#include "../fsm/event.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state_machine.h"
+#include "lightfsm_ros/state_machine_ros_executor.h"
+#include "lightfsm_ros/state_machine_ros_executor.h"
+#include "lightfsm/state.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/event.h"
+#include "lightfsm/triggered_event.h"
 
 #include "../global.h"
 

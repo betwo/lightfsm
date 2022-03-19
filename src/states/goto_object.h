@@ -2,8 +2,8 @@
 #define GOTOOBJECT_H
 
 /// COMPONENT
-#include "../fsm/meta_state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/triggered_event.h"
 #include "follow_path.h"
 
 /// PROJECT

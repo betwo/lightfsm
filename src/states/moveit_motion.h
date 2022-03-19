@@ -1,8 +1,8 @@
 #ifndef MOVEITMOTION_H
 #define MOVEITMOTION_H
 /// COMPONENT
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 #include "global_state.h"
 
 #include <actionlib/client/simple_action_client.h>

@@ -2,8 +2,8 @@
 #define DELIVER_OBJECT_H
 
 /// COMPONENT
-#include "../fsm/meta_state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/triggered_event.h"
 #include "../states/go_to_base.h"
 #include "../states/place_cup.h"
 #include "ros/ros.h"

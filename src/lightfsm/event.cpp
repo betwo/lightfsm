@@ -1,8 +1,8 @@
 /// HEADER
-#include "event.h"
+#include "lightfsm/event.h"
 
 /// COMPONENT
-#include "state.h"
+#include "lightfsm/state.h"
 
 /// SYSTEM
 #include <iostream>

@@ -2,7 +2,7 @@
 #define STATE_MACHINE_ROS_EXECUTOR_H
 
 /// COMPONENT
-#include "../fsm/state_machine_executor.h"
+#include "lightfsm/state_machine_executor.h"
 
 class StateMachineRosExecutor : public StateMachineExecutor
 {

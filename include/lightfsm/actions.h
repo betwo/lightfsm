@@ -2,7 +2,7 @@
 #define ACTIONS_H
 
 /// COMPONENT
-#include "action.h"
+#include "lightfsm/action.h"
 
 /// SYSTEM
 #include <vector>

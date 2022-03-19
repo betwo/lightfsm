@@ -1,6 +1,6 @@
-#include "../fsm/event.h"
-#include "../fsm/meta_state.h"
-#include "../fsm/state_machine.h"
+#include "lightfsm/event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/state_machine.h"
 #include "../global.h"
 
 #include "gtest/gtest.h"

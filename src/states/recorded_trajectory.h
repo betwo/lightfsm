@@ -2,8 +2,8 @@
 #define RECORDED_TRAJECTORY_H
 
 /// COMPONENT
-#include "../fsm/state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/state.h"
+#include "lightfsm/triggered_event.h"
 #include "ros/ros.h"
 #include <actionlib/client/simple_action_client.h>
 #include <sbc15_msgs/PlayAction.h>

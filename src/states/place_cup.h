@@ -1,8 +1,8 @@
 #ifndef PLACE_CUP_H
 #define PLACE_CUP_H
 
-#include "../fsm/meta_state.h"
-#include "../fsm/triggered_event.h"
+#include "lightfsm/meta_state.h"
+#include "lightfsm/triggered_event.h"
 #include "rest_to_pre_position.h"
 #include "store_object.h"
 #include "back_up.h"

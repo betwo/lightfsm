@@ -1,8 +1,8 @@
 /// HEADER
-#include "triggered_event.h"
+#include "lightfsm/triggered_event.h"
 
 /// PROJECT
-#include "state.h"
+#include "lightfsm/state.h"
 #include <iostream>
 
 TriggeredEvent::TriggeredEvent(State* parent, const std::string& description)

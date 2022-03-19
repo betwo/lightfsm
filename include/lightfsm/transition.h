@@ -2,8 +2,8 @@
 #define TRANSITION_H
 
 /// COMPONENT
-#include "guard.h"
-#include "action.h"
+#include "lightfsm/guard.h"
+#include "lightfsm/action.h"
 
 class State;
 class Event;

@@ -1,5 +1,5 @@
 /// HEADER
-#include "guard.h"
+#include "lightfsm/guard.h"
 
 /// SYSTEM
 #include <boost/lambda/lambda.hpp>
