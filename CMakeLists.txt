@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.10.0)
 project(lightfsm)
 
 add_definitions(-W -Wall -Wextra)
@@ -7,17 +7,19 @@ add_definitions(-W -Wall -Wextra)
 set(CMAKE_CXX_STANDARD 17)
 
 
-find_package(catkin REQUIRED)
+find_package(catkin)
+if(${catkin_FOUND})
+  include_directories(${catkin_INCLUDE_DIRS})
+  link_directories(${catkin_LIBRARY_DIRS})
 
 
-include_directories(${catkin_INCLUDE_DIRS})
-link_directories(${catkin_LIBRARY_DIRS})
+  catkin_package(
+    INCLUDE_DIRS include
+    LIBRARIES ${PROJECT_NAME}
+  )
+endif()
 
-
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-)
+enable_testing()
 
 add_library(lightfsm
   src/action.cpp
