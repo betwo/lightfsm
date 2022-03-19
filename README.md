@@ -3,6 +3,8 @@
 This package implements a simple, lightweight finite-state-machine implementation in C++.
 FSMs are perfectly suited to implement complex applications that can be in distinct states, e.g. robotic apllications.
 
+This package was extracted from [a robots project at the Univerty of Tuebingen](https://github.com/betwo/sbc15_fsm) and is aimed to be re-usable in a more general context.
+
 ## Example Use Case
 
 Take as an example a robot, that can open doors. The Robot can be in multiple states:
