@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>sbc15_fsm</name>
+  <name>lightfsm</name>
   <version>1.0.0</version>
-  <description>The high level ctrl package used in the Space Bot Camp 2015 event</description>
+  <description>Yet another lightweight C++ finite state machine framework</description>
 
   <maintainer email="sebastian.buck@uni-tuebingen.de">buck</maintainer>
 
@@ -10,19 +10,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>sbc15_msgs</depend>
-
-  <depend>rospy</depend>
-  <depend>roscpp</depend>
-  <depend>std_msgs</depend>
-  <depend>path_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>tf</depend>
-  <depend>visualization_msgs</depend>
-  <depend>rviz</depend>
-  <depend>actionlib</depend>
-
   <export>
-      <rviz plugin="${prefix}/plugin_description.xml"/>
   </export>
 </package>

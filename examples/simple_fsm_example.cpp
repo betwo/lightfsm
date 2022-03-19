@@ -5,11 +5,11 @@
 #include "lightfsm/meta_state.h"
 #include "lightfsm/event.h"
 #include "lightfsm/triggered_event.h"
-#include "../global.h"
 #include "lightfsm/state.h"
 #include "lightfsm/triggered_event.h"
 
 #include <chrono>
+#include <iostream>
 
 class Entry : public State
 {

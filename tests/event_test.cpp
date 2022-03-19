@@ -2,19 +2,33 @@
 #include "lightfsm/triggered_event.h"
 #include "lightfsm/state.h"
 #include "lightfsm/state_machine.h"
-#include "../global.h"
 
 #include "gtest/gtest.h"
 
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 
+class Initial : public State
+{
+public:
+    Initial(State* parent) : State(parent)
+    {
+    }
+};
+
+class Quit : public State
+{
+public:
+    Quit(State* parent) : State(parent)
+    {
+    }
+};
+
 class EventTest : public ::testing::Test
 {
 protected:
     EventTest() : default_value(23)
     {
-        ros::Time::init();
     }
 
     virtual ~EventTest()

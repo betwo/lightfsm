@@ -16,8 +16,8 @@ catkin profile list | grep coverage || {
 }
 
 catkin profile set coverage
-catkin build sbc15_fsm
-catkin test sbc15_fsm
+catkin build lightfsm
+catkin test lightfsm
 
 BUILD=$(catkin locate -b)
 ROOT=$(echo ${BUILD}/.. | xargs realpath)
@@ -40,7 +40,7 @@ set -e
 
 lcov --directory $DIR --zerocounters -q
 
-cd ${BUILD}/sbc15_fsm
+cd ${BUILD}/lightfsm
 make run_tests
 
 cd $THISDIR

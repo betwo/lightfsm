@@ -1,18 +1,24 @@
 #include "lightfsm/action.h"
 #include "lightfsm/state.h"
 #include "lightfsm/state_machine.h"
-#include "../global.h"
 
 #include "gtest/gtest.h"
 
 #include <boost/bind.hpp>
+
+class Initial : public State
+{
+public:
+    Initial(State* parent) : State(parent)
+    {
+    }
+};
 
 class ActionTest : public ::testing::Test
 {
 protected:
     ActionTest()
     {
-        ros::Time::init();
     }
 
     virtual ~ActionTest()
@@ -159,7 +165,6 @@ TEST_F(ActionTest, ActionsAreCalledInCorrectOrder)
 
     int no = 0;
     bool ok = true;
-
 
     // default event
     init.event_default << [&]() { order(&no, 0, &ok); };

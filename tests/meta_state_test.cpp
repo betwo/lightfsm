@@ -1,19 +1,33 @@
 #include "lightfsm/event.h"
 #include "lightfsm/meta_state.h"
 #include "lightfsm/state_machine.h"
-#include "../global.h"
 
 #include "gtest/gtest.h"
 
 #include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 
+class Initial : public State
+{
+public:
+    Initial(State* parent) : State(parent)
+    {
+    }
+};
+
+class Quit : public State
+{
+public:
+    Quit(State* parent) : State(parent)
+    {
+    }
+};
+
 class MetaStateTest : public ::testing::Test
 {
 protected:
     MetaStateTest()
     {
-        ros::Time::init();
     }
 
     virtual ~MetaStateTest()
@@ -40,14 +54,7 @@ protected:
 class MockupMetaState : public MetaState
 {
 public:
-    MockupMetaState()
-      : MetaState(State::NO_PARENT)
-      ,
-
-      init(this)
-      , intermediate(this)
-      , goal(this)
-
+    MockupMetaState() : MetaState(State::NO_PARENT), init(this), intermediate(this), goal(this)
     {
         event_entry_meta >> init;
 
