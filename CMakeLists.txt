@@ -1,27 +1,17 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.1.0)
 project(sbc15_fsm)
 
-add_definitions(-W -Wall)
+add_definitions(-W -Wall -Wextra)
 
-set(CMAKE_BUILD_TYPE Debug)
+## Enforce that we use C++17
+set(CMAKE_CXX_STANDARD 17)
 
-## Enforce that we use C++11
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-std=c++11" COMPILER_SUPPORTS_CXX11)
-check_cxx_compiler_flag("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-  message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
   sbc15_msgs
-  roscpp 
-  std_msgs 
+  roscpp
+  std_msgs
   tf
   geometry_msgs
   visualization_msgs
@@ -30,8 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   rviz
 )
 
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-include(${QT_USE_FILE})
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 add_definitions(-DQT_NO_KEYWORDS)
 
@@ -100,9 +89,7 @@ add_library(sbc15_state_machine
     ${UTILS}
 )
 add_dependencies(sbc15_state_machine
-    sick_msgs_generate_messages_cpp
-    path_msgs_generate_messages_cpp
-    sbc15_msgs_generate_messages_cpp
+    ${catkin_EXPORTED_TARGETS}
 )
 target_link_libraries(sbc15_state_machine ${OpenCV_LIBS} ${catkin_LIBRARIES})
 add_dependencies(sbc15_state_machine ${catkin_EXPORTED_TARGETS})
@@ -114,70 +101,24 @@ target_link_libraries(sbc15_state_machine_node
   sbc15_state_machine ${catkin_LIBRARIES}
 )
 
-
-add_executable(sbc15_test_map_exploration
-    src/tests/map_exploration_test.cpp
-)
-target_link_libraries(sbc15_test_map_exploration
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
-
-
-add_executable(sbc15_test_find_cup
-    src/tests/find_cup_test.cpp
-)
-target_link_libraries(sbc15_test_find_cup
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
-
-add_executable(sbc15_test_pick_up_cup
-    src/tests/pick_up_cup_test.cpp
-)
-target_link_libraries(sbc15_test_pick_up_cup
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
-
-add_executable(sbc15_test_place_cup
-    src/tests/place_cup_test.cpp
-)
-target_link_libraries(sbc15_test_place_cup
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
-
-
-add_executable(sbc15_test_approach_object
-    src/tests/approach_object_test.cpp
-)
-target_link_libraries(sbc15_test_approach_object
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
-
-
-
-
-
-add_executable(sbc15_pick_up
-    src/tests/pickup.cpp
-)
-target_link_libraries(sbc15_pick_up
-  sbc15_state_machine ${catkin_LIBRARIES}
-)
+add_subdirectory(src/examples)
+add_subdirectory(src/tests)
 
 
 # RVIZ
 
-qt4_wrap_cpp(MOC_FILES
-  src/rviz/exploration_control.h
-)
+# qt5_wrap_cpp(MOC_FILES
+#   src/rviz/exploration_control.h
+# )
 
 set(SOURCE_FILES
   src/rviz/exploration_control.cpp
-  ${MOC_FILES}
 )
 
 add_library(${PROJECT_NAME}_rviz ${SOURCE_FILES})
+set_property(TARGET ${PROJECT_NAME}_rviz PROPERTY AUTOMOC ON)
 
-target_link_libraries(${PROJECT_NAME}_rviz ${QT_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_rviz Qt5::Core Qt5::Widgets ${catkin_LIBRARIES})
 
 
 ## Install rules

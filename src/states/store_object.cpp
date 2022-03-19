@@ -4,7 +4,7 @@
 #include <sbc15_msgs/PreplannedTrajectories.h>
 #include <control_msgs/FollowJointTrajectoryResult.h>
 
-StoreObject::StoreObject(State *parent, int retries):
+StoreObject::StoreObject(State *parent, int /* retries */):
     MetaState(parent),
     object_stored(this,"object is stored"),
     event_failure(this,"error occured"),

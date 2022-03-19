@@ -50,7 +50,7 @@ TEST_F(EventTest, EventCanBeConnected) {
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    Event e(&init);
+    Event e(&init, "description");
 
     e >> goal;
 

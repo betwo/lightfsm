@@ -136,7 +136,7 @@ void MapExplorer::findExplorationPoint()
     ROS_WARN("exploring: send goal");
     global.moveTo(goal,
                   boost::bind(&MapExplorer::doneCb, this, _1, _2),
-                  [](const path_msgs::NavigateToGoalFeedbackConstPtr& fb) {});
+                  [](const path_msgs::NavigateToGoalFeedbackConstPtr& /* fb */) {});
 
     exploring_ = true;
     //    visualization_msgs::Marker marker = global.makeMarker(1,0,0, "exploration goal", 0);
@@ -230,8 +230,6 @@ nav_msgs::OccupancyGridPtr MapExplorer::generateSearchSpace(const cv::Point2i& m
     int8_t* dataP = &ss->data[0];
     for(int row = 0; row < h; ++row) {
         for(int col = 0; col < w; ++col) {
-            const uchar& val = search_space.at<uchar>(row, col);
-
             float dist_to_obstacles = distance_to_obstacle.at<float>(row, col) * res;
             float dist_to_unknown = distance_to_unknown.at<float>(row, col) * res;
             float dist_to_robot = std::hypot(map_pos.x - col, map_pos.y - row) * res;
@@ -391,10 +389,10 @@ void MapExplorer::splitMap(const nav_msgs::OccupancyGrid &map, cv::Point2i map_p
     cv::erode(map_obstacle, map_obstacle, kernel);
     cv::erode(map_unknown, map_unknown, small_kernel);
 
-    cv::distanceTransform(map_obstacle, distance_to_obstacle, CV_DIST_L2, 5);
+    cv::distanceTransform(map_obstacle, distance_to_obstacle, cv::DIST_L2, 5);
     assert(distance_to_obstacle.type() == CV_32FC1);
 
-    cv::distanceTransform(map_unknown, distance_to_unknown, CV_DIST_L2, 5);
+    cv::distanceTransform(map_unknown, distance_to_unknown, cv::DIST_L2, 5);
     assert(distance_to_unknown.type() == CV_32FC1);
 
     search_space = cv::Mat(h, w, CV_8UC1, cv::Scalar::all(0));
