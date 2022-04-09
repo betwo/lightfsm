@@ -53,4 +53,7 @@ lcov --remove test_extracted.info "/opt*" -o test_extracted.info
 cd $THISDIR
 genhtml --demangle-cpp --output-directory $THISDIR/coverage test_extracted.info
 
+lcov --summary test_extracted.info
+export COVERAGE=$(lcov --summary test_extracted.info | grep lines | cut -d" " -f 4)
+
 catkin profile set default
