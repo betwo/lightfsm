@@ -16,7 +16,7 @@ catkin profile list | grep coverage || {
 }
 
 catkin profile set coverage
-catkin build lightfsm
+catkin build --no-status --no-notify lightfsm
 catkin test lightfsm
 
 BUILD=$(catkin locate -b)
