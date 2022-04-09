@@ -4,9 +4,6 @@
 
 #include "gtest/gtest.h"
 
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
-
 class Initial : public State
 {
 public:

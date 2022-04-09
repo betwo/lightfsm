@@ -4,8 +4,6 @@
 
 #include "gtest/gtest.h"
 
-#include <boost/bind.hpp>
-
 class Initial : public State
 {
 public:

@@ -5,9 +5,6 @@
 
 #include "gtest/gtest.h"
 
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
-
 class Initial : public State
 {
 public:
@@ -184,7 +181,7 @@ TEST_F(EventTest, EventConnectionWithUnsatisfiedGuardIsNotFollowed)
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    std::function<bool()> condition = boost::lambda::constant(false);
+    std::function<bool()> condition = []() { return false; };
     Guard guard(condition);
     init.event_default.connect(&goal, guard, Action([&]() { set(&value, 42); }));
 
@@ -200,7 +197,7 @@ TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed)
     Initial init(State::NO_PARENT);
     Quit goal(State::NO_PARENT);
 
-    std::function<bool()> condition = boost::lambda::constant(true);
+    std::function<bool()> condition = []() { return true; };
     Guard guard(condition);
     init.event_default.connect(&goal, guard, Action([&]() { set(&value, 42); }));
 
