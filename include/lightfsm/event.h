@@ -6,6 +6,7 @@
 
 /// SYSTEM
 #include <vector>
+#include <string>
 
 class State;
 
