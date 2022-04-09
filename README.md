@@ -1,9 +1,9 @@
 # LightFSM
 
 This package implements a simple, lightweight finite-state-machine implementation in C++.
-FSMs are perfectly suited to implement complex applications that can be in distinct states, e.g. robotic apllications.
+FSMs are perfectly suited to implement complex applications that can be in distinct states, e.g. robotic applications.
 
-This package was extracted from [a robots project at the Univerty of Tuebingen](https://github.com/betwo/sbc15_fsm) and is aimed to be re-usable in a more general context.
+This package was extracted from [a robots project at the University of Tuebingen](https://github.com/betwo/sbc15_fsm) and is aimed to be re-usable in a more general context.
 
 ## Example Use Case
 
@@ -15,7 +15,7 @@ It will stay in that state until either
 
 1. The door has been reached, in which case we switch to `OpenDoor`.
 2. A collision has happend, in which case we switch to `Recovery`.
-3. Another reason to stop occured, in which case we stop the application.
+3. Another reason to stop occurred, in which case we stop the application.
 
 ### FSM Diagram
 
@@ -76,9 +76,9 @@ In the diagram above, the `GoToDoor` state is shown in more detail:
    1. `collsion` is triggered when the robot collides with the environment
    2. `moved` is triggered when the robot has changed its position
    3. `door_reached` is triggered when the door can be opened
-   4. A `default` event is triggered, if another reason occured to change the state, e.g. the application should be shutdown.
+   4. A `default` event is triggered, if another reason occurred to change the state, e.g. the application should be shutdown.
 5. Some these events are connected to a follow-up state. I.e. if the `collision` event is triggered, we remember this fact and transition out of the `GoToDoor` state into the `Recovery` state.
-Similarly, we transition to `OpenDoor` if the `door_reached` event was triggered and into the exit of the FSM if the `default` event was triggred.
+Similarly, we transition to `OpenDoor` if the `door_reached` event was triggered and into the exit of the FSM if the `default` event was triggered.
 6. The `moved` event is not connected to any follow-up state, of if that one is triggered, no transition is taken.
 
 In all cases where a event transition occurs, we have the following hooks available:
@@ -140,7 +140,7 @@ int main() {
     Recovery recovery;
     OpenDoor open_door;
 
-    // connect events to follow-up states to estabilish transitions
+    // connect events to follow-up states to establish transitions
     start_robot.event_default >> goto_door;
     goto_door.event_collision >> recovery;
     goto_door.event_door_reached >> open_door;
