@@ -1,5 +1,9 @@
 # LightFSM
 
+[![Licence](https://img.shields.io/github/license/betwo/vscode-catkin-tools.svg)](https://github.com/betwo/vscode-catkin-tools)
+[![continuous_integration](https://github.com/betwo/lightfsm/actions/workflows/continuous_integration.yaml/badge.svg)](https://github.com/betwo/lightfsm/actions/workflows/continuous_integration.yaml)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/betwo/c519eb0319f6fdb3fcb49b052de2fa0a/raw/lightfsm_coverage__main.json)
+
 This package implements a simple, lightweight finite-state-machine implementation in C++.
 FSMs are perfectly suited to implement complex applications that can be in distinct states, e.g. robotic applications.
 

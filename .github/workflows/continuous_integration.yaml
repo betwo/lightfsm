@@ -70,6 +70,21 @@ jobs:
           source $HOME/work/lightfsm/ws/src/lightfsm/tests/coverage.sh
           echo $COVERAGE
           echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
+          BRANCH_ID=$(echo ${{ github.ref }} | cut -d"/" -f 3- | tr / _)
+          echo $BRANCH_ID
+          echo "BRANCH=$(echo ${BRANCH_ID})" >> $GITHUB_ENV
+
+      - name: create_coverage_badge
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        if: ${{ matrix.build-tool == 'catkin_tools' && contains(matrix.os, '20.04') && contains(matrix.compiler, 'clang')  }}
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: c519eb0319f6fdb3fcb49b052de2fa0a
+          filename: lightfsm_coverage__${{ env.BRANCH }}.json
+          label: coverage
+          message: ${{ env.COVERAGE }}
+          color: blue
+          logoColor: lightblue
 
       - name: upload_coverage_output
         uses: actions/upload-artifact@v3
