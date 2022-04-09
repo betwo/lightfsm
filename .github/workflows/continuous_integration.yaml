@@ -83,8 +83,6 @@ jobs:
           filename: lightfsm_coverage__${{ env.BRANCH }}.json
           label: coverage
           message: ${{ env.COVERAGE }}
-          color: blue
-          logoColor: lightblue
 
       - name: upload_coverage_output
         uses: actions/upload-artifact@v3
