@@ -121,12 +121,22 @@ TEST_F(ActionTest, ActionCanBeAssignedToAnEvent)
     Initial init(State::NO_PARENT);
     Initial goal(State::NO_PARENT);
     int goal_value = 23;
+    value = 23;
+    init.action_entry << [&]() { set(&value, 42); };
     init.event_default << [this]() { set(&value, 42); };
 
     init.event_default >> goal;
     goal.action_entry << [&]() { set(&goal_value, 42); };
 
     StateMachine state_machine(&init);
+
+    ASSERT_EQ(23, goal_value);
+    ASSERT_EQ(23, value);
+
+    state_machine.step();
+
+    ASSERT_EQ(42, value);
+    ASSERT_EQ(23, goal_value);
 
     state_machine.step();
 
@@ -164,19 +174,27 @@ TEST_F(ActionTest, ActionsAreCalledInCorrectOrder)
     int no = 0;
     bool ok = true;
 
+    // entry event
+    init.action_entry << [&]() { order(&no, 0, &ok); };
     // default event
-    init.event_default << [&]() { order(&no, 0, &ok); };
+    init.event_default << [&]() { order(&no, 1, &ok); };
     // exit action
-    init.action_exit << [&]() { order(&no, 1, &ok); };
+    init.action_exit << [&]() { order(&no, 2, &ok); };
     // transition action
-    init.event_default.connect(&goal, Action(std::bind(&order, &no, 2, &ok)));
+    init.event_default.connect(&goal, Action(std::bind(&order, &no, 3, &ok)));
     // entry action
-    goal.action_entry << [&]() { order(&no, 3, &ok); };
+    goal.action_entry << [&]() { order(&no, 4, &ok); };
 
     StateMachine state_machine(&init);
 
-    state_machine.step();
+    ASSERT_EQ(0, no);
 
-    ASSERT_EQ(4, no);
+    // first step: init becomes active, its entry action is called
+    state_machine.step();
+    ASSERT_EQ(1, no);
+
+    // second step: transition from init to goal, remaining actions are called
+    state_machine.step();
+    ASSERT_EQ(5, no);
     ASSERT_TRUE(ok);
 }

@@ -49,7 +49,7 @@ protected:
         // before the destructor).
     }
     int value;
-    int default_value;
+    const int default_value;
 };
 
 namespace
@@ -69,7 +69,7 @@ TEST_F(EventTest, EventCanBeConnected)
 
     e >> goal;
 
-    goal.action_entry << Action([&]() { set(&value, 42); });
+    init.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -87,7 +87,7 @@ TEST_F(EventTest, TriggeredEventIsFollowedWhenTriggered)
 
     e >> goal;
 
-    goal.action_entry << Action([&]() { set(&value, 42); });
+    init.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -122,7 +122,7 @@ TEST_F(EventTest, EventConnectionIsFollowed)
     Quit goal(State::NO_PARENT);
     init.event_default >> goal;
 
-    goal.action_entry << Action([&]() { set(&value, 42); });
+    init.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -138,7 +138,7 @@ TEST_F(EventTest, EventForwardingWorks)
     Quit goal(State::NO_PARENT);
     init.event_default >> intermediate.event_default;
     intermediate.event_default >> goal;
-    goal.action_entry << Action([&]() { set(&value, 42); });
+    init.action_entry << Action([&]() { set(&value, 42); });
 
     StateMachine state_machine(&init);
 
@@ -158,7 +158,9 @@ TEST_F(EventTest, EventConnectionWithDefaultGuardIsFollowed)
     StateMachine state_machine(&init);
 
     state_machine.step();
+    ASSERT_EQ(default_value, value);
 
+    state_machine.step();
     ASSERT_EQ(42, value);
 }
 
@@ -172,7 +174,9 @@ TEST_F(EventTest, EventConnectionWithoutGuardIsFollowed)
     StateMachine state_machine(&init);
 
     state_machine.step();
+    ASSERT_EQ(default_value, value);
 
+    state_machine.step();
     ASSERT_EQ(42, value);
 }
 
@@ -204,6 +208,8 @@ TEST_F(EventTest, EventConnectionWithSatisfiedGuardIsFollowed)
     StateMachine state_machine(&init);
 
     state_machine.step();
+    ASSERT_EQ(default_value, value);
 
+    state_machine.step();
     ASSERT_EQ(42, value);
 }

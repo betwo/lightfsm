@@ -1,11 +1,7 @@
 
 find_package(catkin)
 
-set(TEST_SOURCES
-  action_test.cpp
-  event_test.cpp
-  meta_state_test.cpp
-)
+file(GLOB_RECURSE TEST_SOURCES "*.cpp")
 
 if (${catkin_FOUND})
     catkin_add_gtest(${PROJECT_NAME}_tests

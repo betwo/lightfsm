@@ -30,7 +30,17 @@ private:
     template <class Stream>
     Stream& printState(Stream& stream, const State* s, const std::string& prefix) const;
 
+    class EntryState : public State
+    {
+    public:
+        EntryState(State* parent) : State(parent)
+        {
+        }
+    };
+
 private:
+    EntryState entry_state_;
+
     State* start_state_;
     State* state_;
 

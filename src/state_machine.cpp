@@ -11,8 +11,14 @@
 #include <sstream>
 
 StateMachine::StateMachine(State* initial_state)
-  : start_state_(initial_state), state_(nullptr), state_change_pending_(true), requested_state_(initial_state)
+  : entry_state_(State::NO_PARENT)
+  , start_state_(initial_state)
+  , state_(&entry_state_)
+  , state_change_pending_(true)
+  , requested_state_(&entry_state_)
 {
+    entry_state_.event_default >> *initial_state;
+
     check();
 }
 

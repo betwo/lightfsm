@@ -102,6 +102,8 @@ TEST_F(MetaStateTest, EventConnectionIsFollowed)
 
     StateMachine state_machine(&init);
 
+    state_machine.step();  // -> init
+
     state_machine.step();  // init -> meta
     ASSERT_TRUE(meta_entry_called);
 
@@ -161,6 +163,7 @@ TEST_F(MetaStateTest, EventForwardingIsFollowedFromSubState)
 
     StateMachine state_machine(&init);
 
+    state_machine.step();  // -> init
     state_machine.step();  // init -> meta
     state_machine.step();  // meta -> meta.init
     state_machine.step();  // meta.init -> meta.intermediate
