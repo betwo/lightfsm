@@ -4,7 +4,11 @@ function(add_lightfsm_example_example NAME)
     )
     target_link_libraries(${PROJECT_NAME}_example_${NAME}
         ${PROJECT_NAME}
-        ${catkin_LIBRARIES}
+    )
+
+    install(TARGETS
+        ${PROJECT_NAME}_example_${NAME}
+        DESTINATION lib/${PROJECT_NAME}
     )
 endfunction()
 
